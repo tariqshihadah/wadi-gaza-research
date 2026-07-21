@@ -27,6 +27,7 @@ from .aoi import AOI, aoi_from_bounds
 from .client import S2Client
 from .evalscripts import REDUCERS, EvalScript, Index, make_evalscript
 from .models import Image, Scene, SceneList
+from .windows import month_window, month_windows
 
 __all__ = [
     "S2Client",
@@ -39,4 +40,6 @@ __all__ = [
     "Index",
     "EvalScript",
     "REDUCERS",
+    "month_window",
+    "month_windows",
 ]

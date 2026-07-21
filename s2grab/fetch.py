@@ -11,6 +11,7 @@ from sentinelhub import (
     DataCollection,
     MimeType,
     MosaickingOrder,
+    ResamplingType,
     SentinelHubRequest,
     SHConfig,
 )
@@ -33,6 +34,8 @@ def fetch_array(
     time_interval: tuple[str, str],
     max_cloud_cover: int = 100,
     mosaicking: MosaickingOrder = MosaickingOrder.MOST_RECENT,
+    upsampling: str | None = None,
+    downsampling: str | None = None,
 ) -> np.ndarray | None:
     """Fetch one scene/composite as a numpy array.
 
@@ -44,6 +47,11 @@ def fetch_array(
     time_interval: (start, end) as YYYY-MM-DD strings.
     max_cloud_cover: scene-level cloud filter, percent (0-100).
     mosaicking: how to pick among candidate scenes in the interval.
+    upsampling: how 20 m bands are resampled up to the output grid
+        ("NEAREST", "BILINEAR", "BICUBIC"). None uses the service default
+        (NEAREST).
+    downsampling: resampling used when the output grid is coarser than the
+        source; same options as ``upsampling``.
 
     Returns
     -------
@@ -57,6 +65,8 @@ def fetch_array(
                 time_interval=time_interval,
                 mosaicking_order=mosaicking,
                 maxcc=max_cloud_cover / 100,
+                upsampling=ResamplingType(upsampling) if upsampling else None,
+                downsampling=ResamplingType(downsampling) if downsampling else None,
             )
         ],
         responses=[SentinelHubRequest.output_response("default", MimeType.TIFF)],

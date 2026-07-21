@@ -1,0 +1,2 @@
+site,window,status,n_scenes,mean_cloud,pct_nodata,mean_pixel_std,path
+Yuma_demo,2024-06,ok,8,1.07375,0.0,0.020757103338837624,outputs/_demo_composites/Yuma_demo/Yuma_demo_2024-06.tif

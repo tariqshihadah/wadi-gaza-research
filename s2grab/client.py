@@ -55,6 +55,8 @@ class S2Client:
         product: Union[str, EvalScript] = "true_color",
         max_cloud: float = 100,
         mosaicking: MosaickingOrder = MosaickingOrder.MOST_RECENT,
+        upsampling: Union[str, None] = None,
+        downsampling: Union[str, None] = None,
     ) -> Union[Image, None]:
         """Fetch one image.
 
@@ -65,6 +67,12 @@ class S2Client:
         ``product`` may be a preset name ("true_color", "ndvi", "indices",
         "full"), an :class:`~s2grab.evalscripts.EvalScript` built via
         :func:`s2grab.evalscripts.make_evalscript`, or a raw evalscript string.
+
+        ``upsampling`` / ``downsampling`` control how bands whose native
+        resolution differs from the output grid are resampled ("NEAREST",
+        "BILINEAR", "BICUBIC"). None uses the service default (NEAREST); this
+        matters for the 20 m bands (B05, B8A, B11, B12) and NDRE when the grid
+        is 10 m.
 
         Returns an :class:`Image`, or None if no data qualifies.
         """
@@ -87,6 +95,8 @@ class S2Client:
             time_interval=time_interval,
             max_cloud_cover=max_cloud,
             mosaicking=mosaicking,
+            upsampling=upsampling,
+            downsampling=downsampling,
         )
         if array is None:
             return None
