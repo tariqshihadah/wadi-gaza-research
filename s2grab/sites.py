@@ -20,7 +20,7 @@ from typing import Union
 
 import geopandas as gpd
 
-from .aoi import AOI
+from .aoi import AOI, InvalidGeometryError
 
 
 def load_aois(
@@ -62,7 +62,10 @@ def load_aois(
             suffix += 1
             unique_id = f"{site_id}_{suffix}"
 
-        aois[unique_id] = AOI.from_geometry(
-            row.geometry, crs=gdf.crs, resolution=resolution, clip=clip
-        )
+        try:
+            aois[unique_id] = AOI.from_geometry(
+                row.geometry, crs=gdf.crs, resolution=resolution, clip=clip
+            )
+        except InvalidGeometryError as exc:
+            raise InvalidGeometryError(f"Site '{unique_id}': {exc}") from exc
     return aois

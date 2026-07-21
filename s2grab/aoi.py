@@ -38,6 +38,29 @@ def _to_epsg(crs: Union[int, str, "PyprojCRS"]) -> int:
     return int(PyprojCRS.from_user_input(crs).to_epsg())
 
 
+class InvalidGeometryError(ValueError):
+    """Raised when an AOI geometry is not valid and would be rejected upstream."""
+
+
+def _validate(geom: BaseGeometry) -> BaseGeometry:
+    """Return ``geom`` unchanged if it is valid, else raise.
+
+    Source polygons sometimes have self-intersecting or overlapping rings,
+    which the Process API rejects ("Polygon rings are intersecting"). We do not
+    silently repair them here: instead we surface the problem so the caller can
+    decide how to fix the source data (e.g. shapely ``make_valid``/``buffer(0)``
+    or cleaning it in GIS).
+    """
+    if geom.is_valid:
+        return geom
+    from shapely.validation import explain_validity
+
+    raise InvalidGeometryError(
+        f"AOI geometry is invalid and would be rejected by the Process API: "
+        f"{explain_validity(geom)}. Repair the source geometry before use."
+    )
+
+
 @dataclass
 class AOI:
     """A request-ready area of interest in a local UTM projection.
@@ -95,6 +118,9 @@ class AOI:
         coarsened just enough to fit.
         """
         src_epsg = _to_epsg(crs)
+
+        # Reject self-intersecting / overlapping rings the API would refuse.
+        geom = _validate(geom)
 
         # Centroid in lon/lat to choose the UTM zone.
         if src_epsg == 4326:
