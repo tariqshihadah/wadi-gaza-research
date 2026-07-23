@@ -70,6 +70,12 @@ OPTICAL_BANDS = (
 # avoid over-masking dark arid surfaces; the PI may revise this set.
 DEFAULT_SCL_MASK = (0, 1, 3, 8, 9, 10, 11)
 
+# The full set of Sentinel-2 L2A Scene Classification (SCL) class values (0-11):
+# 0 no-data, 1 saturated/defective, 2 dark/topographic shadow, 3 cloud shadow,
+# 4 vegetation, 5 bare soil, 6 water, 7 unclassified, 8/9 cloud med/high,
+# 10 thin cirrus, 11 snow/ice.
+SCL_CLASSES = tuple(range(12))
+
 # Temporal reducers: each defines a JS ``agg(a)`` over an array of per-scene
 # values (already filtered to finite numbers upstream). Used when ``reduce`` is
 # set on :func:`make_evalscript` to composite many scenes into one pixel.
@@ -245,6 +251,67 @@ def make_evalscript(
             f"  return [{return_list}];\n"
             "}\n"
         )
+    return EvalScript(script=script, band_names=tuple(band_names))
+
+
+def make_scl_count_evalscript(
+    classes: Sequence[int] = SCL_CLASSES,
+    *,
+    sample_type: str = "FLOAT32",
+) -> EvalScript:
+    """Build a multi-temporal evalscript that tallies SCL classes per pixel.
+
+    Instead of compositing reflectance, this counts — for every pixel, across
+    all scenes in the request window (``mosaicking="ORBIT"``) — how many valid
+    observations fall in each SCL class. The output is a fixed set of count
+    bands regardless of how many scenes the window contains::
+
+        ["valid", "SCL_<c0>", "SCL_<c1>", ...]
+
+    where ``valid`` is the number of scenes covering the pixel (``dataMask==1``)
+    and each ``SCL_<c>`` is how many of those observations were classified as
+    ``c``.
+
+    These counts are a *sufficient statistic* for simulating any SCL mask set
+    offline: a pixel is no-data under a mask ``M`` exactly when
+    ``valid - sum(SCL_<c> for c in M) == 0``. So one request per window lets you
+    test arbitrarily many candidate ``mask_scl`` sets in NumPy without refetching.
+
+    Parameters
+    ----------
+    classes: SCL class values to count (default: all classes 0-11).
+    sample_type: output sample type (FLOAT32 keeps it consistent with the rest
+        of the toolkit; counts are small non-negative integers).
+    """
+    classes = tuple(classes)
+    n_out = 1 + len(classes)
+    band_names = ["valid"] + [f"SCL_{c}" for c in classes]
+    inc_lines = "\n".join(
+        f"    if (c === {c}) acc[{j + 1}]++;" for j, c in enumerate(classes)
+    )
+    return_list = ", ".join(f"acc[{j}]" for j in range(n_out))
+    script = (
+        "//VERSION=3\n"
+        "function setup() {\n"
+        "  return {\n"
+        '    input: [{ bands: ["SCL", "dataMask"] }],\n'
+        f'    output: {{ bands: {n_out}, sampleType: "{sample_type}" }},\n'
+        '    mosaicking: "ORBIT"\n'
+        "  };\n"
+        "}\n"
+        "function evaluatePixel(samples) {\n"
+        "  var acc = [];\n"
+        f"  for (var k = 0; k < {n_out}; k++) acc.push(0);\n"
+        "  for (var i = 0; i < samples.length; i++) {\n"
+        "    var s = samples[i];\n"
+        "    if (s.dataMask === 0) continue;\n"
+        "    acc[0]++;\n"
+        "    var c = s.SCL;\n"
+        f"{inc_lines}\n"
+        "  }\n"
+        f"  return [{return_list}];\n"
+        "}\n"
+    )
     return EvalScript(script=script, band_names=tuple(band_names))
 
 

@@ -25,7 +25,13 @@ The facade delegates to the functional core; it adds no processing logic.
 
 from .aoi import AOI, aoi_from_bounds
 from .client import S2Client
-from .evalscripts import REDUCERS, EvalScript, Index, make_evalscript
+from .evalscripts import (
+    REDUCERS,
+    EvalScript,
+    Index,
+    make_evalscript,
+    make_scl_count_evalscript,
+)
 from .models import Image, Scene, SceneList
 from .windows import month_window, month_windows
 
@@ -37,6 +43,7 @@ __all__ = [
     "SceneList",
     "Image",
     "make_evalscript",
+    "make_scl_count_evalscript",
     "Index",
     "EvalScript",
     "REDUCERS",
