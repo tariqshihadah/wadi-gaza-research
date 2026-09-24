@@ -41,22 +41,22 @@ Within a study area, all rasters are co-registered: they share the same resoluti
 
 For each date pair, the difference is computed at every valid pixel:
 
-$$
+```math
 d_i = X_i^{(1)} - X_i^{(0)}
 \tag{1}
-$$
+```
 
 The mean and sample standard deviation of $D$ are:
 
-$$
+```math
 \bar{d} = \frac{1}{N} \sum_{i=1}^{N} d_i
 \tag{2}
-$$
+```
 
-$$
+```math
 s_D = \sqrt{ \frac{1}{N-1} \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }
 \tag{3}
-$$
+```
 
 The standard deviation uses the actual pixel count $N$. It describes the pixel-to-pixel spread of the change, which is not reduced by autocorrelation. The effective sample size enters only through the standard error of the mean (Section 4.5). All subsequent steps operate on $D$, since the relevant autocorrelation is that of the change, not of either date individually.
 
@@ -66,41 +66,41 @@ Spatial autocorrelation of $D$ is measured with a Moran's I correlogram, in whic
 
 Each lag uses binary ring (annular) weights on Chebyshev distance:
 
-$$
+```math
 w_{ij}^{(k)} =
 \begin{cases}
 1 & \text{if } \max\left( \lvert r_i - r_j \rvert ,\, \lvert c_i - c_j \rvert \right) = k \\
 0 & \text{otherwise}
 \end{cases}
 \tag{4}
-$$
+```
 
 Each lag therefore captures only pixel pairs exactly $k$ steps apart, including diagonals, and lag 1 is equivalent to queen contiguity. Weights are not row-standardized. Pairs involving a pixel outside the mask are excluded, so pixels near edges and mask boundaries simply contribute fewer pairs.
 
 The total weight at lag $k$ is the number of valid ordered pairs:
 
-$$
+```math
 W_k = \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)}
 \tag{5}
-$$
+```
 
 Moran's I at lag $k$ is:
 
-$$
+```math
 I_k = \frac{N}{W_k} \cdot
 \frac{ \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)} \left( d_i - \bar{d} \right) \left( d_j - \bar{d} \right) }
      { \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }
 \tag{6}
-$$
+```
 
 With binary ring weights, $I_k$ equals the average product of paired deviations at lag $k$, divided by the variance of $D$. It therefore serves directly as the spatial autocorrelation at that lag.
 
 The maximum lag is one quarter of the smaller dimension of the study area's bounding box:
 
-$$
+```math
 K_{\max} = \left\lfloor \frac{1}{4} \min\left( n_{\mathrm{rows}} ,\, n_{\mathrm{cols}} \right) \right\rfloor
 \tag{7}
-$$
+```
 
 Beyond this distance, too few pairs remain for reliable estimates. Lags are evaluated at 1-pixel steps. For very large rasters, lags may be spaced more widely at larger distances, with the correlogram interpolated between them.
 
@@ -108,11 +108,11 @@ Beyond this distance, too few pairs remain for reliable estimates. Lags are eval
 
 The range $R$ is the first lag at which autocorrelation becomes negligible:
 
-$$
+```math
 R = \min \{ k \in \{1, \ldots, K_{\max}\} \,:\, I_k < \tau \},
 \qquad \tau = 0.05
 \tag{8}
-$$
+```
 
 Since $\tau > 0$, this also captures the first lag at which $I_k$ reaches or crosses zero. A fixed magnitude threshold is used instead of a significance test. With large $N$, even negligible autocorrelation is statistically significant, so a significance-based cutoff would not identify a meaningful range. $R$ is reported in both pixels and map units ($R$ multiplied by the cell size).
 
@@ -120,10 +120,10 @@ Since $\tau > 0$, this also captures the first lag at which $I_k$ reaches or cro
 
 Autocorrelation inflates the variance of the mean. Summing the correlation contributed by each lag below the range gives:
 
-$$
+```math
 n_{\mathrm{eff}} = \frac{N}{ 1 + \sum_{k=1}^{R-1} \frac{W_k}{N} \, I_k }
 \tag{9}
-$$
+```
 
 The ratio $W_k / N$ is the average number of valid neighbors per pixel at lag $k$. Because it is measured from the data, it accounts for edges and the irregular mask. Only lags $1$ through $R-1$ are included, and every $I_k$ in that span is at least $\tau$. The denominator is therefore at least 1, so $n_{\mathrm{eff}} \le N$ holds automatically. If $R = 1$, the sum is empty and $n_{\mathrm{eff}} = N$.
 
@@ -131,18 +131,18 @@ The ratio $W_k / N$ is the average number of valid neighbors per pixel at lag $k
 
 The degrees of freedom are:
 
-$$
+```math
 \nu = n_{\mathrm{eff}} - 1
 \tag{10}
-$$
+```
 
 The $(1 - \alpha)$ CI for the mean change is:
 
-$$
+```math
 \mathrm{CI} = \bar{d} \pm t_{1-\alpha/2,\,\nu} \cdot \frac{s_D}{\sqrt{n_{\mathrm{eff}}}},
 \qquad \alpha = 0.05
 \tag{11}
-$$
+```
 
 Here $t_{1-\alpha/2,\,\nu}$ is the $(1 - \alpha/2)$ quantile of Student's t-distribution with $\nu$ degrees of freedom.
 
