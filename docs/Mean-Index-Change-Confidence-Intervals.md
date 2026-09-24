@@ -109,7 +109,7 @@ Beyond this distance, too few pairs remain for reliable estimates. Lags are eval
 The range $R$ is the first lag at which autocorrelation becomes negligible:
 
 $$
-R = \min \left\{ k \in \{1, \ldots, K_{\max}\} \,:\, I_k < \tau \right\},
+R = \min \{ k \in \{1, \ldots, K_{\max}\} \,:\, I_k < \tau \},
 \qquad \tau = 0.05
 \tag{8}
 $$
