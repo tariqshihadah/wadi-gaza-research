@@ -16,107 +16,160 @@ Within a study area, all rasters are co-registered: they share the same resoluti
 
 | Symbol | Meaning |
 |---|---|
-| $X^{(0)}, X^{(1)}$ | Index rasters for the earlier and later date of a pair |
-| $d_i$ | Change at valid pixel $i$: $d_i = X^{(1)}_i - X^{(0)}_i$ |
+| $X^{(0)}$, $X^{(1)}$ | Index rasters for the earlier and later date of a pair |
+| $D$ | Difference raster, $D = X^{(1)} - X^{(0)}$ |
+| $d_i$ | Value of $D$ at valid pixel $i$ |
+| $r_i$, $c_i$ | Row and column of pixel $i$ |
 | $N$ | Number of valid pixels |
-| $\bar{d}$, $s_D$ | Mean and sample standard deviation of the change |
+| $\bar{d}$ | Mean of $D$ |
+| $s_D$ | Sample standard deviation of $D$ |
 | $k$ | Lag, in pixels |
-| $w^{(k)}_{ij}$ | Binary ring weight between pixels $i$ and $j$ at lag $k$ |
+| $w_{ij}^{(k)}$ | Binary ring weight between pixels $i$ and $j$ at lag $k$ |
 | $W_k$ | Number of valid ordered pixel pairs at lag $k$ |
-| $I_k$ | Moran's I at lag $k$ |
+| $I_k$ | Moran's I of $D$ at lag $k$ |
+| $K_{\max}$ | Maximum lag evaluated |
+| $n_{\mathrm{rows}}$, $n_{\mathrm{cols}}$ | Dimensions of the study area's bounding box, in pixels |
 | $\tau$ | Near-zero threshold defining the range |
 | $R$ | Range (decorrelation distance), in pixels |
-| $n_{\text{eff}}$ | Effective sample size |
+| $n_{\mathrm{eff}}$ | Effective sample size |
+| $\nu$ | Degrees of freedom for the CI |
+| $\alpha$ | Significance level (CI level is $1 - \alpha$) |
 
 ## 4. Method
 
 ### 4.1 Difference raster and summary statistics
 
-For each date pair, compute the difference raster $D$ over valid pixels. Then compute:
+For each date pair, the difference is computed at every valid pixel:
 
-$$\bar{d} = \frac{1}{N}\sum_{i=1}^{N} d_i, \qquad s_D = \sqrt{\frac{1}{N-1}\sum_{i=1}^{N}(d_i - \bar{d})^2}$$
+$$
+d_i = X_i^{(1)} - X_i^{(0)}
+\tag{1}
+$$
 
-All subsequent steps operate on $D$, since the relevant autocorrelation is that of the change, not of either date individually.
+The mean and sample standard deviation of $D$ are:
+
+$$
+\bar{d} = \frac{1}{N} \sum_{i=1}^{N} d_i
+\tag{2}
+$$
+
+$$
+s_D = \sqrt{ \frac{1}{N-1} \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }
+\tag{3}
+$$
+
+The standard deviation uses the actual pixel count $N$. It describes the pixel-to-pixel spread of the change, which is not reduced by autocorrelation. The effective sample size enters only through the standard error of the mean (Section 4.5). All subsequent steps operate on $D$, since the relevant autocorrelation is that of the change, not of either date individually.
 
 ### 4.2 Moran's I correlogram
 
-Spatial autocorrelation of $D$ is measured with a Moran's I correlogram: Moran's I is computed separately at each lag $k = 1, 2, \dots, K_{\max}$.
+Spatial autocorrelation of $D$ is measured with a Moran's I correlogram, in which Moran's I is computed separately at each lag $k = 1, 2, \ldots, K_{\max}$.
 
-At each lag, binary ring (annular) weights on Chebyshev distance are used. For pixel $i$ at row $r_i$ and column $c_i$:
+Each lag uses binary ring (annular) weights on Chebyshev distance:
 
-$$w^{(k)}_{ij} = \begin{cases} 1 & \text{if } \max(|r_i - r_j|,\ |c_i - c_j|) = k \\ 0 & \text{otherwise} \end{cases}$$
+$$
+w_{ij}^{(k)} =
+\begin{cases}
+1 & \text{if } \max\left( \lvert r_i - r_j \rvert ,\, \lvert c_i - c_j \rvert \right) = k \\
+0 & \text{otherwise}
+\end{cases}
+\tag{4}
+$$
 
-Each lag therefore captures only pixel pairs exactly $k$ steps apart, including diagonals. Lag 1 is equivalent to queen contiguity. Weights are not row-standardized. Pairs involving any pixel outside the mask are excluded, so edge and mask-boundary pixels simply contribute fewer pairs.
+Each lag therefore captures only pixel pairs exactly $k$ steps apart, including diagonals, and lag 1 is equivalent to queen contiguity. Weights are not row-standardized. Pairs involving a pixel outside the mask are excluded, so pixels near edges and mask boundaries simply contribute fewer pairs.
 
 The total weight at lag $k$ is the number of valid ordered pairs:
 
-$$W_k = \sum_{i}\sum_{j \neq i} w^{(k)}_{ij}$$
+$$
+W_k = \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)}
+\tag{5}
+$$
 
 Moran's I at lag $k$ is:
 
-$$I_k = \frac{N}{W_k} \cdot \frac{\sum_{i}\sum_{j \neq i} w^{(k)}_{ij}\,(d_i - \bar{d})(d_j - \bar{d})}{\sum_{i}(d_i - \bar{d})^2}$$
+$$
+I_k = \frac{N}{W_k} \cdot
+\frac{ \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)} \left( d_i - \bar{d} \right) \left( d_j - \bar{d} \right) }
+     { \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }
+\tag{6}
+$$
 
-With binary ring weights, $I_k$ equals the average product of paired deviations at lag $k$ divided by the overall variance. It therefore serves directly as the spatial autocorrelation at that lag.
+With binary ring weights, $I_k$ equals the average product of paired deviations at lag $k$, divided by the variance of $D$. It therefore serves directly as the spatial autocorrelation at that lag.
 
-The maximum lag is set to one quarter of the smaller dimension of the study area's bounding box, in pixels:
+The maximum lag is one quarter of the smaller dimension of the study area's bounding box:
 
-$$K_{\max} = \left\lfloor \tfrac{1}{4}\min(H, W) \right\rfloor$$
+$$
+K_{\max} = \left\lfloor \frac{1}{4} \min\left( n_{\mathrm{rows}} ,\, n_{\mathrm{cols}} \right) \right\rfloor
+\tag{7}
+$$
 
-Beyond this distance, too few pairs remain for reliable estimates. Lags are evaluated at 1-pixel steps. For very large rasters, lags may be spaced more widely at larger distances and the correlogram interpolated between them.
+Beyond this distance, too few pairs remain for reliable estimates. Lags are evaluated at 1-pixel steps. For very large rasters, lags may be spaced more widely at larger distances, with the correlogram interpolated between them.
 
 ### 4.3 Range
 
 The range $R$ is the first lag at which autocorrelation becomes negligible:
 
-$$R = \min\{\, k : I_k < \tau \ \text{ or } \ I_k \le 0 \,\}, \qquad \tau = 0.05$$
+$$
+R = \min \left\{ k \in \{1, \ldots, K_{\max}\} \,:\, I_k < \tau \right\},
+\qquad \tau = 0.05
+\tag{8}
+$$
 
-A fixed magnitude threshold is used instead of a significance test. With large $N$, even negligible autocorrelation is statistically significant, so a significance-based cutoff would not identify a meaningful range.
-
-The range is reported in both pixels and map units ($R \times$ cell size).
+Since $\tau > 0$, this also captures the first lag at which $I_k$ reaches or crosses zero. A fixed magnitude threshold is used instead of a significance test. With large $N$, even negligible autocorrelation is statistically significant, so a significance-based cutoff would not identify a meaningful range. $R$ is reported in both pixels and map units ($R$ multiplied by the cell size).
 
 ### 4.4 Effective sample size
 
-Autocorrelation inflates the variance of the mean. Summing the correlation contributed by each lag up to the range gives:
+Autocorrelation inflates the variance of the mean. Summing the correlation contributed by each lag below the range gives:
 
-$$n_{\text{eff}} = \frac{N}{1 + \displaystyle\sum_{k=1}^{R-1} \frac{W_k}{N}\, I_k}$$
+$$
+n_{\mathrm{eff}} = \frac{N}{ 1 + \sum_{k=1}^{R-1} \frac{W_k}{N} \, I_k }
+\tag{9}
+$$
 
-The term $W_k / N$ is the average number of valid neighbors per pixel at lag $k$. It is measured from the data, so it automatically accounts for edges and the irregular mask. Lags at or beyond $R$, including any negative values, are excluded from the sum.
-
-The result is bounded so that $n_{\text{eff}} \le N$.
+The ratio $W_k / N$ is the average number of valid neighbors per pixel at lag $k$. Because it is measured from the data, it accounts for edges and the irregular mask. Only lags $1$ through $R-1$ are included, and every $I_k$ in that span is at least $\tau$. The denominator is therefore at least 1, so $n_{\mathrm{eff}} \le N$ holds automatically. If $R = 1$, the sum is empty and $n_{\mathrm{eff}} = N$.
 
 ### 4.5 Confidence interval
 
-The CI for the mean change uses the observed mean and standard deviation with the effective sample size:
+The degrees of freedom are:
 
-$$\text{CI}_{1-\alpha} = \bar{d} \ \pm\ t_{1-\alpha/2,\ n_{\text{eff}}-1} \cdot \frac{s_D}{\sqrt{n_{\text{eff}}}}, \qquad \alpha = 0.05$$
+$$
+\nu = n_{\mathrm{eff}} - 1
+\tag{10}
+$$
+
+The $(1 - \alpha)$ CI for the mean change is:
+
+$$
+\mathrm{CI} = \bar{d} \pm t_{1-\alpha/2,\,\nu} \cdot \frac{s_D}{\sqrt{n_{\mathrm{eff}}}},
+\qquad \alpha = 0.05
+\tag{11}
+$$
+
+Here $t_{1-\alpha/2,\,\nu}$ is the $(1 - \alpha/2)$ quantile of Student's t-distribution with $\nu$ degrees of freedom.
 
 ## 5. Sensitivity and Quality Checks
 
-**Threshold sensitivity.** Steps 4.3 through 4.5 are repeated for $\tau \in \{0.02,\ 0.05,\ 0.10\}$. The pair count $W_k$ grows with lag, so small correlations at larger lags can noticeably affect $n_{\text{eff}}$. Stable results across thresholds indicate the CI is robust to this choice.
+**Threshold sensitivity.** Equations (8) through (11) are recomputed for $\tau \in \{0.02, 0.05, 0.10\}$. Because $W_k$ grows with lag, small correlations at larger lags can noticeably affect $n_{\mathrm{eff}}$. Stable results across thresholds indicate the CI is robust to this choice.
 
-**Flags.** A pair is flagged for review when either condition holds:
+**Flags.** A pair is flagged for review under either of two conditions:
 
-- $I_k$ does not fall below $\tau$ by $K_{\max}$. This typically indicates a broad trend across the study area rather than local clustering, and the effective number of independent units is very small.
-- $n_{\text{eff}} < 30$.
+- No lag up to $K_{\max}$ satisfies Equation (8), so $R$ is undefined. This typically indicates a broad trend across the study area rather than local clustering, meaning the effective number of independent units is very small.
+- The effective sample size falls below 30 ($n_{\mathrm{eff}} < 30$).
 
 ## 6. Assumptions and Notes
 
-**Stationarity.** A single correlogram is assumed to describe the autocorrelation structure across the whole study area for a given pair.
+**Stationarity.** A single correlogram is assumed to describe the autocorrelation structure of $D$ across the whole study area.
 
-**Independence of pairs.** Each date pair is analyzed separately, and its correlogram, range, and $n_{\text{eff}}$ are specific to that pair.
+**Independence of pairs.** Each date pair is analyzed separately. Its correlogram, $R$, and $n_{\mathrm{eff}}$ are specific to that pair.
 
 **Multiple comparisons.** Because many pairs are evaluated across study areas, individual CIs should be interpreted with the number of comparisons in mind.
 
 ## 7. Reported Outputs (per date pair)
 
-For each pair, the following are reported:
+For each pair, the reported outputs are:
 
-- the mean change $\bar{d}$
-- the standard deviation $s_D$
-- the pixel count $N$
+- the mean change $\bar{d}$, the standard deviation $s_D$, and the pixel count $N$
 - the range $R$, in pixels and map units
-- the effective sample size $n_{\text{eff}}$
-- the 95% CI
+- the effective sample size $n_{\mathrm{eff}}$ and the 95% CI
 - the sensitivity results for each value of $\tau$
 - any flags raised
-- the correlogram ($I_k$ versus $k$)
+- the correlogram, i.e. $I_k$ versus $k$
