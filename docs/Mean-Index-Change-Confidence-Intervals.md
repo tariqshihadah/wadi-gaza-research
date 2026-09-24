@@ -49,12 +49,12 @@ $$
 The mean and sample standard deviation of $D$ are:
 
 $$
-\bar{d} = \frac{1}{N} \sum_{i=1}^{N} d_i
+{\bar{d} = \frac{1}{N} \sum_{i=1}^{N} d_i}
 \tag{2}
 $$
 
 $$
-s_D = \sqrt{ \frac{1}{N-1} \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }
+{s_D = \sqrt{ \frac{1}{N-1} \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }}
 \tag{3}
 $$
 
@@ -67,11 +67,11 @@ Spatial autocorrelation of $D$ is measured with a Moran's I correlogram, in whic
 Each lag uses binary ring (annular) weights on Chebyshev distance:
 
 $$
-w_{ij}^{(k)} =
+{w_{ij}^{(k)} =
 \begin{cases}
 1 & \text{if } \max\left( \lvert r_i - r_j \rvert ,\, \lvert c_i - c_j \rvert \right) = k \\
 0 & \text{otherwise}
-\end{cases}
+\end{cases}}
 \tag{4}
 $$
 
@@ -80,16 +80,16 @@ Each lag therefore captures only pixel pairs exactly $k$ steps apart, including 
 The total weight at lag $k$ is the number of valid ordered pairs:
 
 $$
-W_k = \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)}
+{W_k = \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)}}
 \tag{5}
 $$
 
 Moran's I at lag $k$ is:
 
 $$
-I_k = \frac{N}{W_k} \cdot
+{I_k = \frac{N}{W_k} \cdot
 \frac{ \sum_{i=1}^{N} \sum_{j \neq i} w_{ij}^{(k)} \left( d_i - \bar{d} \right) \left( d_j - \bar{d} \right) }
-     { \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }
+     { \sum_{i=1}^{N} \left( d_i - \bar{d} \right)^2 }}
 \tag{6}
 $$
 
@@ -98,7 +98,7 @@ With binary ring weights, $I_k$ equals the average product of paired deviations 
 The maximum lag is one quarter of the smaller dimension of the study area's bounding box:
 
 $$
-K_{\max} = \left\lfloor \frac{1}{4} \min\left( n_{\mathrm{rows}} ,\, n_{\mathrm{cols}} \right) \right\rfloor
+{K_{\max} = \left\lfloor \frac{1}{4} \min\left( n_{\mathrm{rows}} ,\, n_{\mathrm{cols}} \right) \right\rfloor}
 \tag{7}
 $$
 
@@ -109,8 +109,8 @@ Beyond this distance, too few pairs remain for reliable estimates. Lags are eval
 The range $R$ is the first lag at which autocorrelation becomes negligible:
 
 $$
-R = \min \{ k \in \{1, \ldots, K_{\max}\} \,:\, I_k < \tau \},
-\qquad \tau = 0.05
+{R = \min \{ k \in \{1, \ldots, K_{\max}\} \,:\, I_k < \tau \},
+\qquad \tau = 0.05}
 \tag{8}
 $$
 
@@ -121,7 +121,7 @@ Since $\tau > 0$, this also captures the first lag at which $I_k$ reaches or cro
 Autocorrelation inflates the variance of the mean. Summing the correlation contributed by each lag below the range gives:
 
 $$
-n_{\mathrm{eff}} = \frac{N}{ 1 + \sum_{k=1}^{R-1} \frac{W_k}{N} \, I_k }
+{n_{\mathrm{eff}} = \frac{N}{ 1 + \sum_{k=1}^{R-1} \frac{W_k}{N} \, I_k }}
 \tag{9}
 $$
 
@@ -132,15 +132,15 @@ The ratio $W_k / N$ is the average number of valid neighbors per pixel at lag $k
 The degrees of freedom are:
 
 $$
-\nu = n_{\mathrm{eff}} - 1
+{\nu = n_{\mathrm{eff}} - 1}
 \tag{10}
 $$
 
 The $(1 - \alpha)$ CI for the mean change is:
 
 $$
-\mathrm{CI} = \bar{d} \pm t_{1-\alpha/2,\,\nu} \cdot \frac{s_D}{\sqrt{n_{\mathrm{eff}}}},
-\qquad \alpha = 0.05
+{\mathrm{CI} = \bar{d} \pm t_{1-\alpha/2,\,\nu} \cdot \frac{s_D}{\sqrt{n_{\mathrm{eff}}}},
+\qquad \alpha = 0.05}
 \tag{11}
 $$
 
