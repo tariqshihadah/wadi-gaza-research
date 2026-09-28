@@ -102,7 +102,7 @@ $$
 \tag{7}
 $$
 
-Beyond this distance, too few pairs remain for reliable estimates. Lags are evaluated at 1-pixel steps. For very large rasters, lags may be spaced more widely at larger distances, with the correlogram interpolated between them.
+Beyond this distance, too few pairs remain for reliable estimates. Moran's I is computed at every integer lag from 1 to K_max. Correlogram values are computed via FFT-based autocorrelation following Marcotte (1996), which yields values identical to direct computation.
 
 ### 4.3 Range
 
