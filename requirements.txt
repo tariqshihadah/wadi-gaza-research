@@ -4,8 +4,10 @@ rasterio
 pyproj
 shapely
 numpy
+scipy
 pandas
 matplotlib
 PyYAML
 python-dotenv
 ipykernel
+pytest

@@ -1,0 +1,23 @@
+{
+  "data_root": "/home/tshihadah/code/wadi-gaza-research/outputs/composites",
+  "output_dir": "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/phase1_september_2023_2024",
+  "study_areas": null,
+  "months": [
+    "09"
+  ],
+  "year_range": [
+    2023,
+    2024
+  ],
+  "index_band": "NDVI",
+  "engine": "fft",
+  "tau": 0.05,
+  "tau_sensitivity": [
+    0.02,
+    0.05,
+    0.1
+  ],
+  "alpha": 0.05,
+  "max_lag_fraction": 0.25,
+  "min_n_eff": 30
+}
