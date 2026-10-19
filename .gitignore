@@ -29,3 +29,6 @@ Thumbs.db
 # Project outputs (large rasters, not tracked)
 outputs/*.tif
 outputs/**/*.tif
+
+# Archived prior outputs kept locally for before/after comparison
+outputs/_archive/

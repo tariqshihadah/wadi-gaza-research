@@ -7,10 +7,11 @@ reuse it for any band stack.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Sequence
+from typing import Mapping, Sequence
 
 import numpy as np
 import rasterio
+from affine import Affine
 from rasterio.transform import from_bounds
 from sentinelhub import BBox
 
@@ -20,6 +21,8 @@ def write_geotiff(
     array: np.ndarray,
     bbox: BBox,
     band_names: Sequence[str] | None = None,
+    tags: Mapping[str, object] | None = None,
+    transform: Affine | None = None,
 ) -> Path:
     """Write ``array`` to ``path`` as a FLOAT32 GeoTIFF georeferenced by ``bbox``.
 
@@ -28,6 +31,8 @@ def write_geotiff(
     array: shape (H, W) or (H, W, bands).
     bbox: the request BBox (carries CRS and extent).
     band_names: optional per-band descriptions written into metadata.
+    tags: optional dataset-level metadata tags (values stored as strings).
+    transform: grid transform; derived from ``bbox`` and the array size if None.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -38,7 +43,8 @@ def write_geotiff(
     arr = np.transpose(array, (2, 0, 1)).astype("float32")
     count, height, width = arr.shape
 
-    transform = from_bounds(*bbox, width=width, height=height)
+    if transform is None:
+        transform = from_bounds(*bbox, width=width, height=height)
     with rasterio.open(
         path,
         "w",
@@ -52,6 +58,8 @@ def write_geotiff(
         compress="deflate",
     ) as dst:
         dst.write(arr)
+        if tags:
+            dst.update_tags(**{key: str(value) for key, value in tags.items()})
         if band_names:
             for i, name in enumerate(band_names, start=1):
                 dst.set_band_description(i, name)

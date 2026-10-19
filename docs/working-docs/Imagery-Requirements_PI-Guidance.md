@@ -1,3 +1,9 @@
+> **Working document.** Original PI guidance written to direct the imagery
+> pipeline. Notes marked *Implementation note* record where the implemented
+> process differs or clarifies; the authoritative description of what was
+> done is the white paper
+> [Imagery Acquisition and Preparation](../white-papers/Imagery-Acquisition-and-Preparation.md).
+
 # Vegetation Indices
 
 *Sentinel-2 L2A imagery from Copernicus Browser:*
@@ -31,20 +37,33 @@ We want **monthly composites of September, November, January, and May of 2019 \-
 
 **Apply scaling factor** to images to convert to actual reflectance values: **Divide pixel values by 10,000**
 
+> *Implementation note:* no manual division is applied. Sentinel Hub returns
+> L2A bands as surface reflectance (0–1) when requested in reflectance units,
+> which is equivalent to dividing the stored digital numbers by 10,000.
+
 **Calculate monthly median** for each band.
 
 **Calculate indices for these median band composites** (all indices for Wadi Gaza, NDVI ONLY for other study sites):
+
+> *Implementation note:* all four indices (NDVI, GNDVI, SAVI, NDRE) are produced
+> for **every** study site. Each index is computed per scene and the per-pixel
+> median is then taken across scenes (median of indices), rather than computing
+> indices from median band composites.
 
 | Vegetation Index | Formula | Sentinel-2 Bands Used | Native Resolution | Purpose |
 | ----- | :---: | :---: | :---: | ----- |
 | **NDVI** (Normalized Difference Vegetation Index) | (B8 − B4) / (B8 \+ B4) | B8 (NIR), B4 (Red) | 10 m | Measures overall vegetation vigor and greenness; widely used indicator of photosynthetic activity. |
 | **GNDVI** (Green Normalized Difference Vegetation Index) | (B8 − B3) / (B8 \+ B3) | B8 (NIR), B3 (Green) | 10 m | More sensitive to chlorophyll concentration and canopy condition than NDVI. |
-| **SAVI** (Soil Adjusted Vegetation Index) | ((B8 − B4) / (B8 \+ B4 \+ L)) × L | B8 (NIR), B4 (Red) | 10 m | Reduces the influence of exposed soil, making it useful in sparsely vegetated areas such as Wadi Gaza. |
+| **SAVI** (Soil Adjusted Vegetation Index) | ((B8 − B4) / (B8 \+ B4 \+ L)) × (1 \+ L) | B8 (NIR), B4 (Red) | 10 m | Reduces the influence of exposed soil, making it useful in sparsely vegetated areas such as Wadi Gaza. |
 | **NDRE** (Normalized Difference Red Edge Index) | (B8A − B5) / (B8A \+ B5) | B8A (Narrow NIR), B5 (Red Edge 1\) | 20 m | Sensitive to chlorophyll content and vegetation stress, particularly in denser vegetation. |
 
 *\*Where L is soil brightness correction factor: 0.428 (value from European Space Agency for implementation of Sentinel-2 for this)*
 
 **Clip each calculated index raster to the study area polygons** I have from the WDPA (all four for Wadi Gaza, only NDVI for other areas)
+
+> *Implementation note:* clipping is done at acquisition with a pixel-center
+> rule: a 10 m pixel belongs to a site when its center lies inside the site
+> polygon. Pixels outside are set to NaN in every saved composite.
 
 # Land Cover Change Analysis
 

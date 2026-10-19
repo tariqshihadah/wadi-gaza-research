@@ -3,23 +3,32 @@
 Sentinel-2 is delivered in UTM zones, and we want resolution expressed in metres,
 so every AOI is reprojected to its local UTM zone before building a request.
 
-An AOI carries a bounding box (always) and, optionally, a clip polygon. When a
-polygon is present, the Process API clips output to that shape (pixels outside
-come back masked). This module depends only on shapely + pyproj + sentinelhub —
-no file IO, no geopandas — so it stays lean and easy to unit-test.
+An AOI carries a bounding box (always) and, optionally, the study-area
+polygon. Imagery is always requested for the full bounding box; when a polygon
+is present it is used for scene search and to build the pixel-center study-area
+footprint (see :mod:`s2grab.footprint`), which :meth:`s2grab.S2Client.fetch`
+applies once to every fetched array. No file IO, no geopandas — so it stays
+lean and easy to unit-test.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from functools import cached_property
 from typing import Optional, Union
+
+import numpy as np
+from affine import Affine
 
 from pyproj import CRS as PyprojCRS
 from pyproj import Transformer
+from rasterio.transform import from_bounds
 from sentinelhub import CRS, BBox, Geometry, bbox_to_dimensions
 from shapely.geometry import box
 from shapely.geometry.base import BaseGeometry
 from shapely.ops import transform as shapely_transform
+
+from .footprint import pixel_center_mask
 
 # Process API caps a single request at this many pixels per side.
 MAX_DIM = 2500
@@ -70,7 +79,8 @@ class AOI:
     bbox: the UTM bounding box (carries CRS + extent), always present.
     size: (width, height) in pixels.
     resolution: effective ground resolution in metres.
-    geometry: optional UTM clip polygon; when set, requests are masked to it.
+    geometry: optional UTM study-area polygon. Used for scene search and the
+        pixel-center :attr:`footprint`; requests always cover the full bbox.
     """
 
     bbox: BBox
@@ -83,11 +93,31 @@ class AOI:
         return int(self.bbox.crs.value)
 
     @property
-    def is_clipped(self) -> bool:
+    def has_polygon(self) -> bool:
         return self.geometry is not None
 
+    @property
+    def shape(self) -> tuple[int, int]:
+        """Output raster shape as (height, width)."""
+        return (self.size[1], self.size[0])
+
+    @property
+    def transform(self) -> Affine:
+        """Affine transform of the output grid (shared by fetch, footprint and IO)."""
+        return from_bounds(*self.bbox, width=self.size[0], height=self.size[1])
+
+    @cached_property
+    def footprint(self) -> np.ndarray:
+        """Boolean (H, W) study-area mask: pixel centers inside the polygon.
+
+        All True for a bbox-only AOI. Computed once per AOI and reused.
+        """
+        if self.geometry is None:
+            return np.ones(self.shape, dtype=bool)
+        return pixel_center_mask(self.geometry.geometry, self.transform, self.shape)
+
     def __repr__(self) -> str:
-        shape = "polygon" if self.is_clipped else "bbox"
+        shape = "polygon" if self.has_polygon else "bbox"
         return (
             f"AOI(EPSG:{self.epsg}, {self.size[0]}x{self.size[1]}px, "
             f"{self.resolution:.1f}m, {shape})"
@@ -99,7 +129,6 @@ class AOI:
         geom: BaseGeometry,
         crs: Union[int, str, "PyprojCRS"],
         resolution: float = 10,
-        clip: bool = True,
     ) -> "AOI":
         """Build an :class:`AOI` from an in-memory shapely geometry.
 
@@ -110,8 +139,6 @@ class AOI:
             none. Accepts an EPSG int, an authority string ("EPSG:4326"), or a
             pyproj CRS.
         resolution: requested ground resolution in metres.
-        clip: when True (default), keep the polygon so requests are masked to
-            it. When False, only the bounding box is used (rectangular output).
 
         The geometry is reprojected to the local UTM zone of its centroid. If
         the requested resolution would exceed the Process API pixel cap, it is
@@ -144,8 +171,12 @@ class AOI:
             eff_res = resolution * (max(size) / MAX_DIM)
             size = bbox_to_dimensions(utm_bbox, resolution=eff_res)
 
-        geometry = Geometry(geom_utm, crs=utm_crs) if clip else None
-        return cls(bbox=utm_bbox, size=size, resolution=eff_res, geometry=geometry)
+        return cls(
+            bbox=utm_bbox,
+            size=size,
+            resolution=eff_res,
+            geometry=Geometry(geom_utm, crs=utm_crs),
+        )
 
     @classmethod
     def from_bounds(
@@ -158,15 +189,14 @@ class AOI:
     ) -> "AOI":
         """Build a rectangular :class:`AOI` from WGS84 lon/lat bounds.
 
-        Delegates to :meth:`from_geometry` with ``clip=False`` so output is the
-        full bounding box.
+        The result has no polygon, so the footprint covers the full bbox.
         """
-        return cls.from_geometry(
+        aoi = cls.from_geometry(
             box(min_lon, min_lat, max_lon, max_lat),
             crs=4326,
             resolution=resolution,
-            clip=False,
         )
+        return replace(aoi, geometry=None)
 
 
 # Functional-style alias for the classmethod constructor.

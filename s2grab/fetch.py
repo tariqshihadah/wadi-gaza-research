@@ -43,7 +43,7 @@ def fetch_array(
     ----------
     config: authenticated SHConfig (see :mod:`s2grab.auth`).
     evalscript: the evalscript string (see :mod:`s2grab.evalscripts`).
-    aoi: request geometry + size (see :mod:`s2grab.aoi`).
+    aoi: request bbox + size (see :mod:`s2grab.aoi`).
     time_interval: (start, end) as YYYY-MM-DD strings.
     max_cloud_cover: scene-level cloud filter, percent (0-100).
     mosaicking: how to pick among candidate scenes in the interval.
@@ -55,7 +55,8 @@ def fetch_array(
 
     Returns
     -------
-    numpy.ndarray of shape (H, W, bands), or None if the response is empty.
+    numpy.ndarray of shape (H, W, bands) covering the full bbox (unmasked), or
+    None if the response is empty.
     """
     request = SentinelHubRequest(
         evalscript=evalscript,
@@ -72,13 +73,9 @@ def fetch_array(
         responses=[SentinelHubRequest.output_response("default", MimeType.TIFF)],
         size=aoi.size,
         config=config,
-        # When the AOI carries a polygon, clip to it (pixels outside are masked);
-        # otherwise request the full bounding box.
-        **(
-            {"geometry": aoi.geometry}
-            if aoi.geometry is not None
-            else {"bbox": aoi.bbox}
-        ),
+        # Always request the full bounding box; the study-area footprint is
+        # applied locally by S2Client.fetch, not by the server.
+        bbox=aoi.bbox,
     )
     data = request.get_data()[0]
     if data is None or not np.any(data):

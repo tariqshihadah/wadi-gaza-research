@@ -25,6 +25,7 @@ from . import search as search_mod
 from .aoi import AOI
 from .auth import get_config
 from .evalscripts import EvalScript
+from .footprint import apply_footprint
 from .models import Image, Scene, SceneList
 
 
@@ -74,6 +75,10 @@ class S2Client:
         matters for the 20 m bands (B05, B8A, B11, B12) and NDRE when the grid
         is 10 m.
 
+        The full bounding box is requested and the AOI's pixel-center
+        study-area footprint is then applied: pixels outside it are set to NaN.
+        This is the only place the footprint is applied.
+
         Returns an :class:`Image`, or None if no data qualifies.
         """
         if date is not None:
@@ -100,6 +105,7 @@ class S2Client:
         )
         if array is None:
             return None
+        array = apply_footprint(array, aoi.footprint)
         product_name = product if isinstance(product, str) else "custom"
         return Image(
             array=array,

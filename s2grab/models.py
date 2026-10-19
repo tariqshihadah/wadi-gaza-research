@@ -12,12 +12,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterator, Sequence, Union
+from typing import Iterator, Mapping, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
 from .aoi import AOI
+from .footprint import FOOTPRINT_RULE, TAG_PIXELS, TAG_RULE
 from .io import write_geotiff
 
 
@@ -108,9 +109,29 @@ class Image:
     def shape(self) -> tuple[int, ...]:
         return self.array.shape
 
-    def save(self, path: Union[str, Path]) -> Path:
-        """Write to a georeferenced GeoTIFF and return the path."""
-        return write_geotiff(path, self.array, self.aoi.bbox, band_names=self.band_names)
+    def save(
+        self,
+        path: Union[str, Path],
+        tags: Union[Mapping[str, object], None] = None,
+    ) -> Path:
+        """Write to a georeferenced GeoTIFF and return the path.
+
+        The study-area footprint rule and pixel count are always written as
+        dataset tags; ``tags`` adds any further provenance metadata.
+        """
+        all_tags = {
+            TAG_RULE: FOOTPRINT_RULE if self.aoi.has_polygon else "bbox",
+            TAG_PIXELS: int(self.aoi.footprint.sum()),
+            **(tags or {}),
+        }
+        return write_geotiff(
+            path,
+            self.array,
+            self.aoi.bbox,
+            band_names=self.band_names,
+            tags=all_tags,
+            transform=self.aoi.transform,
+        )
 
     def __repr__(self) -> str:
         return (

@@ -1,8 +1,4 @@
-# Documentation Index
+# Documentation
 
-Methodology white papers and guiding notes for the Wadi Gaza research project.
-
-## Contents
-
-- [Imagery Processing Pipeline](Imagery-Processing-Pipeline.md) — Sentinel-2 composite workflow: band selection, cloud masking, monthly medians, vegetation indices, and land-cover change layers.
-- [Mean Index Change Confidence Intervals](Mean-Index-Change-Confidence-Intervals.md) — Estimating confidence intervals for mean raster index change under spatial autocorrelation using an effective sample size.
+- [white-papers/](white-papers/): methodology write-ups describing what the project does and why, intended to inform the paper.
+- [working-docs/](working-docs/): contemporaneous materials such as PI guidance and coding plans written to direct implementation. They record intent at the time and may differ from the final methods; the white papers are authoritative.

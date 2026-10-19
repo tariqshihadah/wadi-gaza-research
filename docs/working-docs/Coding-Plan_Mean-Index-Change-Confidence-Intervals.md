@@ -3,7 +3,7 @@
 ## 1. Purpose
 
 This plan describes the code needed to implement the methodology in
-`Mean-Index-Change-Confidence-Intervals.md` (the methodology document). That document is the
+[`Mean-Index-Change-Confidence-Intervals.md`](../white-papers/Mean-Index-Change-Confidence-Intervals.md) (the methodology document). That document is the
 authoritative reference for all formulas. Equation numbers below, e.g. (Eq. 6), refer to it.
 
 The work produces three notebooks and a small supporting module. Together, they:
@@ -30,7 +30,7 @@ The work produces three notebooks and a small supporting module. Together, they:
 - Typically about 500×500 pixels, and at most about 1000×1000.
 - All rasters within a study area share the same CRS, transform, shape, and mask.
 
-**Invalid pixels** are NaN or the declared NoData value. They are almost entirely the pixels outside the study area. No separate mask product exists, and none should be created.
+**Invalid pixels** are NaN or the declared NoData value. They are almost entirely the pixels outside the study area. No separate mask product exists, and none should be created. (Acquisition masks each composite to its site's pixel-center footprint, so NaN already encodes "outside the study area"; see [Imagery Acquisition and Preparation](../white-papers/Imagery-Acquisition-and-Preparation.md).)
 
 ## 4. Pair Definition
 

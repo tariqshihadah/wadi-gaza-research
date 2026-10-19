@@ -10,7 +10,7 @@ This document describes the method used to estimate a confidence interval (CI) f
 
 The analysis is applied to multiple study areas. For each study area, index rasters are available for several dates. Pairs of dates are compared, and each pair is analyzed independently using the identical procedure described here.
 
-Within a study area, all rasters are co-registered: they share the same resolution, alignment, extent, and valid-pixel mask. Pixels outside the mask are excluded from every calculation.
+Within a study area, all rasters are co-registered: they share the same resolution, alignment, and extent. At acquisition, every raster is masked to the same study-area footprint, the pixels whose centers lie inside the site polygon ([Imagery Acquisition and Preparation](Imagery-Acquisition-and-Preparation.md), Section 4.6). A pixel is valid for a date pair only if it has a value on both dates. Pixels outside the footprint, and the occasional interior pixel with no cloud-free observation on either date, are excluded from every calculation.
 
 ## 3. Notation
 

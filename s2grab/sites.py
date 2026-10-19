@@ -27,7 +27,6 @@ def load_aois(
     source: Union[str, Path, "gpd.GeoDataFrame"],
     id_field: Union[str, None] = None,
     resolution: float = 10,
-    clip: bool = True,
 ) -> dict[str, AOI]:
     """Build one :class:`AOI` per feature.
 
@@ -37,8 +36,6 @@ def load_aois(
     id_field: attribute column used as the dict key. If None, the row index is
         used ("site0", "site1", ...). Non-unique values get a numeric suffix.
     resolution: ground resolution in metres, passed through to each AOI.
-    clip: keep each polygon for server-side masking (option B). See
-        :meth:`AOI.from_geometry`.
 
     Returns
     -------
@@ -64,7 +61,7 @@ def load_aois(
 
         try:
             aois[unique_id] = AOI.from_geometry(
-                row.geometry, crs=gdf.crs, resolution=resolution, clip=clip
+                row.geometry, crs=gdf.crs, resolution=resolution
             )
         except InvalidGeometryError as exc:
             raise InvalidGeometryError(f"Site '{unique_id}': {exc}") from exc

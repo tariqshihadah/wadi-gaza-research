@@ -29,7 +29,8 @@ def search(
     Parameters
     ----------
     config: authenticated SHConfig (see :mod:`s2grab.auth`).
-    aoi: request geometry (see :mod:`s2grab.aoi`).
+    aoi: area of interest; scenes are matched against its study-area polygon
+        when present (not the larger request bbox), else its bbox.
     start, end: inclusive date bounds as YYYY-MM-DD strings.
     max_cloud_cover: scene-level cloud filter, percent (0-100).
 

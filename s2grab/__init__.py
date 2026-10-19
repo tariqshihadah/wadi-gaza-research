@@ -15,6 +15,7 @@ Two ways to use it:
 
        auth        credentials -> authenticated SHConfig
        aoi         bounds/polygon -> local-UTM BBox + pixel dimensions
+       footprint   pixel-center study-area mask, applied once at fetch
        evalscripts named evalscripts (start simple: true colour)
        fetch       one Process API request -> numpy array
        io          numpy array + BBox -> georeferenced GeoTIFF
