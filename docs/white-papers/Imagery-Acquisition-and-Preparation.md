@@ -59,7 +59,7 @@ The scene-level filter only removes heavily clouded acquisitions. Clouds within 
 
 Every observation of every pixel is checked against its SCL class. Only observations classified as vegetation (class 4), bare soil (5), or water (6) are kept. All other classes are discarded: no data (0), saturated or defective (1), dark area or topographic shadow (2), cloud shadow (3), unclassified (7), medium- and high-probability cloud (8, 9), thin cirrus (10), and snow or ice (11). Observations with no data are also discarded.
 
-Keeping only these three classes follows the PI's guidance. Class 2 is included in the discarded set because, on the flat terrain of the study area, dark-area classifications are more likely to be cloud shadow than true topographic shadow. A diagnostic of the masking for Nahal Rubin is kept in the acquisition notebook. It counts each pixel's observations by SCL class, which shows how much data each alternative class set would keep.
+Keeping only these three classes follows the PI's guidance. Class 2 is included in the discarded set because, on the flat terrain of the study area, dark-area classifications are more likely to be cloud shadow than true topographic shadow. An optional [SCL masking diagnostic](../../notebooks/02_diagnose_scl_mask.ipynb) counts each pixel's observations by class for Nahal Rubin and compares how much data alternative class sets would keep.
 
 ### 4.4 Compositing and reflectance values
 
