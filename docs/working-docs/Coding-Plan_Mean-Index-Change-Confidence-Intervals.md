@@ -66,23 +66,9 @@ Runs are phased, so the configuration must allow filtering by study area, month,
 
 ## 7. Module Design
 
-### 7.1 Configuration — `AnalysisConfig` (frozen dataclass)
+### 7.1 Configuration — `AnalysisConfig`
 
-| Field | Default | Notes |
-|---|---|---|
-| `data_root` | — | Root folder containing study-area subfolders |
-| `output_dir` | — | Where CSVs, config, and plots are written |
-| `study_areas` | `None` | `None` means all discovered |
-| `months` | `("01", "05", "09", "11")` | |
-| `year_range` | `(2019, 2025)` | Inclusive; pairs formed within it |
-| `engine` | `"fft"` | One of `"fft"`, `"bruteforce"`, `"pysal"` |
-| `tau` | `0.05` | Primary near-zero threshold (Eq. 8) |
-| `tau_sensitivity` | `(0.02, 0.05, 0.10)` | Must include `tau` |
-| `alpha` | `0.05` | Gives a 95% CI |
-| `max_lag_fraction` | `0.25` | Used in Eq. 7 |
-| `min_n_eff` | `30` | Low-n_eff flag threshold |
-
-The configuration is saved as `config.json` alongside every set of outputs, for auditability.
+`AnalysisConfig` loads and validates the current run settings from [`configs/change_ci.yaml`](../../configs/change_ci.yaml). That file is the editable source of analysis parameters; a `config.json` snapshot is saved alongside each output set for auditability.
 
 ### 7.2 File discovery — pure functions
 

@@ -2,7 +2,6 @@ import numpy as np
 import rasterio
 
 from change_ci.analysis import ChangeCIAnalysis
-from change_ci.config import AnalysisConfig
 from change_ci.discovery import PairSpec
 
 
@@ -16,7 +15,9 @@ def _write(path, data):
         dst.set_band_description(1, "NDVI")
 
 
-def test_analysis_returns_sensitivity_and_correlogram_rows(tmp_path):
+def test_analysis_returns_sensitivity_and_correlogram_rows(
+    tmp_path, analysis_config_factory
+):
     rng = np.random.default_rng(4)
     earlier = rng.normal(size=(8, 8))
     later = earlier + 0.2 + rng.normal(scale=0.05, size=(8, 8))
@@ -25,8 +26,11 @@ def test_analysis_returns_sensitivity_and_correlogram_rows(tmp_path):
     _write(earlier_path, earlier)
     _write(later_path, later)
     spec = PairSpec("Area", "09", 2023, 2024, earlier_path, later_path)
-    config = AnalysisConfig(
-        tmp_path, tmp_path / "out", months=("09",), year_range=(2023, 2024),
+    config = analysis_config_factory(
+        tmp_path,
+        tmp_path / "out",
+        months=("09",),
+        year_range=(2023, 2024),
         tau_sensitivity=(0.02, 0.05),
     )
     results, correlograms = ChangeCIAnalysis(config).run([spec])

@@ -1,0 +1,14 @@
+years: [2019, 2020, 2021, 2022, 2023, 2024, 2025]
+months: [1, 5, 9, 11]
+bands: [B02, B03, B04, B05, B08, B8A, B11, B12]
+indices: [NDVI, GNDVI, SAVI, NDRE]
+resolution: 10
+upsampling: NEAREST
+max_cloud: 20
+mask_scl: [0, 1, 2, 3, 7, 8, 9, 10, 11]
+compute_std: true
+sites_source: sites/StudySites.gpkg
+id_field: site_name
+output_dir: outputs/composites
+demo_month: 5
+demo_output_dir: outputs/_demo_composites

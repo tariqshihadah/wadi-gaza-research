@@ -6,6 +6,8 @@
 
 This document describes the method used to estimate a confidence interval (CI) for the mean change in a raster-based index between two dates, while accounting for spatial autocorrelation. A standard CI treats every pixel as an independent observation. Neighboring pixels in raster data tend to be similar, so they carry partly redundant information. Treating them as independent understates the uncertainty. This method replaces the raw pixel count with an **effective sample size** derived from the measured spatial autocorrelation of the change.
 
+The current executable run settings are maintained in [`configs/change_ci.yaml`](../../configs/change_ci.yaml); this paper documents the methodology and rationale without duplicating that configuration.
+
 ## 2. Scope and Data
 
 The analysis is applied to multiple study areas. For each study area, index rasters are available for several dates. Pairs of dates are compared, and each pair is analyzed independently using the identical procedure described here.

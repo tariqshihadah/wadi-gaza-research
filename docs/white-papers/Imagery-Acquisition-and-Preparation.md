@@ -4,7 +4,7 @@
 
 This document describes how the Sentinel-2 imagery used in the study is acquired and prepared. It covers scene selection, per-pixel cloud masking, monthly median compositing, vegetation index calculation, and the rule that defines which pixels belong to each study site. The output is one masked, multi-band composite per study site and monthly window. Those composites are the input to the mean index change analysis described in [Confidence Intervals for Mean Index Change Under Spatial Autocorrelation](Mean-Index-Change-Confidence-Intervals.md).
 
-The goal is a process that is fully reproducible from the study-site polygons and the parameters listed here, with every masking decision made once, by a documented rule, before any analysis takes place.
+The current executable run settings are maintained in [`configs/imagery.yaml`](../../configs/imagery.yaml); this paper documents the methodology and rationale without duplicating that configuration. The process is reproducible from those settings and the study-site polygons, with every masking decision made once, by a documented rule, before any analysis takes place.
 
 ## 2. Scope and Data
 
