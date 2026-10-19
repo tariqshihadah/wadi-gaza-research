@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wadi-gaza-research"
+version = "0.1.0"
+description = "Research workflows for Sentinel-2 imagery and spatially adjusted change estimates"
+dependencies = [
+    "sentinelhub>=3.9",
+    "affine",
+    "geopandas",
+    "rasterio",
+    "pyproj",
+    "shapely",
+    "numpy",
+    "scipy",
+    "pandas",
+    "matplotlib",
+    "PyYAML",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = ["ipykernel", "pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["change_ci*", "s2grab*"]

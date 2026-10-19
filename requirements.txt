@@ -1,13 +1,1 @@
-sentinelhub>=3.9
-geopandas
-rasterio
-pyproj
-shapely
-numpy
-scipy
-pandas
-matplotlib
-PyYAML
-python-dotenv
-ipykernel
-pytest
+-e .[dev]
