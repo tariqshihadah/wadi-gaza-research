@@ -1,8 +1,0 @@
-site,window,status,n_scenes,mean_cloud,pct_nodata,mean_pixel_std,path
-AlAhrashProtectorate,2024-05,ok,3,0.27,0.0,0.008567492477595806,outputs/_demo_composites/AlAhrashProtectorate/AlAhrashProtectorate_2024-05.tif
-BesorStream,2024-05,ok,3,0.27,0.0,0.009275470860302448,outputs/_demo_composites/BesorStream/BesorStream_2024-05.tif
-HaBesorNationalPark,2024-05,ok,3,0.27,0.0,0.010716491378843784,outputs/_demo_composites/HaBesorNationalPark/HaBesorNationalPark_2024-05.tif
-HolotNizzanim,2024-05,ok,1,0.01,0.2212864692991879,0.0,outputs/_demo_composites/HolotNizzanim/HolotNizzanim_2024-05.tif
-HolotPalmahim,2024-05,ok,1,0.01,0.0,0.0,outputs/_demo_composites/HolotPalmahim/HolotPalmahim_2024-05.tif
-NahalRubin,2024-05,ok,1,0.01,1.7557251908396947,0.0,outputs/_demo_composites/NahalRubin/NahalRubin_2024-05.tif
-WadiGaza,2024-05,ok,3,0.27,0.0,0.012085690163075924,outputs/_demo_composites/WadiGaza/WadiGaza_2024-05.tif
