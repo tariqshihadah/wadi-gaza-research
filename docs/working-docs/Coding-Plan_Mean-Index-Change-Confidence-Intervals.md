@@ -26,9 +26,11 @@ The work produces three notebooks and a small supporting module. Together, they:
 
 **Raster properties:**
 
-- Single band.
+- Multiband GeoTIFFs with named index bands; the selected index is read by its
+  band description.
 - Typically about 500×500 pixels, and at most about 1000×1000.
-- All rasters within a study area share the same CRS, transform, shape, and mask.
+- Paired rasters within a study area share the same CRS, transform, and shape.
+  Valid pixels are intersected separately for each index and date pair.
 
 **Invalid pixels** are NaN or the declared NoData value. They are almost entirely the pixels outside the study area. No separate mask product exists, and none should be created. (Acquisition masks each composite to its site's pixel-center footprint, so NaN already encodes "outside the study area"; see [Imagery Acquisition and Preparation](../white-papers/Imagery-Acquisition-and-Preparation.md).)
 
@@ -68,7 +70,11 @@ Runs are phased, so the configuration must allow filtering by study area, month,
 
 ### 7.1 Configuration — `AnalysisConfig`
 
-`AnalysisConfig` loads and validates the current run settings from [`configs/change_ci.yaml`](../../configs/change_ci.yaml). That file is the editable source of analysis parameters; a `config.json` snapshot is saved alongside each output set for auditability.
+`AnalysisConfig` loads and validates the current run settings, including the
+`index_bands` batch, from [`configs/change_ci.yaml`](../../configs/change_ci.yaml).
+That file is the editable source of analysis parameters. Each index is written
+to `outputs/change_ci/<INDEX>/` with its own `results.csv`,
+`correlograms.csv`, and `config.json` snapshot for auditability.
 
 ### 7.2 File discovery — pure functions
 
@@ -82,7 +88,8 @@ Runs are phased, so the configuration must allow filtering by study area, month,
 
 `RasterPair` loads and holds one date pair.
 
-**Loading:** reads band 1 of each file with `rasterio` using `read(1, masked=True)`, converts to float64, and fills masked values with NaN.
+**Loading:** reads the configured named index band from each file with
+`rasterio`, converts to float64, and fills masked values with NaN.
 
 **Validation:** raises a clear error if the CRS, transform, or shape differ between the two rasters.
 
@@ -94,7 +101,7 @@ Runs are phased, so the configuration must allow filtering by study area, month,
 - `sd`: the sample standard deviation of D, with `ddof=1` (Eq. 3).
 - `cell_size`: from `src.res`. Log a warning if the pixels are not square.
 - `k_max`: from the bounding box of the valid pixels (Eq. 7).
-- identifying metadata: study area, month, and years.
+- identifying metadata: study area, index, month, and years.
 
 The raster may be cropped to the valid-pixel bounding box before further processing. Results are unchanged, and it reduces FFT padding. The class raises an error if fewer than 2 pixels are valid.
 
@@ -181,24 +188,30 @@ The naive CI is the same function called with `n` in place of `n_eff`.
 
 **`ChangeCIAnalysis` (class).** Initialized with an `AnalysisConfig`.
 
-- **`run_pair(spec)`:** loads the `RasterPair`, computes the correlogram once, then loops over `tau_sensitivity` to produce the results records and correlogram rows.
-- **`run(specs)`:** processes all pairs, logging progress. It catches and logs per-pair errors so one bad pair doesn't halt the run: the failure is recorded in an `error` column, and processing continues. It returns two DataFrames, results and correlograms.
-- **`save(results, correlograms)`:** writes the CSVs and `config.json` to `output_dir`.
+- **`run_pair(spec, index_band)`:** loads the selected `RasterPair`, computes
+  its correlogram once, then loops over `tau_sensitivity` to produce the
+  results records and correlogram rows.
+- **`run(specs)`:** repeats the analysis independently for every configured
+  index and pair. Both result tables carry an `index` column.
+- **`run(specs)`:** catches and logs per-index pair errors so one bad pair
+  doesn't halt the run. The failure is recorded in an `error` column.
+- **`save(results, correlograms)`:** writes each index to
+  `output_dir/<INDEX>/`, with its own CSVs and `config.json`.
 
 ## 8. Outputs
 
-Written to `output_dir`:
+For each index, outputs are written to `output_dir/<INDEX>/`:
 
 - `results.csv`
 - `correlograms.csv`
 - `config.json`
 - `plots/`
 
-**`results.csv`** has one row per study area × month × year pair × τ.
+**`results.csv`** has one row per index × study area × month × year pair × τ.
 
 | Column | Description |
 |---|---|
-| `study_area`, `month`, `year_start`, `year_end` | Pair identifiers |
+| `study_area`, `index`, `month`, `year_start`, `year_end` | Pair identifiers |
 | `tau`, `is_primary_tau` | Threshold used, and whether it is the primary one |
 | `engine` | Engine used |
 | `n`, `mean_change`, `sd` | Eqs. 1–3 |
@@ -211,7 +224,10 @@ Written to `output_dir`:
 | `flag_no_range`, `flag_low_n_eff` | Quality flags (methodology Section 5) |
 | `error` | Empty unless the pair failed |
 
-**`correlograms.csv`** has one row per pair × lag, with columns `study_area`, `month`, `year_start`, `year_end`, `lag`, `moran_i`, and `pair_count`. Because this table is stored, correlograms can be re-plotted and n_eff recomputed without reprocessing the rasters.
+**`correlograms.csv`** has one row per index × pair × lag, with columns
+`study_area`, `index`, `month`, `year_start`, `year_end`, `lag`, `moran_i`,
+and `pair_count`. Because this table is stored, correlograms can be re-plotted
+and n_eff recomputed without reprocessing the rasters.
 
 ## 9. Notebooks
 

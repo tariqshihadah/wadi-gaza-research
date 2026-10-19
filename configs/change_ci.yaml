@@ -1,9 +1,9 @@
 data_root: outputs/composites
-output_dir: outputs/change_ci/all_year_pairs_2019_2025
+output_dir: outputs/change_ci
 study_areas: null
 months: ["01", "05", "09", "11"]
 year_range: [2019, 2025]
-index_band: NDVI
+index_bands: [NDVI, GNDVI, SAVI, NDRE]
 engine: fft
 tau: 0.05
 tau_sensitivity: [0.02, 0.05, 0.10]

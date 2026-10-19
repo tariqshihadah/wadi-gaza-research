@@ -18,7 +18,7 @@ class AnalysisConfig:
     study_areas: tuple[str, ...] | None
     months: tuple[str, ...]
     year_range: tuple[int, int]
-    index_band: str
+    index_bands: tuple[str, ...]
     engine: str
     tau: float
     tau_sensitivity: tuple[float, ...]
@@ -39,7 +39,7 @@ class AnalysisConfig:
             "study_areas",
             "months",
             "year_range",
-            "index_band",
+            "index_bands",
             "engine",
             "tau",
             "tau_sensitivity",
@@ -73,6 +73,11 @@ class AnalysisConfig:
         months = data["months"]
         if not isinstance(months, list) or not all(isinstance(m, str) for m in months):
             raise ValueError("months must be a sequence of strings")
+        index_bands = data["index_bands"]
+        if not isinstance(index_bands, list) or not all(
+            isinstance(index, str) and index for index in index_bands
+        ):
+            raise ValueError("index_bands must be a sequence of non-empty strings")
         year_range = data["year_range"]
         if not isinstance(year_range, list) or len(year_range) != 2 or not all(
             isinstance(year, int) and not isinstance(year, bool) for year in year_range
@@ -91,7 +96,7 @@ class AnalysisConfig:
             study_areas=tuple(study_areas) if study_areas is not None else None,
             months=tuple(months),
             year_range=(year_range[0], year_range[1]),
-            index_band=_string(data["index_band"], "index_band"),
+            index_bands=tuple(index_bands),
             engine=_string(data["engine"], "engine"),
             tau=_number(data["tau"], "tau"),
             tau_sensitivity=tuple(float(value) for value in sensitivity),
@@ -104,6 +109,8 @@ class AnalysisConfig:
         """Validate configuration values."""
         if self.year_range[0] >= self.year_range[1]:
             raise ValueError("year_range must be an increasing inclusive range")
+        if not self.index_bands or len(set(self.index_bands)) != len(self.index_bands):
+            raise ValueError("index_bands must be non-empty and contain no duplicates")
         if self.engine not in {"fft", "bruteforce", "pysal"}:
             raise ValueError(f"Unknown engine: {self.engine}")
         if self.tau not in self.tau_sensitivity:

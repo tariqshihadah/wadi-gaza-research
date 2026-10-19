@@ -42,6 +42,7 @@ class ChangeCIResult:
     """One threshold-specific result record for a date pair."""
 
     study_area: str
+    index: str
     month: str
     year_start: int
     year_end: int

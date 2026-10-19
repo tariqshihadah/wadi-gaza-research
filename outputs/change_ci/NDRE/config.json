@@ -1,6 +1,6 @@
 {
   "data_root": "/home/tshihadah/code/wadi-gaza-research/outputs/composites",
-  "output_dir": "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/all_year_pairs_2019_2025",
+  "output_dir": "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/NDRE",
   "study_areas": null,
   "months": [
     "01",
@@ -12,7 +12,12 @@
     2019,
     2025
   ],
-  "index_band": "NDVI",
+  "index_bands": [
+    "NDVI",
+    "GNDVI",
+    "SAVI",
+    "NDRE"
+  ],
   "engine": "fft",
   "tau": 0.05,
   "tau_sensitivity": [
@@ -22,5 +27,6 @@
   ],
   "alpha": 0.05,
   "max_lag_fraction": 0.25,
-  "min_n_eff": 30
+  "min_n_eff": 30,
+  "index_band": "NDRE"
 }
