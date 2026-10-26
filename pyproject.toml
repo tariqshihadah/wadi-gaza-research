@@ -19,11 +19,13 @@ dependencies = [
     "matplotlib",
     "PyYAML",
     "python-dotenv",
+    "cdsapi>=0.7",
 ]
 
 [project.optional-dependencies]
 dev = ["ipykernel", "pytest"]
+validation = ["xarray", "netCDF4"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["change_ci*", "s2grab*"]
+include = ["cds_pull*", "change_ci*", "s2grab*"]

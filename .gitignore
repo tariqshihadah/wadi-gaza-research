@@ -32,3 +32,6 @@ outputs/**/*.tif
 
 # Archived prior outputs kept locally for before/after comparison
 outputs/_archive/
+
+# Raw ERA5-Land downloads (local cache, rebuildable from the CDS)
+outputs/climate/raw/
