@@ -2,8 +2,12 @@ sites_source: sites/StudySites.gpkg
 id_field: site_name
 output_dir: outputs/climate
 dataset: reanalysis-era5-land-timeseries
-data_format: csv
 variables: [2m_temperature, total_precipitation]
+region_lat: [31.2, 32.0]
+region_lon: [34.2, 34.8]
+site_cell_overrides:
+  HolotPalmahim: N31.9_E34.8
+  NahalRubin: N31.9_E34.8
 extraction_range: ["1990-10-01", "2025-12-31"]
 reference_period: [1991, 2020]
 study_years: [2019, 2025]

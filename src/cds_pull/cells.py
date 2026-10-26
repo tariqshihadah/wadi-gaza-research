@@ -1,4 +1,8 @@
-"""Assign study sites to ERA5-Land 0.1 degree grid cells."""
+"""ERA5-Land 0.1 degree grid cells and the assignment of study sites to them.
+
+Each site uses the cell containing its polygon centroid unless the
+configuration names a different cell for it (``site_cell_overrides``).
+"""
 
 from __future__ import annotations
 
@@ -17,12 +21,13 @@ SITE_CELL_COLUMNS = [
     "site",
     "centroid_lat",
     "centroid_lon",
+    "centroid_cell_id",
     "cell_id",
     "cell_lat",
     "cell_lon",
     "distance_km",
+    "assignment",
     "shared_with",
-    "substituted",
 ]
 
 
@@ -40,6 +45,22 @@ def cell_id(cell_lat: float, cell_lon: float) -> str:
     ns = "N" if cell_lat >= 0 else "S"
     ew = "E" if cell_lon >= 0 else "W"
     return f"{ns}{abs(cell_lat):.1f}_{ew}{abs(cell_lon):.1f}"
+
+
+def parse_cell_id(value: str) -> tuple[float, float]:
+    """Return the (latitude, longitude) centre encoded in a cell ID."""
+    lat_part, lon_part = value.split("_")
+    lat = float(lat_part[1:]) * (1 if lat_part[0] == "N" else -1)
+    lon = float(lon_part[1:]) * (1 if lon_part[0] == "E" else -1)
+    return lat, lon
+
+
+def grid_cells(lat_range: tuple[float, float], lon_range: tuple[float, float]) -> pd.DataFrame:
+    """Return every grid point in an inclusive latitude and longitude range."""
+    lats = _grid(*lat_range)
+    lons = _grid(*lon_range)
+    rows = [(cell_id(lat, lon), lat, lon) for lat in lats for lon in lons]
+    return pd.DataFrame(rows, columns=["cell_id", "cell_lat", "cell_lon"])
 
 
 def cell_box(cell_lat: float, cell_lon: float):
@@ -72,29 +93,40 @@ def load_sites(path: Path, id_field: str) -> gpd.GeoDataFrame:
     return sites
 
 
-def assign_cells(sites: gpd.GeoDataFrame, id_field: str) -> pd.DataFrame:
-    """Assign each site to the ERA5-Land cell containing its centroid.
+def assign_cells(
+    sites: gpd.GeoDataFrame, id_field: str, overrides: dict[str, str] | None = None
+) -> pd.DataFrame:
+    """Assign each site to the cell containing its centroid, or to an override.
 
     Centroids are computed in the sites' projected CRS and then transformed to
-    WGS84. Returns one row per site with the columns in ``SITE_CELL_COLUMNS``.
+    WGS84. ``assignment`` is ``"centroid"`` or ``"manual"``. Returns one row
+    per site with the columns in ``SITE_CELL_COLUMNS``.
     """
     if sites.crs is None or not sites.crs.is_projected:
         raise ValueError("Sites must be in a projected CRS to compute centroids")
+    overrides = overrides or {}
+    unknown = set(overrides) - set(sites[id_field].astype(str))
+    if unknown:
+        raise ValueError(f"Overrides name unknown sites: {sorted(unknown)}")
     centroids = gpd.GeoSeries(sites.geometry.centroid, crs=sites.crs).to_crs(4326)
 
     rows = []
-    for site, point in zip(sites[id_field], centroids):
+    for site, point in zip(sites[id_field].astype(str), centroids):
         lat, lon = point.y, point.x
-        cell_lat, cell_lon = predict_cell(lat, lon)
+        centroid_cell = cell_id(*predict_cell(lat, lon))
+        assigned = overrides.get(site, centroid_cell)
+        cell_lat, cell_lon = parse_cell_id(assigned)
         rows.append(
             {
-                "site": str(site),
+                "site": site,
                 "centroid_lat": lat,
                 "centroid_lon": lon,
-                "cell_id": cell_id(cell_lat, cell_lon),
+                "centroid_cell_id": centroid_cell,
+                "cell_id": assigned,
                 "cell_lat": cell_lat,
                 "cell_lon": cell_lon,
                 "distance_km": haversine_km(lat, lon, cell_lat, cell_lon),
+                "assignment": "manual" if site in overrides else "centroid",
             }
         )
     table = pd.DataFrame(rows)
@@ -102,15 +134,17 @@ def assign_cells(sites: gpd.GeoDataFrame, id_field: str) -> pd.DataFrame:
         ";".join(sorted(table.loc[(table["cell_id"] == cid) & (table["site"] != s), "site"]))
         for s, cid in zip(table["site"], table["cell_id"])
     ]
-    table["substituted"] = False
     return table[SITE_CELL_COLUMNS]
 
 
-def cells_geodataframe(site_cells: pd.DataFrame) -> gpd.GeoDataFrame:
-    """Return one 0.1 degree box feature per assigned cell (EPSG:4326)."""
+def cells_geodataframe(cells: pd.DataFrame) -> gpd.GeoDataFrame:
+    """Return one 0.1 degree box feature per cell (EPSG:4326).
+
+    ``cells`` needs ``cell_id``, ``cell_lat`` and ``cell_lon``; other columns
+    are kept from the first row of each cell.
+    """
     cells = (
-        site_cells[["cell_id", "cell_lat", "cell_lon"]]
-        .drop_duplicates("cell_id")
+        cells.drop_duplicates("cell_id")
         .sort_values("cell_id")
         .reset_index(drop=True)
     )
@@ -118,11 +152,16 @@ def cells_geodataframe(site_cells: pd.DataFrame) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(cells, geometry=geometry, crs="EPSG:4326")
 
 
-def write_cells_gpkg(site_cells: pd.DataFrame, path: Path) -> Path:
+def write_cells_gpkg(cells: pd.DataFrame, path: Path) -> Path:
     """Write the cell reference layer to a GeoPackage and return its path."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    cells_geodataframe(site_cells).to_file(path, layer="era5land_cells", driver="GPKG")
+    cells_geodataframe(cells).to_file(path, layer="era5land_cells", driver="GPKG")
     return path
+
+
+def _grid(low: float, high: float) -> list[float]:
+    count = int(round((high - low) / GRID_STEP_DEG))
+    return [round(low + i * GRID_STEP_DEG, 1) for i in range(count + 1)]
 
 
 def _snap(value: float) -> float:

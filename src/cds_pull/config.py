@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import asdict, dataclass
 from datetime import date
 from pathlib import Path
@@ -9,13 +10,17 @@ from typing import Any
 
 import yaml
 
+_CELL_ID = re.compile(r"[NS]\d+\.\d_[EW]\d+\.\d")
+
 _EXPECTED_KEYS = {
     "sites_source",
     "id_field",
     "output_dir",
     "dataset",
-    "data_format",
     "variables",
+    "region_lat",
+    "region_lon",
+    "site_cell_overrides",
     "extraction_range",
     "reference_period",
     "study_years",
@@ -32,17 +37,22 @@ _EXPECTED_KEYS = {
 class ClimateConfig:
     """Validated climate-context settings loaded from the project YAML file.
 
-    ``extraction_range`` holds the inclusive first and last UTC days of daily
-    output. ``wet_season_months`` holds the first and last calendar months of
-    the wet season (October and April by default).
+    ``region_lat`` and ``region_lon`` hold the inclusive first and last
+    ERA5-Land grid-point centres to download (multiples of 0.1 degrees).
+    ``site_cell_overrides`` maps a site to a cell ID that replaces its centroid
+    cell. ``extraction_range`` holds the inclusive first and last UTC days of
+    daily output. ``wet_season_months`` holds the first and last calendar
+    months of the wet season (October and April by default).
     """
 
     sites_source: Path
     id_field: str
     output_dir: Path
     dataset: str
-    data_format: str
     variables: tuple[str, ...]
+    region_lat: tuple[float, float]
+    region_lon: tuple[float, float]
+    site_cell_overrides: dict[str, str]
     extraction_range: tuple[date, date]
     reference_period: tuple[int, int]
     study_years: tuple[int, int]
@@ -81,6 +91,11 @@ class ClimateConfig:
             isinstance(v, str) and v for v in variables
         ):
             raise ValueError("variables must be a sequence of non-empty strings")
+        overrides = data["site_cell_overrides"] or {}
+        if not isinstance(overrides, dict) or not all(
+            isinstance(k, str) and isinstance(v, str) for k, v in overrides.items()
+        ):
+            raise ValueError("site_cell_overrides must map site names to cell IDs")
         extraction = data["extraction_range"]
         if not isinstance(extraction, list) or len(extraction) != 2:
             raise ValueError("extraction_range must contain two ISO dates")
@@ -90,8 +105,10 @@ class ClimateConfig:
             id_field=_string(data["id_field"], "id_field"),
             output_dir=resolve_path(data["output_dir"], "output_dir"),
             dataset=_string(data["dataset"], "dataset"),
-            data_format=_string(data["data_format"], "data_format"),
             variables=tuple(variables),
+            region_lat=_number_pair(data["region_lat"], "region_lat"),
+            region_lon=_number_pair(data["region_lon"], "region_lon"),
+            site_cell_overrides=dict(overrides),
             extraction_range=(_date(extraction[0]), _date(extraction[1])),
             reference_period=_int_pair(data["reference_period"], "reference_period"),
             study_years=_int_pair(data["study_years"], "study_years"),
@@ -105,6 +122,14 @@ class ClimateConfig:
 
     def __post_init__(self) -> None:
         """Validate configuration values."""
+        for name, (low, high) in (("region_lat", self.region_lat), ("region_lon", self.region_lon)):
+            if low > high:
+                raise ValueError(f"{name} must be increasing")
+            if any(abs(v * 10 - round(v * 10)) > 1e-6 for v in (low, high)):
+                raise ValueError(f"{name} must lie on the 0.1 degree grid")
+        for site, cell in self.site_cell_overrides.items():
+            if not _CELL_ID.fullmatch(cell):
+                raise ValueError(f"Invalid cell ID for {site}: {cell}")
         start, end = self.extraction_range
         if start > end:
             raise ValueError("extraction_range must be increasing")

@@ -90,7 +90,7 @@ Added to `pyproject.toml` `packages.find`.
 
 ## 6. Outputs — `outputs/climate/`
 
-As in the brief, with CSV raw files: `raw/<cell_id>/…csv` plus `…metadata.json` (git-ignored cache), `download_manifest.csv`, `site_cells.csv`, `era5land_cells.gpkg`, `daily_climate.csv`, `climate_normals.csv`, `monthly_climate_summary.csv` (196 rows), plus `checks.csv`, `config.json` and `plots/`.
+As in the brief, with CSV raw files: `raw/<cell_id>/…csv` plus `…metadata.json` (git-ignored cache), `download_manifest.csv`, `site_cells.csv`, `era5land_cells.gpkg`, `daily_climate.csv`, `climate_normals.csv`, `monthly_climate_summary.csv` (196 rows), plus `missing_days.csv`, `checks.csv`, `validation_checks.csv`, `validation_daily.csv`, `config.json` and `plots/`. The white paper (Section 7) lists the final schema.
 
 **Monthly summary column groups** (snake_case, unit suffixes as in the brief):
 
@@ -151,20 +151,52 @@ Decided Oct 26, 2026:
 - Review the finalized plan with the PI before any download is run.
 - Download mode: point requests, one per unique cell (6 requests). A regional area box can be added later if needed.
 
-Implementation choice (Oct 26, 2026, for PI awareness): in `daily_climate.csv`, a day with fewer than 24 hourly values for a variable keeps its row and hour count, but that variable's daily value is left blank rather than holding a partial sum or mean.
+Implementation choice (Oct 26, 2026, approved by PI): in `daily_climate.csv`, a day with fewer than 24 hourly values for a variable keeps its row and hour count, but that variable's daily value is left blank rather than holding a partial sum or mean. Every such day is listed in `missing_days.csv` and shown in notebook `21_` so the PI can review it. The current run has none.
 
-Open:
+Decided later on Oct 26, 2026 (see Section 14):
 
-- None blocking. Downloads wait on licence acceptance (Section 13, step 1).
+- Download every grid point in an explicit region (31.2–32.0° N, 34.2–34.8° E) instead of one point per site cell, to support regional maps.
+- Holot Palmahim and Nahal Rubin are both manually assigned to N31.9_E34.8 (the cell to the east of their shared centroid cell, which has no data). The white paper states this explicitly.
+- Remove the automatic nearest-neighbour substitution.
+- Download N31.4_E34.4 (now part of the region) as a Wadi Gaza cell-choice sensitivity check.
+- Track `daily_climate.csv` in git.
+
+Open: none.
 
 ## 13. Execution Order
 
-Status as of Oct 26, 2026 in brackets.
+Status as of Oct 26, 2026: all steps done. Steps 3–4 describe the original point-based run; Section 14 describes the regional revision that replaced it.
 
-1. Credentials (done) and acceptance of the "CC-BY licence" (`cc-by`) on the dataset download page (PI; **pending**, which blocks every download).
-2. Config, `cells.py`, `windows.py`, `daily.py` and their tests. No credentials needed. [**done**; `summaries.py` and `download.build_request` were also written and tested against synthetic data]
-3. Downloader in `download.py` and a one-cell probe (Wadi Gaza). Inspect the file structure, units, time stamps and returned grid point; write `io.py`.
-4. Full download for six cells, then `checks.py` and notebook `21_` (and `20_`).
-5. Validation requests and checks (`23_`).
-6. Plotting and notebook `22_`.
-7. White paper draft. Then update `docs/README.md` if needed.
+1. Credentials and licence acceptance (PI). [done]
+2. Config, `cells.py`, `windows.py`, `daily.py`, `summaries.py` and their tests. [done]
+3. One-cell probe (Wadi Gaza, January 2020). The CDS returns a zip with one CSV per parameter group (`valid_time`, `t2m` or `tp`, `latitude`, `longitude`); a request ending on day E includes all hours of E. Precipitation is hourly (de-accumulated) with tiny negative values; `io.py` and the downloader were written to this layout. [done]
+4. Full download, `checks.py`, notebooks `20_` and `21_`. N31.9_E34.7 returned no values, so empty-cell substitution was added (`cells.neighbour_cells`, `cells.substitute_cell`, `ClimateDownloader.download_all`); two neighbouring cells were downloaded. All checks pass. [done]
+5. Validation (`validation.py`, notebook `23_`). The standard-dataset comparison is a single request (Wadi Gaza, January–February 2020) that covers both the day-boundary check and the spot-check. Results go to `validation_checks.csv` and `validation_daily.csv`, not `checks.csv`, so that re-running `21_` cannot overwrite them. [done]
+6. Plotting (`plotting.py`) and notebook `22_`. Monthly heatmaps show the anomaly in mm (percent of normal is blank for every May and September); temperature anomaly heatmaps were added. [done]
+7. White paper drafted at `docs/white-papers/ERA5-Land-Climate-Context.md`. `docs/README.md` needed no change. [done]
+
+## 14. Revision: Regional Download (Oct 26, 2026)
+
+The PI moved the step from per-site cells to an explicit regional grid. Sections 3–7 above record the original point-based design; the white paper describes the current method.
+
+**Data load and limits.** A CDS costing query rated one point request (full record, CSV) at 50, the regional area request at 2,350 as CSV and 94 as NetCDF, against a per-request limit of 500. The region is therefore fetched in one NetCDF request, which took under two minutes. The CC-BY-4.0 licence has no volume limit. The raw zip is 118 MB (about 300 MB with extracted files, git-ignored). `daily_climate.csv` grows from 8.5 MB (7 cells) to about 27 MB (36 cells, values written to 4 decimals). The regional summary adds 0.4 MB.
+
+**Request box.** The CDS leaves out grid points lying exactly on the north and east edges of the `area` box, so the request is padded by half a cell on every side, and the returned grid is checked against the configured region.
+
+**Land and sea points.** 27 of the 63 grid points are empty. The published 0.1° land-sea mask does not predict which (N32.0_E34.7 at 0.36 land has data; N31.9_E34.7 at 0.57 does not). The likeliest cause is that land or sea status is inherited from the native TCo1279 model grid. This is explained in white paper Section 4.1.
+
+**Code changes in `cds_pull`.**
+
+- `config.py`: `region_lat`, `region_lon` and `site_cell_overrides` added; `data_format` removed (the regional request is always NetCDF).
+- `cells.py`: `assign_cells` takes overrides and records `centroid_cell_id` and `assignment`; `grid_cells` and `parse_cell_id` added; `neighbour_cells` and `substitute_cell` removed.
+- `download.py`: one regional request (`request_area`, `ClimateDownloader.download`), writing the manifest; the per-cell download, CSV extraction and substitution loop removed.
+- `io.py`: reads the regional NetCDF (`open_region`, `cell_table`, `hourly_for_cell`, `load_daily`); the CSV reader removed.
+- `checks.py`: `check_region_grid` and `check_site_cells` replace the per-cell grid-point, has-data and substitution checks.
+- `plotting.py`: the cell map shows the whole grid; `plot_cell_values` draws regional maps.
+- `pyproject.toml`: `xarray` and `netCDF4` move from the `validation` extra into the main dependencies.
+- `daily.py`, `windows.py`, `summaries.py` and `validation.py` are unchanged apart from minor wiring (the site summary now processes only the cells sites use).
+
+**Outputs added.** `regional_climate_summary.csv` (one row per cell with data, year and study month), regional figures, and the Wadi Gaza cell-sensitivity figure.
+
+**Sensitivity result.** N31.4_E34.4 has a lower wet-season normal than N31.5_E34.4 (237 against 302 mm), but Wadi Gaza's wet-season percent of normal differs by at most 7 points and its temperature anomaly by at most 0.2 °C across the 28 study months.
+

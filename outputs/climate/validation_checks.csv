@@ -1,0 +1,4 @@
+check,scope,passed,detail
+validation_day_boundary,N31.5_E34.4 2020-01,True,17 rainy days; max |diff| 0.00006 mm
+validation_monthly_precip,N31.5_E34.4 2020-01,True,time series 122.63 mm; standard 122.63 mm
+validation_monthly_t2m,N31.5_E34.4 2020-01,True,time series 12.910 C; standard 12.910 C

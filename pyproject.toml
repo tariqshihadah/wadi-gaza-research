@@ -20,11 +20,12 @@ dependencies = [
     "PyYAML",
     "python-dotenv",
     "cdsapi>=0.7",
+    "xarray",
+    "netCDF4",
 ]
 
 [project.optional-dependencies]
 dev = ["ipykernel", "pytest"]
-validation = ["xarray", "netCDF4"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -18,8 +18,10 @@ def test_climate_config_loads_canonical_yaml():
     assert config.id_field == "site_name"
     assert config.output_dir == ROOT / "outputs" / "climate"
     assert config.dataset == "reanalysis-era5-land-timeseries"
-    assert config.data_format == "csv"
     assert config.variables == ("2m_temperature", "total_precipitation")
+    assert config.region_lat == (31.2, 32.0)
+    assert config.region_lon == (34.2, 34.8)
+    assert config.site_cell_overrides == {"HolotPalmahim": "N31.9_E34.8", "NahalRubin": "N31.9_E34.8"}
     assert config.extraction_range == (date(1990, 10, 1), date(2025, 12, 31))
     assert config.reference_period == (1991, 2020)
     assert config.study_years == (2019, 2025)
@@ -59,3 +61,14 @@ def test_climate_config_rejects_season_start_as_study_month():
 
     with pytest.raises(ValueError, match="season start month"):
         replace(config, study_months=(1, 10))
+
+
+def test_climate_config_validates_region_and_overrides():
+    config = ClimateConfig.from_yaml(CONFIG_PATH, project_root=ROOT)
+
+    with pytest.raises(ValueError, match="0.1 degree grid"):
+        replace(config, region_lat=(31.25, 32.0))
+    with pytest.raises(ValueError, match="increasing"):
+        replace(config, region_lon=(34.8, 34.2))
+    with pytest.raises(ValueError, match="Invalid cell ID"):
+        replace(config, site_cell_overrides={"A": "31.9,34.8"})

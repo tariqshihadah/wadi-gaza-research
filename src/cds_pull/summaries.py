@@ -149,7 +149,10 @@ def build_monthly_summary(
     Each observation carries its monthly, wet-season and cumulative values,
     the matching normals, absolute anomalies, percent of normal (blank when
     the normal is below ``config.near_zero_normal_mm``) and completeness flags.
+    ``site_cells`` needs ``site`` and ``cell_id``; passing one row per cell
+    with ``site`` set to the cell ID gives a regional summary.
     """
+    daily = daily.loc[daily["cell_id"].isin(site_cells["cell_id"])]
     monthly = monthly_values(daily).set_index(["cell_id", "year", "month"])
     lookup = _normal_lookup(normals)
     season_start, season_end = config.wet_season_months
