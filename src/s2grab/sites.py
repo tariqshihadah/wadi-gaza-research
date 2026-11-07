@@ -7,10 +7,10 @@ into ``{site_id: AOI}`` using :meth:`AOI.from_geometry`.
     import geopandas as gpd
     from s2grab.sites import load_aois
 
-    aois = load_aois("sites/Cities_SS4A/Cities_SS4A.shp", id_field="CITY_NAME")
+    aois = load_aois("sites/StudySites.gpkg", id_field="site_name")
     # or from an already-loaded frame:
     gdf = gpd.read_file(...)
-    aois = load_aois(gdf, id_field="CITY_NAME")
+    aois = load_aois(gdf, id_field="site_name")
 """
 
 from __future__ import annotations
