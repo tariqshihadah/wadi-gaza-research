@@ -14,6 +14,7 @@ from .engines import CorrelogramEngine, get_engine
 from .estimation import confidence_interval, estimate_effective_n
 from .models import ChangeCIResult, CorrelogramData
 from .raster import RasterPair
+from spatial_ci.correlogram import MoranCorrelogram as SpatialMoranCorrelogram
 
 LOGGER = logging.getLogger(__name__)
 
@@ -31,7 +32,10 @@ class MoranCorrelogram:
         cls, pair: RasterPair, engine: CorrelogramEngine, max_lag: int | None = None
     ) -> "MoranCorrelogram":
         """Compute a correlogram for ``pair`` once."""
-        return cls(engine.compute(pair.values, max_lag or pair.k_max), pair.n, pair)
+        correlogram = SpatialMoranCorrelogram.from_values(
+            pair.values, engine, max_lag or pair.k_max
+        )
+        return cls(correlogram.data, correlogram.n, pair)
 
     def effective_n(self, tau: float):
         """Estimate effective sample size at ``tau`` (Eqs. 8-9)."""
@@ -39,15 +43,12 @@ class MoranCorrelogram:
 
     def to_frame(self) -> pd.DataFrame:
         """Return tidy lag rows for correlogram output."""
-        return pd.DataFrame({
+        return SpatialMoranCorrelogram(self.data, self.n).to_frame({
             "study_area": self.pair.spec.study_area,
             "index": self.pair.band,
             "month": self.pair.spec.month,
             "year_start": self.pair.spec.year_start,
             "year_end": self.pair.spec.year_end,
-            "lag": self.data.lags,
-            "moran_i": self.data.moran_i,
-            "pair_count": self.data.pair_counts,
         })
 
 

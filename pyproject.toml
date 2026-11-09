@@ -29,4 +29,4 @@ dev = ["ipykernel", "pytest"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["cds_pull*", "change_ci*", "s2grab*"]
+include = ["cds_pull*", "change_ci*", "spatial_ci*", "s2grab*"]
