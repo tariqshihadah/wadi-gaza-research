@@ -70,3 +70,15 @@ def test_climate_plots_render_and_save(tmp_path):
     assert save_figure(figures[0], tmp_path / "plots" / "map.png").exists()
     for figure in figures:
         plt.close(figure)
+
+
+def test_summary_heatmap_shared_limit_without_colorbar():
+    daily = _daily()
+    normals = compute_normals(daily, CONFIG)
+    site_cells = pd.DataFrame({"site": ["WadiGaza", "Other"], "cell_id": ["N31.5_E34.4", "N31.3_E34.2"]})
+    summary = build_monthly_summary(daily, normals, site_cells, CONFIG)
+    fig, ax = plot_summary_heatmap(summary, "t2m_mean_24h_anom_c", 1, limit=2.5, colorbar=False)
+    norm = ax.images[0].norm
+    assert (norm.vmin, norm.vcenter, norm.vmax) == (-2.5, 0.0, 2.5)
+    assert len(fig.axes) == 1
+    plt.close(fig)

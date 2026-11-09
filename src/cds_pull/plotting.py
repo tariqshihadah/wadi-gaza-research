@@ -15,6 +15,8 @@ from matplotlib.colors import TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 
+from plot_style import add_gridlines, annotate_cells, contrast_text_color, month_name
+
 from .windows import season_label
 
 MONTH_ABBR = {m: calendar.month_abbr[m] for m in range(1, 13)}
@@ -72,6 +74,7 @@ def plot_cell_values(
     limits: tuple[float, float] | None = None,
     annotate: bool = True,
     fmt: str | None = None,
+    colorbar: bool = True,
 ) -> tuple[Figure, Axes]:
     """Map one value per cell over the region grid, with optional site outlines.
 
@@ -79,7 +82,9 @@ def plot_cell_values(
     A ``centre`` gives a diverging scale centred on that value. ``limits``
     fixes the colour range so several maps can share one scale. ``fmt`` is a
     format string for cell labels, such as ``"{:.1f}"``; by default values of
-    10 or more show no decimals and smaller values show one.
+    10 or more show no decimals and smaller values show one. Set
+    ``colorbar=False`` with shared ``limits`` when combining maps with
+    ``plot_style.finish_panel_grid``.
     """
     frame = cells.assign(value=cells["cell_id"].map(values))
     fig, ax = _figure_axes(ax, (6, 7))
@@ -104,8 +109,10 @@ def plot_cell_values(
                 text = fmt.format(row.value)
             else:
                 text = f"{row.value:.0f}" if abs(row.value) >= 10 else f"{row.value:.1f}"
-            ax.text(row.cell_lon, row.cell_lat, text, ha="center", va="center", fontsize=6)
-    fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax, label=label, shrink=0.8)
+            ax.text(row.cell_lon, row.cell_lat, text, ha="center", va="center", fontsize=7,
+                    color=contrast_text_color(plt.get_cmap(cmap)(norm(row.value))))
+    if colorbar:
+        fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax, label=label, shrink=0.8)
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
     return fig, ax
@@ -119,12 +126,18 @@ def plot_summary_heatmap(
     flag: str | None = None,
     label: str | None = None,
     sites: Sequence[str] | None = None,
+    limit: float | None = None,
+    colorbar: bool = True,
 ) -> tuple[Figure, Axes]:
     """Plot one summary column as a site-by-year heatmap for a study month.
 
     Diverging colours are centred on zero for anomalies, or on 100 when
     ``value`` ends in ``pct_normal``. Cells where ``flag`` is true are hatched
     (for example a near-zero normal that leaves percent of normal blank).
+    ``limit`` is the colour half-range around the centre; pass one value for
+    every month, with ``colorbar=False``, to combine panels with
+    ``plot_style.finish_panel_grid``. By default it is the largest deviation
+    shown. Percent-of-normal scales stop at zero.
     """
     frame = summary.loc[summary["month"] == month]
     if frame.empty:
@@ -134,26 +147,31 @@ def plot_summary_heatmap(
     grid = frame.pivot(index="site", columns="year", values=value).reindex(index=sites, columns=years)
     values = grid.to_numpy(dtype=float)
     centre = 100.0 if value.endswith("pct_normal") else 0.0
-    finite = np.abs(values[np.isfinite(values)] - centre)
-    limit = float(finite.max()) if len(finite) and finite.max() > 0 else 1.0
-    fig, ax = _figure_axes(ax, (max(6, len(years) * 0.9), max(3.5, len(sites) * 0.45)))
-    image = ax.imshow(values, aspect="auto", cmap="BrBG" if "precip" in value else "RdBu_r",
-                      norm=TwoSlopeNorm(vmin=centre - limit, vcenter=centre, vmax=centre + limit))
+    if limit is None:
+        finite = np.abs(values[np.isfinite(values)] - centre)
+        limit = float(finite.max()) if len(finite) else 1.0
+    limit = limit if limit > 0 else 1.0
+    # Percent of normal cannot be negative, so the scale stops at zero.
+    vmin = max(centre - limit, 0.0) if centre else -limit
+    fig, ax = _figure_axes(ax, (len(years) * 0.7 + 3.5, len(sites) * 0.7 + 1.8))
+    image = ax.imshow(values, aspect="equal", cmap="BrBG" if "precip" in value else "RdBu_r",
+                      norm=TwoSlopeNorm(vmin=vmin, vcenter=centre, vmax=centre + limit))
     if flag is not None:
         flags = frame.pivot(index="site", columns="year", values=flag).reindex(index=sites, columns=years)
         for (i, j), flagged in np.ndenumerate(flags.fillna(False).to_numpy(dtype=bool)):
             if flagged:
                 ax.add_patch(plt.Rectangle((j - 0.5, i - 0.5), 1, 1, fill=False, hatch="///",
                                            edgecolor="grey", linewidth=0))
-    for (i, j), number in np.ndenumerate(values):
-        if np.isfinite(number):
-            ax.text(j, i, f"{number:.0f}" if abs(number) >= 10 else f"{number:.1f}",
-                    ha="center", va="center", fontsize=7)
+    labels = np.vectorize(lambda number: f"{number:.0f}" if abs(number) >= 10 else f"{number:.1f}",
+                          otypes=[str])(values)
+    annotate_cells(ax, image, values, labels)
     ax.set_xticks(range(len(years)), years)
     ax.set_yticks(range(len(sites)), sites)
     ax.set_xlabel("Observation year")
-    ax.set_title(f"{label or value}, {MONTH_ABBR[month]}")
-    fig.colorbar(image, ax=ax, label=label or value)
+    ax.set_ylabel("Site")
+    ax.set_title(f"{label or value}, {month_name(month)}")
+    if colorbar:
+        fig.colorbar(image, ax=ax, label=label or value)
     return fig, ax
 
 
@@ -169,12 +187,10 @@ def plot_wet_season_heatmap(
     values = grid.to_numpy(dtype=float)
     finite = np.abs(values[np.isfinite(values)] - 100)
     limit = float(finite.max()) if len(finite) and finite.max() > 0 else 1.0
-    fig, ax = _figure_axes(ax, (max(6, len(labels) * 0.9), max(3.5, len(sites) * 0.45)))
-    image = ax.imshow(values, aspect="auto", cmap="BrBG",
+    fig, ax = _figure_axes(ax, (len(labels) * 0.7 + 3.5, len(sites) * 0.7 + 2.2))
+    image = ax.imshow(values, aspect="equal", cmap="BrBG",
                       norm=TwoSlopeNorm(vmin=100 - limit, vcenter=100, vmax=100 + limit))
-    for (i, j), number in np.ndenumerate(values):
-        if np.isfinite(number):
-            ax.text(j, i, f"{number:.0f}", ha="center", va="center", fontsize=7)
+    annotate_cells(ax, image, values, np.vectorize(lambda number: f"{number:.0f}", otypes=[str])(values))
     ax.set_xticks(range(len(labels)), labels, rotation=35, ha="right")
     ax.set_yticks(range(len(sites)), sites)
     ax.set_xlabel("Wet season (October to April)")
@@ -196,13 +212,14 @@ def plot_temperature_anomalies(
     for colour, month in zip(colours, months):
         rows = frame.loc[frame["month"] == month].sort_values("year")
         ax.plot(rows["year"], rows["t2m_mean_24h_anom_c"], "-o", color=colour, markersize=4,
-                label=f"{MONTH_ABBR[month]} 24-hour mean")
+                label=f"{month_name(month)} 24-hour mean")
         ax.plot(rows["year"], rows["t2m_midrange_anom_c"], "--", color=colour, linewidth=1,
-                label=f"{MONTH_ABBR[month]} midrange")
+                label=f"{month_name(month)} midrange")
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Anomaly from 1991\N{EN DASH}2020 normal (\N{DEGREE SIGN}C)")
     ax.set_title(f"{site}: monthly temperature anomaly")
+    add_gridlines(ax)
     ax.legend(ncol=2, fontsize=8)
     return fig, ax
 
@@ -232,6 +249,7 @@ def plot_climatology(
     ax.set_xticks(range(1, 13), [MONTH_ABBR[m] for m in range(1, 13)])
     ax.set_ylabel("Precipitation (mm)")
     ax.set_title(f"{cell_id}: monthly precipitation")
+    add_gridlines(ax, axis="y")
     ax.legend(fontsize=7, ncol=2)
     return fig, ax
 
@@ -275,6 +293,7 @@ def plot_cumulative_seasons(
     ax.set_xlim(0, 364)
     ax.set_ylabel("Cumulative precipitation since October 1 (mm)")
     ax.set_title(f"{cell_id}: cumulative precipitation since October 1")
+    add_gridlines(ax)
     ax.legend(fontsize=8, ncol=2, loc="upper left")
     return fig, ax
 
@@ -295,6 +314,7 @@ def plot_temperature_method_difference(
     ax.set_xticks(range(1, 13), [MONTH_ABBR[m] for m in range(1, 13)])
     ax.set_ylabel("Midrange minus 24-hour mean (\N{DEGREE SIGN}C)")
     ax.set_title("Daily temperature method difference, 1990\N{EN DASH}2025 mean")
+    add_gridlines(ax)
     ax.legend(fontsize=8, ncol=2)
     return fig, ax
 

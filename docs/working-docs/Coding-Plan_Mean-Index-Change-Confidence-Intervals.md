@@ -266,7 +266,7 @@ All plotting functions are pure: they take a DataFrame, accept an optional `ax`,
 : A grid of panels, one per month or study area, each drawn as the time-series plot with a shared y-axis. This is the fallback when a single plot gets crowded.
 
 `plot_change_heatmap(results, month, ...)`
-: Rows are study areas and columns are year pairs, colored by mean change on a diverging colormap centered at zero (`TwoSlopeNorm`). A marker shows cells where `ci_excludes_zero` is true.
+: Rows are study areas and columns are year pairs, colored by mean change on a diverging colormap centered at zero (`TwoSlopeNorm`). Each cell is labeled with its mean change, and an asterisk marks cells where `ci_excludes_zero` is true. Notebook 12 draws one panel per month with a shared `limit` so the panels are directly comparable.
 
 `plot_correlogram(correlograms, results, pair, ...)`
 : Plots I_k against lag, with horizontal lines at each τ and the range marked.

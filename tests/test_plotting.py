@@ -90,3 +90,22 @@ def test_timeseries_rejects_missing_highlight():
     results, _ = _frames()
     with np.testing.assert_raises_regex(ValueError, "Highlighted series not present"):
         plot_change_timeseries(results, group_by="study_area", highlight="Missing")
+
+def test_change_heatmap_labels_cells_and_marks_significance():
+    results, _ = _frames()
+    fig, axes = plt.subplots(1, 2, constrained_layout=True)
+    plot_change_heatmap(results, "09", ax=axes[0], sites=["AreaB", "AreaA"], limit=0.2)
+    ax = axes[0]
+    assert [tick.get_text() for tick in ax.get_yticklabels()] == ["AreaB", "AreaA"]
+    assert sorted(text.get_text() for text in ax.texts) == ["+0.050", "-0.100*"]
+    assert ax.images[0].norm.vmin == -0.2 and ax.images[0].norm.vmax == 0.2
+    plt.close(fig)
+
+
+def test_small_multiples_use_one_shared_legend():
+    results, _ = _frames()
+    fig, axes = plot_change_small_multiples(results, facet_by="month", ncols=2)
+    assert all(ax.get_legend() is None for ax in axes.flat)
+    assert len(fig.legends) == 1
+    assert any(line.get_visible() for line in axes.flat[0].get_ygridlines())
+    plt.close(fig)

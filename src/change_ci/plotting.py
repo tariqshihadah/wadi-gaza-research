@@ -14,6 +14,8 @@ from matplotlib.axes import Axes
 from matplotlib.colors import TwoSlopeNorm
 from matplotlib.figure import Figure
 
+from plot_style import add_gridlines, add_shared_legend, annotate_cells, month_name
+
 
 def _month(value: object) -> str:
     """Normalize an integer or string month to two digits."""
@@ -132,14 +134,16 @@ def plot_change_timeseries(
         x = np.array([pair_index[(int(r.year_start), int(r.year_end))] + offset for r in rows.itertuples()])
         color = "C3" if group == highlight else ("0.62" if highlight is not None else f"C{index % 10}")
         marker = "D" if group == highlight else "o"
+        label = month_name(group) if group_by == "month" else group
         ax.plot(x, rows["mean_change"], marker=marker, linestyle="--", linewidth=1,
-                markersize=5, color=color, label=str(group))
+                markersize=5, color=color, label=label)
         if group in ci_groups:
             _errorbars(ax, x, rows, color)
     ax.axhline(0, color="black", linewidth=0.9)
     ax.set_xticks(range(len(pairs)), [_pair_label(*pair) for pair in pairs])
     ax.set_xlabel("Year pair")
     ax.set_ylabel("Mean index change")
+    add_gridlines(ax)
     ax.legend(title=group_by.replace("_", " "))
     fig.tight_layout()
     return fig, ax
@@ -197,19 +201,16 @@ def plot_change_small_multiples(
         fig = flat[0].figure
         axes = flat[:len(facets)].reshape(1, -1)
     group_by = "study_area" if facet_by == "month" else "month"
-    for index, (facet, facet_ax) in enumerate(zip(facets, axes.ravel())):
+    for facet, facet_ax in zip(facets, axes.ravel()):
         plot_change_timeseries(
             results, group_by, {**(filters or {}), facet_by: facet},
             show_ci_for, facet_ax, tau, highlight,
         )
-        facet_ax.set_title(f"{facet_by.replace('_', ' ')}: {facet}")
-        if index:
-            legend = facet_ax.get_legend()
-            if legend is not None:
-                legend.remove()
+        facet_ax.set_title(month_name(facet) if facet_by == "month" else facet)
     for facet_ax in axes.ravel()[len(facets):]:
         facet_ax.set_visible(False)
     fig.tight_layout()
+    add_shared_legend(fig, axes.ravel()[:len(facets)], title=group_by.replace("_", " "))
     return fig, axes
 
 
@@ -218,8 +219,15 @@ def plot_change_heatmap(
     month: str | int,
     ax: Axes | None = None,
     tau: float | None = None,
+    sites: Sequence[str] | None = None,
+    limit: float | None = None,
+    cmap: str = "BrBG",
+    colorbar: bool = True,
 ) -> tuple[Figure, Axes]:
-    """Plot mean changes as a zero-centered heatmap, marking CIs excluding zero.
+    """Plot mean changes as a zero-centered site-by-year-pair heatmap.
+
+    Each cell is labeled with its mean change; an asterisk marks adjusted CIs
+    that exclude zero.
 
     Parameters
     ----------
@@ -231,6 +239,16 @@ def plot_change_heatmap(
         Axes on which to draw.
     tau : float, optional
         Threshold to plot; defaults to the primary tau.
+    sites : sequence of str, optional
+        Study areas and row order; defaults to the sorted areas present.
+    limit : float, optional
+        Symmetric color limit. Pass a shared value to compare panels; defaults
+        to the largest absolute change shown.
+    cmap : str
+        Diverging colormap centered at zero.
+    colorbar : bool
+        Draw a per-panel colorbar. Set False with a shared ``limit`` when
+        combining panels with ``plot_style.finish_panel_grid``.
 
     Returns
     -------
@@ -239,30 +257,41 @@ def plot_change_heatmap(
     """
     frame = _select(results, tau, {"month": month})
     pairs = _pairs(frame)
-    areas = sorted(frame["study_area"].astype(str).unique())
-    frame = frame.assign(_pair=[_pair_label(a, b) for a, b in zip(frame.year_start, frame.year_end)])
+    areas = list(sites) if sites is not None else sorted(frame["study_area"].astype(str).unique())
+    frame = frame.assign(
+        study_area=frame["study_area"].astype(str),
+        _pair=[_pair_label(a, b) for a, b in zip(frame.year_start, frame.year_end)],
+    )
     labels = [_pair_label(*pair) for pair in pairs]
-    values = frame.pivot(index="study_area", columns="_pair", values="mean_change").reindex(
-        index=areas, columns=labels
-    ).to_numpy(dtype=float)
-    finite = np.abs(values[np.isfinite(values)])
-    limit = float(finite.max()) if len(finite) else 1.0
+    grid = frame.pivot(index="study_area", columns="_pair", values="mean_change")
+    values = grid.reindex(index=areas, columns=labels).to_numpy(dtype=float)
+    significant = (
+        frame.pivot(index="study_area", columns="_pair", values="ci_excludes_zero")
+        .reindex(index=areas, columns=labels)
+        .fillna(False).astype(bool).to_numpy()
+    )
+    if limit is None:
+        finite = np.abs(values[np.isfinite(values)])
+        limit = float(finite.max()) if finite.size else 1.0
     limit = limit if limit > 0 else 1.0
-    fig, ax = _figure_axes(ax, (max(7, len(labels) * 1.1), max(4, len(areas) * 0.45)))
-    image = ax.imshow(values, aspect="auto", cmap="RdYlBu", norm=TwoSlopeNorm(vmin=-limit, vcenter=0, vmax=limit))
-    significant = frame.loc[frame["ci_excludes_zero"].fillna(False).astype(bool)]
-    x_index = {label: index for index, label in enumerate(labels)}
-    y_index = {area: index for index, area in enumerate(areas)}
-    for row in significant.itertuples():
-        ax.scatter(x_index[_pair_label(row.year_start, row.year_end)], y_index[str(row.study_area)],
-                   marker="o", s=34, facecolors="none", edgecolors="black", linewidths=0.9)
-    ax.set_xticks(range(len(labels)), labels, rotation=35, ha="right")
+    norm = TwoSlopeNorm(vmin=-limit, vcenter=0, vmax=limit)
+    owns_figure = ax is None
+    fig, ax = _figure_axes(ax, (len(labels) * 0.8 + 3.5, len(areas) * 0.8 + 1.8))
+    image = ax.imshow(values, aspect="equal", cmap=cmap, norm=norm)
+    cell_labels = np.array([
+        [f"{value:+.3f}{'*' if flag else ''}" for value, flag in zip(row, flags)]
+        for row, flags in zip(values, significant)
+    ])
+    annotate_cells(ax, image, values, cell_labels)
+    ax.set_xticks(range(len(labels)), labels)
     ax.set_yticks(range(len(areas)), areas)
     ax.set_xlabel("Year pair")
     ax.set_ylabel("Study area")
-    ax.set_title(f"Mean change by study area, month {_month(month)}")
-    fig.colorbar(image, ax=ax, label="Mean index change")
-    fig.tight_layout()
+    ax.set_title(f"Mean change by study area, {month_name(month)}")
+    if colorbar:
+        fig.colorbar(image, ax=ax, label="Mean index change")
+    if owns_figure:
+        fig.tight_layout()
     return fig, ax
 
 
@@ -334,7 +363,8 @@ def plot_correlogram(
         ax.axvline(float(result["range_px"]), color="C3", linestyle=":", label=f"range={int(result['range_px'])}")
     ax.set_xlabel("Lag (pixels)")
     ax.set_ylabel("Moran's I")
-    ax.set_title(f"{keys['study_area']} {_month(keys['month'])} {keys['year_start']}-{keys['year_end']}")
+    ax.set_title(f"{keys['study_area']} {month_name(keys['month'])} {keys['year_start']}-{keys['year_end']}")
+    add_gridlines(ax)
     if thresholds or pd.notna(result["range_px"]):
         ax.legend()
     fig.tight_layout()
@@ -371,9 +401,10 @@ def plot_n_eff(
     valid = np.isfinite(frame["n_eff"].to_numpy(dtype=float))
     ax.scatter(x[valid], frame.loc[valid, "n_eff"], c="C0", s=28, zorder=3)
     ax.axhline(min_n_eff, color="C3", linestyle="--", label=f"minimum n_eff={min_n_eff:g}")
-    labels = [f"{row.study_area}\n{_month(row.month)} {_pair_label(row.year_start, row.year_end)}" for row in frame.itertuples()]
+    labels = [f"{row.study_area}\n{month_name(row.month)} {_pair_label(row.year_start, row.year_end)}" for row in frame.itertuples()]
     ax.set_xticks(x, labels, rotation=70, ha="right", fontsize=8)
     ax.set_ylabel("Effective sample size")
+    add_gridlines(ax)
     ax.legend()
     fig.tight_layout()
     return fig, ax
@@ -426,9 +457,10 @@ def plot_tau_sensitivity(
         ax.plot(x, rows["mean_change"], marker="o", linestyle="none", color=color, label=f"tau={threshold:g}")
         _errorbars(ax, x, rows, color)
     ax.axhline(0, color="black", linewidth=0.8)
-    labels = [f"{area}\n{month} {_pair_label(start, end)}" for area, month, start, end in pair_ids]
+    labels = [f"{area}\n{month_name(month)} {_pair_label(start, end)}" for area, month, start, end in pair_ids]
     ax.set_xticks(range(len(pair_ids)), labels, rotation=55, ha="right", fontsize=8)
     ax.set_ylabel("Mean index change and adjusted CI")
+    add_gridlines(ax)
     ax.legend(title="Range threshold")
     fig.tight_layout()
     return fig, ax
