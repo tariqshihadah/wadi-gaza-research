@@ -45,7 +45,7 @@ The executable settings are maintained in [`configs/climate.yaml`](../../configs
 
 **Land and sea points.** ERA5-Land has values only at points it treats as land. Points it treats as sea are present in the download but empty; 27 of the 63 points in the region are empty. Along the coast, this classification does not follow the coastline closely. For example, N32.0_E34.7, whose cell is mostly over the Mediterranean, has data, while N31.9_E34.7, whose cell is more than half land, does not. ERA5-Land is produced on an octahedral reduced Gaussian grid (TCo1279, about 9 km) and distributed on the CDS after interpolation to the regular 0.1° grid ([ERA5-Land data documentation](https://confluence.ecmwf.int/display/CKB/ERA5-Land%3A+data+documentation)). The published 0.1° land-sea mask does not predict which points have data: N32.0_E34.7 has a land fraction of 0.36 and has data, while N31.9_E34.7 has 0.57 and does not. The land or sea status therefore appears to come from the native model grid, whose points do not line up with the 0.1° grid. ECMWF does not document the exact rule. In practice, a coastal 0.1° point with data represents the nearby land surface of the model, not the conditions at its geographic centre.
 
-**Site assignment.** Each site uses the cell containing its polygon centroid. The centroid is computed in the sites' projected CRS (EPSG:32636) and transformed to WGS84, and the cell is found by rounding to the nearest 0.1°. Invalid site geometry is repaired with `make_valid` first, as in the imagery pipeline. The largest site, Holot Nizzanim, covers about 14 km², so each site occupies a small part of one cell. Climate values therefore describe the area around each site, not conditions within the site itself.
+**Site assignment.** Each site uses the cell containing its polygon centroid. The centroid is computed in the sites' projected CRS (EPSG:32636) and transformed to WGS84, and the cell is found by rounding to the nearest 0.1°. Invalid site geometry is repaired with `make_valid` first, as in the imagery pipeline. The largest site, Holot Nizzanim, covers about 12 km², so each site occupies a small part of one cell. Climate values therefore describe the area around each site, not conditions within the site itself.
 
 **Manual assignment.** Holot Palmahim and Nahal Rubin share a centroid cell, N31.9_E34.7, which has no data. Both sites are manually assigned to the adjacent cell to the east, N31.9_E34.8, so that each has data and the two neighbouring sites share one climate record. The assignment is set in the configuration (`site_cell_overrides`) and recorded in `site_cells.csv` (`assignment = manual`, with the centroid cell in `centroid_cell_id`).
 
@@ -54,7 +54,7 @@ The executable settings are maintained in [`configs/climate.yaml`](../../configs
 | Al Ahrash Protectorate | 31.303, 34.220 | N31.3_E34.2 | N31.3_E34.2 | 1.9 | Centroid |
 | Besor Stream | 31.357, 34.470 | N31.4_E34.5 | N31.4_E34.5 | 5.6 | Centroid |
 | HaBesor National Park | 31.283, 34.493 | N31.3_E34.5 | N31.3_E34.5 | 2.0 | Centroid |
-| Holot Nizzanim | 31.745, 34.615 | N31.7_E34.6 | N31.7_E34.6 | 5.2 | Centroid |
+| Holot Nizzanim | 31.746, 34.618 | N31.7_E34.6 | N31.7_E34.6 | 5.4 | Centroid |
 | Holot Palmahim | 31.915, 34.726 | N31.9_E34.7 (no data) | N31.9_E34.8 | 7.2 | Manual |
 | Nahal Rubin | 31.938, 34.720 | N31.9_E34.7 (no data) | N31.9_E34.8 | 8.7 | Manual |
 | Wadi Gaza | 31.453, 34.404 | N31.5_E34.4 | N31.5_E34.4 | 5.3 | Centroid |

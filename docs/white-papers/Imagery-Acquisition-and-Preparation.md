@@ -114,7 +114,7 @@ The main alternative, including every pixel the polygon touches, adds edge cells
 | Al Ahrash Protectorate | 33,848 | 338.1 | +0.01% |
 | Besor Stream | 11,318 | 113.1 | −0.06% |
 | HaBesor National Park | 91,755 | 918.7 | −0.01% |
-| Holot Nizzanim | 139,638 | 1,395.2 | +0.01% |
+| Holot Nizzanim | 119,868 | 1,198.4 | +0.00% |
 | Holot Palmahim | 62,192 | 620.8 | +0.01% |
 | Nahal Rubin | 7,860 | 78.4 | +0.15% |
 | Wadi Gaza | 28,413 | 284.2 | +0.05% |
@@ -131,7 +131,7 @@ The main alternative, including every pixel the polygon touches, adds edge cells
 After acquisition, a pixel value in a composite is valid when it is finite. A pixel can be invalid for two reasons:
 
 1. It lies outside the footprint $F$, for every window.
-2. It lies inside $F$ but had no valid observation in that window (an interior gap, Section 4.4). These are uncommon. In the 2019–2025 run, 28 of 196 composites had any interior gap, all at three sites (HolotNizzanim, NahalRubin, WadiGaza). The largest gap was 2.2% of the footprint (NahalRubin).
+2. It lies inside $F$ but had no valid observation in that window (an interior gap, Section 4.4). These are uncommon. In the 2019–2025 run, 25 of 196 composites had any interior gap, all at three sites (HolotNizzanim, NahalRubin, WadiGaza). The largest gap was 2.2% of the footprint (NahalRubin).
 
 For the mean index change analysis, a pixel is used for a pair of dates only if it is valid in both composites. The pixel count $N$ in that analysis is therefore the footprint size minus any interior gaps on either date.
 
