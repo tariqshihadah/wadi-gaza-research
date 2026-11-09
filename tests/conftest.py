@@ -5,6 +5,7 @@ from typing import Any, Callable
 import pytest
 
 from change_ci.config import AnalysisConfig
+from change_did.config import DidAnalysisConfig
 from index_ci.config import IndexAnalysisConfig
 
 
@@ -42,5 +43,18 @@ def index_config_factory() -> Callable[..., IndexAnalysisConfig]:
             output_dir=output_dir,
             **overrides,
         )
+
+    return create_config
+
+
+@pytest.fixture
+def did_config_factory() -> Callable[..., DidAnalysisConfig]:
+    root = Path(__file__).resolve().parents[1]
+    base_config = DidAnalysisConfig.from_yaml(
+        root / "configs" / "change_did.yaml", project_root=root
+    )
+
+    def create_config(**overrides: Any) -> DidAnalysisConfig:
+        return replace(base_config, **overrides)
 
     return create_config
