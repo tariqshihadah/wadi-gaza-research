@@ -25,7 +25,7 @@ The current executable run settings are maintained in [`configs/imagery.yaml`](.
 
 The Scene Classification Layer (SCL, 20 m) is also read, but only to mask unusable observations; it is not saved.
 
-**Time windows.** Composites are built for whole calendar months: January, May, September, and November of each year from 2019 to 2025, giving 28 windows per site.
+**Time windows.** Composites are built for whole calendar months: January, February, March, May, September, and November of each year from 2019 to 2025, giving 42 windows per site.
 
 ## 3. Notation
 
@@ -82,10 +82,10 @@ Four indices are computed for **every** study site, from the reflectance of each
 |---|---|---|
 | NDVI | $(B08 - B04) / (B08 + B04)$ | 10 m |
 | GNDVI | $(B08 - B03) / (B08 + B03)$ | 10 m |
-| SAVI | $\left( (B08 - B04) / (B08 + B04 + L) \right) \times (1 + L)$, with $L = 0.428$ | 10 m |
+| SAVI | $\left( (B08 - B04) / (B08 + B04 + L) \right) \times (1 + L)$, with $L = 0.5$ | 10 m |
 | NDRE | $(B8A - B05) / (B8A + B05)$ | 20 m |
 
-Undefined values (for example, a zero denominator) are discarded with the other invalid observations. The soil brightness factor $L = 0.428$ follows the ESA value used for Sentinel-2.
+Undefined values (for example, a zero denominator) are discarded with the other invalid observations. The soil brightness factor $L = 0.5$ is the standard SAVI value, set by the `savi_l` key of the imagery configuration.
 
 ### 4.6 Study-area footprint
 

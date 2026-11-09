@@ -6,6 +6,8 @@ Nov 8, 2026 · @Tariq
 
 This document describes how the study tests whether the change in a vegetation index at Wadi Gaza between 2023 and 2024 was anomalous. "Anomalous" has two parts: the change differs from what the six comparison sites did over the same period, and it differs from what Wadi Gaza itself did in earlier years.
 
+This paper describes the **site + period** model specification, which gives each site its own typical year-to-year drift. A companion paper, *Testing Whether Wadi Gaza's Index Change Was Anomalous: A Period-Only Comparison Analysis*, describes a simplified **period-only** specification without site effects. Both specifications are run in full, and every output row is labeled with its model.
+
 The analysis builds on Confidence Intervals for Mean Index Change Under Spatial Autocorrelation. That method produces, for each site and pair of years, a mean change and a standard error adjusted for spatial autocorrelation. Its confidence intervals answer whether a site changed. They cannot answer whether one site's change was unusual compared with others, which is the study's central question. This document describes the comparison that answers it.
 
 The current executable run settings are maintained in `configs/change_did.yaml`; this paper documents the methodology and rationale without duplicating that configuration.
@@ -78,6 +80,8 @@ For one index and one month, the 42 observations are modeled as:
 
 The model has 14 parameters: an intercept, 6 site effects, 5 year-pair effects (one site and one pair serve as reference), β, and β′. With 42 observations, ν = 42 − 14 = 28 degrees of freedom.
 
+For reporting, the site and year-pair effects use deviation (sum-to-zero) coding, so each reported effect is relative to the average site or year pair, and joint Wald F-tests of the site effects and of the year-pair effects are reported alongside them. β and β′ are identical under either coding.
+
 This is a two-way fixed-effects regression, the standard way to estimate a BACI or difference-in-differences design. Because the outcome is already a change, it is equivalent to comparing index levels while allowing each site its own linear trend.
 
 ### 4.4 Estimation
@@ -90,7 +94,7 @@ The model is fit in three steps.
 \hat\sigma_u^2 = \max\left(0,\; s^2 - \overline{SE^2}\right) \tag{2}
 ```
 
-The average is taken over all observations except Wadi Gaza in 2023–24. If the result would be negative, it is set to zero and flagged (Section 5).
+The average is taken over all observations except Wadi Gaza in 2023–24 and 2024–25: each of those rows is fit exactly by its own indicator, so neither contributes to the residual scatter. If the result would be negative, it is set to zero and flagged (Section 5).
 
 **Step 2: weight each observation by its total variance.**
 
@@ -151,7 +155,7 @@ The p-value is (1 + the number of placebo estimates as negative as the real one 
 - pairs without a range excluded rather than given the largest standard error;
 - pairs without a range given a standard error that assumes n\_eff = 5.
 
-For NDVI in May, September, and November, these variants changed the event estimate by at most 0.004, and every interval remained well below zero. The conclusion does not depend on the threshold or on the handling of pairs without a range.
+For NDVI in May, September, and November, these variants changed the event estimate by at most 0.002, and every interval remained well below zero. The conclusion does not depend on the threshold or on the handling of pairs without a range.
 
 **Checks on load.** The analysis stops if any index-month subset does not contain exactly 42 observations (7 sites × 6 consecutive pairs) or if any mean change is missing. It reports how many observations had no range.
 
@@ -175,8 +179,8 @@ For NDVI in May, September, and November, these variants changed the event estim
 
 | Output | Value | Reading |
 | --- | --- | --- |
-| Event effect β (95% CI) | −0.111 (−0.161, −0.061), p < 0.001 | NDVI fell about 0.11 more than expected in 2023–24 |
-| Persistence effect β′ (95% CI) | −0.044 (−0.094, 0.006) | No recovery in 2024–25; possibly a further decline |
+| Event effect β (95% CI) | −0.111 (−0.162, −0.060), p < 0.001 | NDVI fell about 0.11 more than expected in 2023–24 |
+| Persistence effect β′ (95% CI) | −0.044 (−0.095, 0.006) | No recovery in 2024–25; possibly a further decline |
 | Placebo in space | Comparison sites −0.014 to +0.019; p = 1/7; ratio 5.9 | Wadi Gaza is the most extreme site, about six times the largest placebo |
 | Placebo in space and time | 34 placebos −0.029 to +0.043; p = 1/35 | Wadi Gaza 2023–24 is more negative than every other site-year |
 
@@ -201,19 +205,22 @@ For NDVI in May, September, and November, these variants changed the event estim
 For each index and month, the reported outputs are:
 
 - the event effect β and persistence effect β′, each with its standard error, 95% confidence interval, and p-value
+- the deviation-coded site and year-pair effects with their joint Wald F-test p-values
 - the estimated real site-year variation σ\_u, the degrees of freedom, the number of pairs without a range, and any flags
 - the placebo-in-space estimates for all seven sites, the p-value, and the ratio of Wadi Gaza's estimate to the largest placebo
 - the placebo-in-space-and-time estimates for all 35 site-years and the p-value
 - the event effect under each sensitivity variant
 
-Every output is labeled with its index (NDVI as primary; GNDVI, SAVI, and NDRE as robustness checks) and marks January as supplementary.
+Every output is labeled with its index (NDVI as primary; GNDVI, SAVI, and NDRE as robustness checks), marks January as supplementary, and carries the model label `site_period`. The same files hold the companion period-only rows under the label `period_only`.
 
 | File | One row per |
 | --- | --- |
-| `did_main.csv` | Index × month × variant × effect (β or β′) |
-| `did_placebo_space.csv` | Index × month × site |
-| `did_placebo_spacetime.csv` | Index × month × site-year |
-| `did_summary.md` | Index × month: the main estimates and both placebo p-values in plain text |
+| `did_main.csv` | Model × index × month × variant × effect (β or β′) |
+| `did_effects.csv` | Model × index × month × fixed-effect level, plus the joint tests |
+| `did_placebo_space.csv` | Model × index × month × site |
+| `did_placebo_spacetime.csv` | Model × index × month × site-year |
+| `did_summary_site_period.csv` | Index: the summary table for this model, months as columns |
+| `did_summary.md` | Index: both models' summary tables and placebo p-values in plain text |
 
 ## References
 

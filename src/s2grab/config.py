@@ -19,6 +19,7 @@ class AcquisitionConfig:
     months: tuple[int, ...]
     bands: tuple[str, ...]
     indices: tuple[str, ...]
+    savi_l: float
     resolution: int
     upsampling: str
     max_cloud: int
@@ -41,6 +42,7 @@ class AcquisitionConfig:
             "months",
             "bands",
             "indices",
+            "savi_l",
             "resolution",
             "upsampling",
             "max_cloud",
@@ -59,6 +61,7 @@ class AcquisitionConfig:
             months=_tuple(data["months"], "months", int),
             bands=_tuple(data["bands"], "bands", str),
             indices=_tuple(data["indices"], "indices", str),
+            savi_l=_number(data["savi_l"], "savi_l"),
             resolution=_integer(data["resolution"], "resolution"),
             upsampling=_string(data["upsampling"], "upsampling"),
             max_cloud=_integer(data["max_cloud"], "max_cloud"),
@@ -82,6 +85,8 @@ class AcquisitionConfig:
             raise ValueError("demo_month must be a calendar month from 1 to 12")
         if not 0 <= config.max_cloud <= 100:
             raise ValueError("max_cloud must be between 0 and 100")
+        if not 0 <= config.savi_l <= 1:
+            raise ValueError("savi_l must be between 0 and 1")
         return config
 
 
@@ -117,6 +122,12 @@ def _integer(data: Any, name: str) -> int:
     if not isinstance(data, int) or isinstance(data, bool):
         raise ValueError(f"{name} must be an integer")
     return data
+
+
+def _number(data: Any, name: str) -> float:
+    if not isinstance(data, (int, float)) or isinstance(data, bool):
+        raise ValueError(f"{name} must be a number")
+    return float(data)
 
 
 def _string(data: Any, name: str) -> str:

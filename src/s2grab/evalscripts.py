@@ -38,6 +38,20 @@ class EvalScript:
     band_names: Union[tuple[str, ...], None] = None
 
 
+def savi(l: float) -> Index:
+    """Return the SAVI index with soil-brightness factor ``l``.
+
+    Standard form: ((B08 - B04) / (B08 + B04 + L)) * (1 + L). The study uses
+    L = 0.5 (configured via ``savi_l`` in the imagery YAML); the ESA
+    Sentinel-2 default is 0.428.
+    """
+    return Index(
+        "SAVI",
+        ("B08", "B04"),
+        f"((s.B08 - s.B04) / (s.B08 + s.B04 + {l:g})) * {1 + l:g}",
+    )
+
+
 # Library of known indices. Add a line here to make a new index available.
 INDEX_LIBRARY: dict[str, Index] = {
     "NDVI": Index("NDVI", ("B08", "B04"), "(s.B08 - s.B04) / (s.B08 + s.B04)"),
@@ -49,13 +63,8 @@ INDEX_LIBRARY: dict[str, Index] = {
         "2.5 * (s.B08 - s.B04) / (s.B08 + 6.0 * s.B04 - 7.5 * s.B02 + 1.0)",
     ),
     "GNDVI": Index("GNDVI", ("B08", "B03"), "(s.B08 - s.B03) / (s.B08 + s.B03)"),
-    # SAVI soil-adjusted vegetation index. L = 0.428 (ESA value for Sentinel-2);
-    # standard form multiplies by (1 + L) = 1.428.
-    "SAVI": Index(
-        "SAVI",
-        ("B08", "B04"),
-        "((s.B08 - s.B04) / (s.B08 + s.B04 + 0.428)) * 1.428",
-    ),
+    # SAVI soil-adjusted vegetation index; see :func:`savi` for the L factor.
+    "SAVI": savi(0.5),
     "NDRE": Index("NDRE", ("B8A", "B05"), "(s.B8A - s.B05) / (s.B8A + s.B05)"),
 }
 
@@ -122,6 +131,7 @@ def make_evalscript(
     include_datamask: bool = False,
     reduce: Union[str, None] = None,
     mask_scl: Union[Sequence[int], bool, None] = None,
+    savi_l: Union[float, None] = None,
 ) -> EvalScript:
     """Generate an :class:`EvalScript` from reflectance bands and indices.
 
@@ -141,6 +151,9 @@ def make_evalscript(
         integers. In reduce mode these samples are skipped before compositing;
         in single-scene mode masked pixels are set to NaN. ``None`` (default)
         disables SCL masking.
+    savi_l: soil-brightness factor used when "SAVI" is requested by name.
+        ``None`` (default) keeps the :data:`INDEX_LIBRARY` value; explicit
+        :class:`Index` objects are never overridden.
 
     Returns
     -------
@@ -148,7 +161,12 @@ def make_evalscript(
     """
     bands = list(bands)
     index_objs = [
-        idx if isinstance(idx, Index) else INDEX_LIBRARY[idx] for idx in indices
+        idx
+        if isinstance(idx, Index)
+        else savi(savi_l)
+        if idx == "SAVI" and savi_l is not None
+        else INDEX_LIBRARY[idx]
+        for idx in indices
     ]
 
     if mask_scl is True:

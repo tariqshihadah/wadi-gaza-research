@@ -33,6 +33,7 @@ def composite_qa(
     mask_scl: Sequence[int],
     compute_std: bool,
     upsampling: str | None = None,
+    savi_l: float | None = None,
 ) -> tuple[Image | None, CompositeQA]:
     """Fetch a masked median composite and its quality metrics.
 
@@ -55,6 +56,7 @@ def composite_qa(
         indices=indices,
         reduce="median",
         mask_scl=mask_scl,
+        savi_l=savi_l,
     )
     image = client.fetch(
         aoi,
@@ -80,6 +82,7 @@ def composite_qa(
             indices=indices,
             reduce="std",
             mask_scl=mask_scl,
+            savi_l=savi_l,
         )
         std_image = client.fetch(
             aoi,
