@@ -1,0 +1,12 @@
+data_root: outputs/composites
+output_dir: outputs/index_ci
+study_areas: null
+months: ["01", "05", "09", "11"]
+year_range: [2019, 2025]
+index_bands: [NDVI, GNDVI, SAVI, NDRE]
+engine: fft
+tau: 0.05
+tau_sensitivity: [0.02, 0.05, 0.10]
+alpha: 0.05
+max_lag_fraction: 0.25
+min_n_eff: 30
