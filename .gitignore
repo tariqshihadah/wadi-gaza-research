@@ -31,3 +31,6 @@ outputs/_archive/
 
 # Raw ERA5-Land downloads (local cache, rebuildable from the CDS)
 outputs/climate/raw/
+
+# Windows alternate data stream markers on downloaded files
+*:Zone.Identifier
