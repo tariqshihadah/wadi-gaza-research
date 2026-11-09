@@ -1,0 +1,46 @@
+{
+  "input_paths": [
+    "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/NDVI/results.csv",
+    "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/GNDVI/results.csv",
+    "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/SAVI/results.csv",
+    "/home/tshihadah/code/wadi-gaza-research/outputs/change_ci/NDRE/results.csv"
+  ],
+  "output_dir": "/home/tshihadah/code/wadi-gaza-research/outputs/change_did/NDRE",
+  "indices": [
+    "NDVI",
+    "GNDVI",
+    "SAVI",
+    "NDRE"
+  ],
+  "primary_index": "NDVI",
+  "months": [
+    1,
+    5,
+    9,
+    11
+  ],
+  "supplementary_months": [
+    1
+  ],
+  "affected_site": "WadiGaza",
+  "event_pairs": [
+    [
+      2023,
+      2024
+    ],
+    [
+      2024,
+      2025
+    ]
+  ],
+  "tau": 0.05,
+  "tau_sensitivity": [
+    0.02,
+    0.05,
+    0.1
+  ],
+  "alpha": 0.05,
+  "fill_n_eff": 5,
+  "expected_flagged_primary": 22,
+  "index": "NDRE"
+}
