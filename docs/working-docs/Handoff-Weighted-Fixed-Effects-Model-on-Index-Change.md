@@ -188,3 +188,27 @@ These values come from a reference run of exactly this specification on the curr
 
 - [ ] Event timing for November. The indicators treat 2023–24 as the first affected pair in every month. If the disturbance began in October 2023, November 2023 is already post-onset; the data show no drop from November 2022 to 2023, so the current coding is consistent with the data.
 - [ ] Whether to report the space-and-time placebo in the main text or the supplement.
+
+## Update (2026-11-09): two model specifications
+
+The PI requested the full pipeline (main model, both placebo tests, sensitivity reruns) for **two model specifications**, for all four indices and all four months, including January, with every output row labeled with its model:
+
+1. **Site + period model** (`site_period`, the specification above). Intercept, 6 site effects, 5 year-pair effects, and the two Wadi Gaza indicators (2023–24 and 2024–25): 14 parameters, 28 residual df.
+2. **Period-only model** (`period_only`, new). The same without site effects: intercept, 5 year-pair effects, and the two indicators: 8 parameters, 34 residual df.
+
+Everything else about fitting and inference (weights, missing-SE fill, CIs, placebo and sensitivity procedures) is unchanged. The placebos use the same model as the run they belong to.
+
+**Change to Step 3 (σ̂\_u², both models).** When computing σ̂\_u² = max(0, s² − mean(SE²)), exclude *both* Wadi Gaza post-event rows (2023–24 and 2024–25) from the mean of SE², not just 2023–24. Both rows are fit exactly by their own indicators, so neither contributes to s². The implementation applies the same rule to the placebo refits: every cell with its own indicator is excluded from mean(SE²).
+
+**Coding for reporting.** Site and year-pair effects are reported with deviation (sum-to-zero) coding, so each effect is relative to the average site or year pair; the omitted level's effect is minus the sum of the block's coefficients. The event terms β and β′ are identical under either coding. Joint Wald F-tests (b′S⁻¹b/q against F(q, residual df)) are reported for the site effects (site + period model only) and for the year-pair effects.
+
+**Summary table, one per model per index** (columns January, May, September, November): site effects, one row per site (site + period model only) plus the joint-test p-value; year-pair effects, one row per pair plus the joint-test p-value; β (2023–24) and β′ (2024–25), each with its 95% CI; σ\_u. Estimates to three decimals, with an asterisk where the 95% CI excludes zero. Each table is saved as `did_summary_<model>.csv` (formatted and numeric columns) and rendered in `did_summary.md`; the tidy per-effect rows are in `did_effects.csv`.
+
+**Validation targets** (NDVI, τ = 0.05, largest-SE fill, with the σ̂\_u² change). These replace the main-model targets above; the earlier placebo and sensitivity targets no longer apply exactly, so the new values are reported rather than matched.
+
+| Month | Site + period β (95% CI) | Period-only β (95% CI) |
+| --- | --- | --- |
+| January | −0.099 (−0.268, 0.071) | −0.088 (−0.234, 0.058) |
+| May | −0.095 (−0.141, −0.049) | −0.082 (−0.123, −0.040) |
+| September | −0.111 (−0.162, −0.060) | −0.101 (−0.148, −0.053) |
+| November | −0.132 (−0.195, −0.069) | −0.128 (−0.185, −0.072) |

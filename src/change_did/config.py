@@ -8,6 +8,8 @@ from typing import Any
 
 import yaml
 
+from .models import MODEL_SPECS
+
 
 @dataclass(frozen=True)
 class DidAnalysisConfig:
@@ -21,6 +23,7 @@ class DidAnalysisConfig:
     supplementary_months: tuple[int, ...]
     affected_site: str
     event_pairs: tuple[tuple[int, int], tuple[int, int]]
+    models: tuple[str, ...]
     tau: float
     tau_sensitivity: tuple[float, ...]
     alpha: float
@@ -43,6 +46,7 @@ class DidAnalysisConfig:
             "supplementary_months",
             "affected_site",
             "event_pairs",
+            "models",
             "tau",
             "tau_sensitivity",
             "alpha",
@@ -95,6 +99,12 @@ class DidAnalysisConfig:
         ):
             raise ValueError("event_pairs must be two [year_start, year_end] pairs")
 
+        models = data["models"]
+        if not isinstance(models, list) or not all(
+            isinstance(model, str) and model for model in models
+        ):
+            raise ValueError("models must be a sequence of non-empty strings")
+
         sensitivity = data["tau_sensitivity"]
         if not isinstance(sensitivity, list) or not all(
             isinstance(value, (int, float)) and not isinstance(value, bool)
@@ -122,6 +132,7 @@ class DidAnalysisConfig:
                 (event_pairs[0][0], event_pairs[0][1]),
                 (event_pairs[1][0], event_pairs[1][1]),
             ),
+            models=tuple(models),
             tau=_number(data["tau"], "tau"),
             tau_sensitivity=tuple(float(value) for value in sensitivity),
             alpha=_number(data["alpha"], "alpha"),
@@ -144,6 +155,13 @@ class DidAnalysisConfig:
                 raise ValueError("event_pairs must be consecutive-year pairs")
         if self.event_pairs[0] == self.event_pairs[1]:
             raise ValueError("event_pairs must be two distinct pairs")
+        if not self.models or len(set(self.models)) != len(self.models):
+            raise ValueError("models must be non-empty and contain no duplicates")
+        unknown = set(self.models) - set(MODEL_SPECS)
+        if unknown:
+            raise ValueError(
+                f"Unknown models: {sorted(unknown)}; expected {sorted(MODEL_SPECS)}"
+            )
         if self.tau not in self.tau_sensitivity:
             raise ValueError("tau must be included in tau_sensitivity")
         if not 0 < self.alpha < 1:
@@ -158,6 +176,10 @@ class DidAnalysisConfig:
     def is_supplementary(self, month: int) -> bool:
         """Return whether a month is reported as supplementary."""
         return month in self.supplementary_months
+
+    def model_site_effects(self, model: str) -> bool:
+        """Return whether a configured model includes site fixed effects."""
+        return MODEL_SPECS[model]
 
     def to_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable configuration mapping."""

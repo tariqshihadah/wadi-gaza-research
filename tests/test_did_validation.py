@@ -1,7 +1,13 @@
-"""Reproduce the handoff brief's NDVI validation targets to within 0.001.
+"""Reproduce the update brief's NDVI validation targets to within 0.001.
 
-A mismatch means the design, the SE fill, or the sigma_u^2 step differs from
-the brief. Targets exist for NDVI only; the other indices run unchanged.
+Targets are the event estimates (beta, 2023-24) with 95% CIs for both model
+specifications at tau = 0.05 with the largest-SE fill, including the Step 1
+change (both Wadi Gaza post-event rows excluded from mean(SE^2)). A mismatch
+means the design, the SE fill, or the sigma_u^2 step differs from the brief.
+The brief's earlier placebo and sensitivity targets no longer apply exactly,
+so those runs are checked structurally and their values are reported in the
+saved outputs rather than pinned here. Targets exist for NDVI only; the other
+indices run unchanged.
 """
 
 from dataclasses import replace
@@ -19,57 +25,26 @@ pytestmark = pytest.mark.skipif(
     not NDVI_RESULTS.exists(), reason="NDVI change-CI results are not available"
 )
 
-# month: (beta, ci_low, ci_high, p, beta', ci_low', ci_high', sigma_u)
+# model: {month: (beta, ci_low, ci_high)}
 MAIN_TARGETS = {
-    1: (-0.099, -0.268, 0.071, 0.24, -0.090, -0.255, 0.075, 0.0628),
-    5: (-0.095, -0.141, -0.049, 2.2e-4, -0.039, -0.087, 0.008, 0.0149),
-    9: (-0.111, -0.161, -0.061, 9.5e-5, -0.044, -0.094, 0.006, 0.0100),
-    11: (-0.132, -0.195, -0.070, 1.7e-4, -0.015, -0.077, 0.048, 0.0177),
+    "site_period": {
+        1: (-0.099, -0.268, 0.071),
+        5: (-0.095, -0.141, -0.049),
+        9: (-0.111, -0.162, -0.060),
+        11: (-0.132, -0.195, -0.069),
+    },
+    "period_only": {
+        1: (-0.088, -0.234, 0.058),
+        5: (-0.082, -0.123, -0.040),
+        9: (-0.101, -0.148, -0.053),
+        11: (-0.128, -0.185, -0.072),
+    },
 }
 
-# month: (placebo_low, placebo_high, p, ratio)
-SPACE_TARGETS = {
-    1: (-0.078, 0.137, 1 / 7, 0.7),
-    5: (-0.030, 0.022, 1 / 7, 3.1),
-    9: (-0.014, 0.019, 1 / 7, 5.9),
-    11: (-0.019, 0.019, 1 / 7, 6.8),
-}
+# model: residual degrees of freedom (42 obs; 14 or 8 parameters)
+MODEL_DF = {"site_period": 28, "period_only": 34}
 
-# month: (real, placebo_low, placebo_high, p)
-SPACETIME_TARGETS = {
-    1: (-0.096, -0.121, 0.137, 3 / 35),
-    5: (-0.095, -0.036, 0.049, 1 / 35),
-    9: (-0.111, -0.029, 0.043, 1 / 35),
-    11: (-0.132, -0.072, 0.058, 1 / 35),
-}
-
-# variant: {month: (beta, ci_low, ci_high, df)}
-SENSITIVITY_TARGETS = {
-    "tau_0.02": {
-        1: (-0.100, -0.268, 0.067, 28),
-        5: (-0.095, -0.141, -0.048, 28),
-        9: (-0.113, -0.160, -0.066, 28),
-        11: (-0.132, -0.192, -0.072, 28),
-    },
-    "tau_0.1": {
-        1: (-0.099, -0.267, 0.069, 28),
-        5: (-0.094, -0.138, -0.049, 28),
-        9: (-0.109, -0.158, -0.061, 28),
-        11: (-0.131, -0.193, -0.070, 28),
-    },
-    "exclude_flagged": {
-        1: (-0.087, -0.256, 0.081, 21),
-        5: (-0.096, -0.144, -0.048, 23),
-        9: (-0.112, -0.163, -0.061, 24),
-        11: (-0.132, -0.196, -0.067, 24),
-    },
-    "n_eff_fill": {
-        1: (-0.098, -0.265, 0.069, 28),
-        5: (-0.095, -0.139, -0.052, 28),
-        9: (-0.112, -0.161, -0.062, 28),
-        11: (-0.132, -0.190, -0.073, 28),
-    },
-}
+MONTHS = (1, 5, 9, 11)
 
 
 @pytest.fixture(scope="module")
@@ -84,66 +59,81 @@ def ndvi_run():
     return ChangeDidAnalysis(config).run(frame)
 
 
-@pytest.mark.parametrize("month", sorted(MAIN_TARGETS))
-def test_main_model_matches_targets(ndvi_run, month):
+@pytest.mark.parametrize("model", sorted(MAIN_TARGETS))
+@pytest.mark.parametrize("month", MONTHS)
+def test_main_model_matches_targets(ndvi_run, model, month):
     main = ndvi_run.main
     rows = main.loc[
-        (main["variant"] == "primary") & (main["month"] == month)
+        (main["model"] == model)
+        & (main["variant"] == "primary")
+        & (main["month"] == month)
     ].set_index("term")
     event = rows.loc["d_event"]
-    persist = rows.loc["d_persist"]
-    beta, low, high, p, beta_p, low_p, high_p, sigma_u = MAIN_TARGETS[month]
+    beta, low, high = MAIN_TARGETS[model][month]
     assert event["estimate"] == pytest.approx(beta, abs=TOL)
     assert event["ci_low"] == pytest.approx(low, abs=TOL)
     assert event["ci_high"] == pytest.approx(high, abs=TOL)
-    assert event["p_value"] == pytest.approx(p, abs=5e-3)
-    assert event["sigma_u"] == pytest.approx(sigma_u, abs=TOL)
-    assert event["df"] == 28
-    assert persist["estimate"] == pytest.approx(beta_p, abs=TOL)
-    assert persist["ci_low"] == pytest.approx(low_p, abs=TOL)
-    assert persist["ci_high"] == pytest.approx(high_p, abs=TOL)
+    assert event["df"] == MODEL_DF[model]
+    assert "d_persist" in rows.index
 
 
-@pytest.mark.parametrize("month", sorted(SPACE_TARGETS))
-def test_placebo_space_matches_targets(ndvi_run, month):
-    placebo = ndvi_run.placebo_space
-    rows = placebo.loc[placebo["month"] == month]
-    low, high, p, ratio = SPACE_TARGETS[month]
-    estimates = rows.loc[~rows["is_real"], "estimate"]
+@pytest.mark.parametrize("model", sorted(MODEL_DF))
+@pytest.mark.parametrize("month", MONTHS)
+def test_effects_table_structure(ndvi_run, model, month):
+    effects = ndvi_run.effects
+    rows = effects.loc[
+        (effects["model"] == model) & (effects["month"] == month)
+    ]
+    counts = rows.groupby("group").size().to_dict()
+    expected = {"pair": 6, "pair_joint": 1}
+    if model == "site_period":
+        expected.update({"site": 7, "site_joint": 1})
+    assert counts == expected
+    for group in ("site", "pair"):
+        if group not in counts:
+            continue
+        block = rows.loc[rows["group"] == group]
+        # Deviation-coded effects sum to zero across levels.
+        assert abs(block["estimate"].sum()) < 1e-9
+        assert block["derived"].sum() == 1
+    joints = rows.loc[rows["group"].str.endswith("_joint")]
+    assert joints["p_value"].between(0.0, 1.0).all()
+    assert joints["df_num"].tolist() == ([6, 5] if model == "site_period" else [5])
+
+
+@pytest.mark.parametrize("model", sorted(MODEL_DF))
+@pytest.mark.parametrize("month", MONTHS)
+def test_placebo_structure(ndvi_run, model, month):
+    space = ndvi_run.placebo_space
+    rows = space.loc[(space["model"] == model) & (space["month"] == month)]
     assert len(rows) == 7
-    assert estimates.min() == pytest.approx(low, abs=TOL)
-    assert estimates.max() == pytest.approx(high, abs=TOL)
-    assert rows["p_value"].iloc[0] == pytest.approx(p, abs=5e-4)
-    assert rows["ratio_to_largest_placebo"].iloc[0] == pytest.approx(ratio, abs=0.05)
+    assert rows["is_real"].sum() == 1
+    assert 1 / 7 <= rows["p_value"].iloc[0] <= 1.0
 
-
-@pytest.mark.parametrize("month", sorted(SPACETIME_TARGETS))
-def test_placebo_spacetime_matches_targets(ndvi_run, month):
-    placebo = ndvi_run.placebo_spacetime
-    rows = placebo.loc[placebo["month"] == month]
-    real, low, high, p = SPACETIME_TARGETS[month]
-    estimates = rows.loc[~rows["is_real"], "estimate"]
+    spacetime = ndvi_run.placebo_spacetime
+    rows = spacetime.loc[
+        (spacetime["model"] == model) & (spacetime["month"] == month)
+    ]
     assert len(rows) == 35
-    assert rows.loc[rows["is_real"], "estimate"].iloc[0] == pytest.approx(real, abs=TOL)
-    assert estimates.min() == pytest.approx(low, abs=TOL)
-    assert estimates.max() == pytest.approx(high, abs=TOL)
-    assert rows["p_value"].iloc[0] == pytest.approx(p, abs=5e-4)
+    assert rows["is_real"].sum() == 1
+    assert 1 / 35 <= rows["p_value"].iloc[0] <= 1.0
 
 
-@pytest.mark.parametrize("variant", sorted(SENSITIVITY_TARGETS))
-@pytest.mark.parametrize("month", sorted(MAIN_TARGETS))
-def test_sensitivity_matches_targets(ndvi_run, variant, month):
+@pytest.mark.parametrize("model", sorted(MODEL_DF))
+@pytest.mark.parametrize(
+    "variant", ["tau_0.02", "tau_0.1", "exclude_flagged", "n_eff_fill"]
+)
+def test_sensitivity_structure(ndvi_run, model, variant):
     main = ndvi_run.main
-    row = main.loc[
-        (main["variant"] == variant)
-        & (main["month"] == month)
+    rows = main.loc[
+        (main["model"] == model)
+        & (main["variant"] == variant)
         & (main["term"] == "d_event")
-    ].iloc[0]
-    beta, low, high, df = SENSITIVITY_TARGETS[variant][month]
-    assert row["estimate"] == pytest.approx(beta, abs=TOL)
-    assert row["ci_low"] == pytest.approx(low, abs=TOL)
-    assert row["ci_high"] == pytest.approx(high, abs=TOL)
-    assert row["df"] == df
+    ]
+    assert sorted(rows["month"]) == sorted(MONTHS)
+    assert rows["estimate"].notna().all()
+    if variant != "exclude_flagged":
+        assert (rows["df"] == MODEL_DF[model]).all()
 
 
 def test_flagged_count_matches_brief(ndvi_run):

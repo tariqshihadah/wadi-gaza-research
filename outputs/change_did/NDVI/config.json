@@ -33,6 +33,10 @@
       2025
     ]
   ],
+  "models": [
+    "site_period",
+    "period_only"
+  ],
   "tau": 0.05,
   "tau_sensitivity": [
     0.02,

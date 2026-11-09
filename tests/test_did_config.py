@@ -28,6 +28,7 @@ def test_did_config_loads_canonical_yaml():
     assert config.supplementary_months == (1,)
     assert config.affected_site == "WadiGaza"
     assert config.event_pairs == ((2023, 2024), (2024, 2025))
+    assert config.models == ("site_period", "period_only")
     assert config.tau == 0.05
     assert config.tau_sensitivity == (0.02, 0.05, 0.1)
     assert config.alpha == 0.05
@@ -44,6 +45,13 @@ def test_did_config_roles_and_supplementary_flags():
     assert not config.is_supplementary(5)
 
 
+def test_did_config_model_site_effects():
+    config = _load()
+
+    assert config.model_site_effects("site_period")
+    assert not config.model_site_effects("period_only")
+
+
 @pytest.mark.parametrize(
     "overrides",
     [
@@ -51,6 +59,9 @@ def test_did_config_roles_and_supplementary_flags():
         {"supplementary_months": (2,)},
         {"event_pairs": ((2023, 2025), (2024, 2025))},
         {"event_pairs": ((2023, 2024), (2023, 2024))},
+        {"models": ()},
+        {"models": ("site_period", "site_period")},
+        {"models": ("site_only",)},
         {"tau": 0.07},
         {"alpha": 1.5},
         {"fill_n_eff": 0},

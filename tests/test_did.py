@@ -4,19 +4,32 @@ import pytest
 from scipy import stats
 
 from change_did.data import fill_missing_se, flagged_se_report, validate_change_results
-from change_did.fitting import build_design, compute_anomalies, fit_did, fit_weighted
+from change_did.fitting import (
+    build_design,
+    compute_anomalies,
+    effect_levels,
+    fit_did,
+    fit_weighted,
+    joint_wald_test,
+    omitted_level_term,
+)
 from change_did.placebo import run_placebo_space, run_placebo_spacetime
 
 SITES = ("WadiGaza", "SiteA", "SiteB", "SiteC", "SiteD", "SiteE", "SiteF")
 YEARS = tuple(range(2019, 2025))
 
 
-def _grid(beta: float = 0.0, beta_persist: float = 0.0, se: float = 0.02) -> pd.DataFrame:
+def _grid(
+    beta: float = 0.0,
+    beta_persist: float = 0.0,
+    se: float = 0.02,
+    site_slope: float = 0.01,
+) -> pd.DataFrame:
     """Build one month x tau subset with known fixed effects and no noise."""
     rows = []
     for s, site in enumerate(SITES):
         for t, year_start in enumerate(YEARS):
-            value = 0.01 * s - 0.005 * t
+            value = site_slope * s - 0.005 * t
             if site == "WadiGaza" and year_start == 2023:
                 value += beta
             if site == "WadiGaza" and year_start == 2024:
@@ -109,6 +122,36 @@ def test_build_design_columns_and_dropped_indicators():
     assert columns[-1] == "d_event"
     assert dropped == ("d_missing",)
     assert X[:, -1].sum() == 1.0
+    # Deviation coding: every effect column sums to zero over the balanced grid.
+    effect_columns = [
+        idx for idx, name in enumerate(columns)
+        if name.startswith(("site_", "pair_"))
+    ]
+    assert np.allclose(X[:, effect_columns].sum(axis=0), 0.0)
+
+
+def test_build_design_without_site_effects():
+    frame = _grid()
+    X, columns, dropped = build_design(
+        frame, {"d_event": ("WadiGaza", (2023, 2024))}, site_effects=False
+    )
+    assert X.shape == (42, 7)
+    assert not any(name.startswith("site_") for name in columns)
+    assert sum(name.startswith("pair_") for name in columns) == 5
+    assert dropped == ()
+
+
+def test_effect_levels_orders_blocks_and_marks_omitted():
+    frame = _grid()
+    blocks = effect_levels(frame)
+    assert set(blocks) == {"site", "pair"}
+    site_levels = blocks["site"]
+    assert site_levels[0] == ("SiteA", None)
+    assert site_levels[-1] == ("WadiGaza", "site_WadiGaza")
+    pair_levels = blocks["pair"]
+    assert pair_levels[0] == ("2019_2020", None)
+    assert pair_levels[-1] == ("2024_2025", "pair_2024_2025")
+    assert "site" not in effect_levels(frame, site_effects=False)
 
 
 def test_fit_did_recovers_known_effects():
@@ -116,7 +159,6 @@ def test_fit_did_recovers_known_effects():
     fit = fit_did(
         frame,
         {"d_event": ("WadiGaza", (2023, 2024)), "d_persist": ("WadiGaza", (2024, 2025))},
-        [("WadiGaza", (2023, 2024))],
         alpha=0.05,
     )
     assert fit.terms["d_event"].estimate == pytest.approx(-0.1, abs=1e-10)
@@ -125,6 +167,87 @@ def test_fit_did_recovers_known_effects():
     assert fit.n_obs == 42
     assert fit.sigma_u == 0.0
     assert fit.sigma_u_clipped
+    assert fit.site_effects
+
+
+def test_fit_did_period_only_recovers_known_effects():
+    # Without site-level drift the period-only model is correctly specified.
+    frame = _grid(beta=-0.1, beta_persist=-0.04, site_slope=0.0)
+    fit = fit_did(
+        frame,
+        {"d_event": ("WadiGaza", (2023, 2024)), "d_persist": ("WadiGaza", (2024, 2025))},
+        alpha=0.05,
+        site_effects=False,
+    )
+    assert fit.terms["d_event"].estimate == pytest.approx(-0.1, abs=1e-10)
+    assert fit.terms["d_persist"].estimate == pytest.approx(-0.04, abs=1e-10)
+    assert fit.df == 34
+    assert fit.n_obs == 42
+    assert not fit.site_effects
+    assert not any(name.startswith("site_") for name in fit.columns)
+
+
+def test_fit_did_reports_deviation_coded_effects():
+    frame = _grid(beta=-0.1)
+    fit = fit_did(frame, {"d_event": ("WadiGaza", (2023, 2024))}, alpha=0.05)
+    # Site s has drift 0.01 * s; deviation effects are relative to the average.
+    offsets = {site: 0.01 * s for s, site in enumerate(SITES)}
+    mean_offset = np.mean(list(offsets.values()))
+    for site in sorted(SITES)[1:]:  # SiteA sorts first and is the omitted level
+        assert fit.terms[f"site_{site}"].estimate == pytest.approx(
+            offsets[site] - mean_offset, abs=1e-10
+        )
+    blocks = effect_levels(frame)
+    site_columns = [column for _, column in blocks["site"] if column is not None]
+    derived = omitted_level_term(fit, site_columns, "site_SiteA", alpha=0.05)
+    assert derived.estimate == pytest.approx(offsets["SiteA"] - mean_offset, abs=1e-10)
+    # Deviation-coded effects sum to zero across all levels.
+    total = derived.estimate + sum(
+        fit.terms[column].estimate for column in site_columns
+    )
+    assert total == pytest.approx(0.0, abs=1e-10)
+
+
+def test_joint_wald_test_matches_manual_computation():
+    rng = np.random.default_rng(11)
+    frame = _grid(beta=-0.1)
+    frame["mean_change"] += rng.normal(scale=0.01, size=len(frame))
+    fit = fit_did(frame, {"d_event": ("WadiGaza", (2023, 2024))}, alpha=0.05)
+    blocks = effect_levels(frame)
+    site_columns = [column for _, column in blocks["site"] if column is not None]
+    test = joint_wald_test(fit, site_columns, "site")
+    indices = [fit.columns.index(column) for column in site_columns]
+    b = np.array([fit.coefficients[column] for column in site_columns])
+    S = fit.cov[np.ix_(indices, indices)]
+    statistic = float(b @ np.linalg.solve(S, b)) / len(indices)
+    assert test.statistic == pytest.approx(statistic)
+    assert test.df_num == 6
+    assert test.df_den == fit.df
+    assert test.p_value == pytest.approx(
+        float(stats.f.sf(statistic, 6, fit.df))
+    )
+    # The grid has strong site drift, so the joint test must reject.
+    assert test.p_value < 0.01
+
+
+def test_sigma_exclusion_covers_every_indicator_cell():
+    rng = np.random.default_rng(3)
+    frame = _grid(beta=-0.1, beta_persist=-0.04)
+    frame["mean_change"] += rng.normal(scale=0.03, size=len(frame))
+    indicators = {
+        "d_event": ("WadiGaza", (2023, 2024)),
+        "d_persist": ("WadiGaza", (2024, 2025)),
+    }
+    baseline = fit_did(frame, indicators, alpha=0.05)
+    # Inflating the persist cell's SE must not move sigma_u: the row is fit
+    # exactly by its own indicator and is excluded from mean(SE^2).
+    inflated = frame.copy()
+    persist_row = (
+        inflated["study_area"].eq("WadiGaza") & inflated["year_start"].eq(2024)
+    )
+    inflated.loc[persist_row, "se"] = 10.0
+    fit = fit_did(inflated, indicators, alpha=0.05)
+    assert fit.sigma_u == pytest.approx(baseline.sigma_u)
 
 
 def test_fit_weighted_matches_brief_reference():
@@ -166,7 +289,6 @@ def test_compute_anomalies_isolates_event_cells():
     fit = fit_did(
         frame,
         {"d_event": ("WadiGaza", (2023, 2024)), "d_persist": ("WadiGaza", (2024, 2025))},
-        [("WadiGaza", (2023, 2024))],
         alpha=0.05,
     )
     anomalies = compute_anomalies(frame, fit)
@@ -183,10 +305,32 @@ def test_compute_anomalies_isolates_event_cells():
     ).equals(anomalies["anomaly"])
 
 
-def test_placebo_space_rows_and_p_value(did_config_factory):
+def test_compute_anomalies_period_only_counterfactual():
+    frame = _grid(beta=-0.1, beta_persist=-0.04, site_slope=0.0)
+    fit = fit_did(
+        frame,
+        {"d_event": ("WadiGaza", (2023, 2024)), "d_persist": ("WadiGaza", (2024, 2025))},
+        alpha=0.05,
+        site_effects=False,
+    )
+    anomalies = compute_anomalies(frame, fit)
+    # Without site drift the period-only counterfactual is exact everywhere.
+    wadi = anomalies["study_area"].eq("WadiGaza")
+    event = wadi & anomalies["year_start"].eq(2023)
+    assert anomalies.loc[event, "anomaly"].iloc[0] == pytest.approx(-0.1, abs=1e-10)
+    non_event = ~(wadi & anomalies["year_start"].isin([2023, 2024]))
+    assert anomalies.loc[non_event, "anomaly"].abs().max() == pytest.approx(
+        0.0, abs=1e-10
+    )
+
+
+@pytest.mark.parametrize("site_effects", [True, False])
+def test_placebo_space_rows_and_p_value(did_config_factory, site_effects):
     config = did_config_factory()
-    frame = _grid(beta=-0.1, beta_persist=-0.04)
-    result = run_placebo_space(frame, real_estimate=-0.1, config=config)
+    frame = _grid(beta=-0.1, beta_persist=-0.04, site_slope=0.0)
+    result = run_placebo_space(
+        frame, real_estimate=-0.1, config=config, site_effects=site_effects
+    )
     assert len(result) == 7
     assert result["is_real"].sum() == 1
     placebos = result.loc[~result["is_real"], "estimate"]
@@ -196,10 +340,11 @@ def test_placebo_space_rows_and_p_value(did_config_factory):
     assert result["p_value"].iloc[0] == pytest.approx(1 / 7)
 
 
-def test_placebo_spacetime_rows_and_p_value(did_config_factory):
+@pytest.mark.parametrize("site_effects", [True, False])
+def test_placebo_spacetime_rows_and_p_value(did_config_factory, site_effects):
     config = did_config_factory()
-    frame = _grid(beta=-0.1, beta_persist=-0.04)
-    result = run_placebo_spacetime(frame, config)
+    frame = _grid(beta=-0.1, beta_persist=-0.04, site_slope=0.0)
+    result = run_placebo_spacetime(frame, config, site_effects=site_effects)
     assert len(result) == 35
     assert result["is_real"].sum() == 1
     real = result.loc[result["is_real"]].iloc[0]
