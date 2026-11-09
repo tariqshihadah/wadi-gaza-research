@@ -19,8 +19,6 @@ from .placebo import EVENT_TERM
 
 REAL_COLOR = "#b2182b"
 PLACEBO_COLOR = "#4393c3"
-TIME_PLACEBO_COLOR = "#e08214"
-SPACETIME_PLACEBO_COLOR = "0.5"
 VARIANT_LABELS = {
     "primary": "Primary",
     "exclude_flagged": "Exclude flagged",
@@ -53,7 +51,7 @@ def plot_placebo_space(
         ax.axvline(real_estimate, color=REAL_COLOR, linewidth=1.4, alpha=0.8, zorder=2)
         ax.scatter(
             real["estimate"], positions[rows["is_real"].to_numpy()],
-            color=REAL_COLOR, marker="s", s=55, zorder=4,
+            color=REAL_COLOR, marker="D", s=55, zorder=4,
             label="Real (affected site)",
         )
         mask = ~rows["is_real"]
@@ -96,7 +94,7 @@ def plot_placebo_spacetime(
         )
         ax.scatter(
             [real], ranks[real_mask],
-            color=REAL_COLOR, marker="s", s=55, zorder=4,
+            color=REAL_COLOR, marker="D", s=55, zorder=4,
             label="Real (affected site)",
         )
         ax.axvline(0.0, color="0.4", linewidth=0.9)
@@ -352,17 +350,17 @@ def plot_combined_evidence(
         )
         ax.scatter(
             time["estimate"], np.full(len(time), 2.0),
-            color=TIME_PLACEBO_COLOR, zorder=3,
+            facecolors="none", edgecolors=REAL_COLOR, zorder=3,
             label=f"{affected_site} time placebos",
         )
         ax.scatter(
             space["estimate"], np.full(len(space), 1.0),
-            color=PLACEBO_COLOR, zorder=3, label="Space placebos",
+            facecolors="none", edgecolors=PLACEBO_COLOR, zorder=3,
+            label="Space placebos",
         )
         ax.scatter(
             spacetime["estimate"], np.full(len(spacetime), 0.0),
-            color=SPACETIME_PLACEBO_COLOR, s=28, zorder=3,
-            label="Space-and-time placebos",
+            color=PLACEBO_COLOR, alpha=0.45, zorder=3, label="Space-and-time placebos",
         )
         ax.axvline(0.0, color="0.4", linewidth=0.9)
         ax.set_yticks(
