@@ -24,8 +24,8 @@ def test_did_config_loads_canonical_yaml():
     assert config.output_dir == root / "outputs" / "change_did"
     assert config.indices == ("NDVI", "GNDVI", "SAVI", "NDRE")
     assert config.primary_index == "NDVI"
-    assert config.months == (2, 5, 9, 11)
-    assert config.supplementary_months == (2,)
+    assert config.months == (1, 5, 9, 11)
+    assert config.supplementary_months == (1,)
     assert config.affected_site == "WadiGaza"
     assert config.event_pairs == ((2023, 2024), (2024, 2025))
     assert config.models == ("site_period", "period_only")
@@ -33,7 +33,7 @@ def test_did_config_loads_canonical_yaml():
     assert config.tau_sensitivity == (0.02, 0.05, 0.1)
     assert config.alpha == 0.05
     assert config.fill_n_eff == 5
-    assert config.expected_flagged_primary is None
+    assert config.expected_flagged_primary == 22
 
 
 def test_did_config_roles_and_supplementary_flags():
@@ -41,7 +41,7 @@ def test_did_config_roles_and_supplementary_flags():
 
     assert config.role("NDVI") == "primary"
     assert config.role("SAVI") == "robustness"
-    assert config.is_supplementary(2)
+    assert config.is_supplementary(1)
     assert not config.is_supplementary(5)
 
 
@@ -56,7 +56,7 @@ def test_did_config_model_site_effects():
     "overrides",
     [
         {"primary_index": "EVI"},
-        {"supplementary_months": (1,)},
+        {"supplementary_months": (2,)},
         {"event_pairs": ((2023, 2025), (2024, 2025))},
         {"event_pairs": ((2023, 2024), (2023, 2024))},
         {"models": ()},

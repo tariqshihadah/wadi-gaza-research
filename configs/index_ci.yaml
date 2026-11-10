@@ -1,7 +1,7 @@
 data_root: outputs/composites
 output_dir: outputs/index_ci
 study_areas: null
-months: ["02", "05", "09", "11"]
+months: ["01", "05", "09", "11"]
 year_range: [2019, 2025]
 index_bands: [NDVI, GNDVI, SAVI, NDRE]
 engine: fft
