@@ -25,7 +25,7 @@ def test_climate_config_loads_canonical_yaml():
     assert config.extraction_range == (date(1990, 10, 1), date(2025, 12, 31))
     assert config.reference_period == (1991, 2020)
     assert config.study_years == (2019, 2025)
-    assert config.study_months == (1, 5, 9, 11)
+    assert config.study_months == (2, 5, 9, 11)
     assert config.wet_season_months == (10, 4)
     assert config.near_zero_normal_mm == 10
     assert config.min_reference_periods == 30
@@ -60,7 +60,7 @@ def test_climate_config_rejects_season_start_as_study_month():
     config = ClimateConfig.from_yaml(CONFIG_PATH, project_root=ROOT)
 
     with pytest.raises(ValueError, match="season start month"):
-        replace(config, study_months=(1, 10))
+        replace(config, study_months=(2, 10))
 
 
 def test_climate_config_validates_region_and_overrides():
