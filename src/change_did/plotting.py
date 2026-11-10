@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -334,57 +334,115 @@ def plot_combined_evidence(
     affected_site = placebo_spacetime.loc[placebo_spacetime["is_real"], "site"].iloc[0]
     fig, axes, month_values = _month_panels(event, months, ncols, (11, 7))
     for ax, month in zip(axes.flat, month_values):
-        row = event.loc[event["month"] == month].iloc[0]
-        space = placebo_space.loc[
-            (placebo_space["month"] == month) & ~placebo_space["is_real"]
-        ]
-        spacetime = placebo_spacetime.loc[
-            (placebo_spacetime["month"] == month) & ~placebo_spacetime["is_real"]
-        ]
-        time = spacetime.loc[spacetime["site"] == affected_site]
-        ax.errorbar(
-            row["estimate"], 3.0,
-            xerr=[[row["estimate"] - row["ci_low"]], [row["ci_high"] - row["estimate"]]],
-            fmt="o", color=REAL_COLOR, capsize=3, zorder=3,
-            label="Event estimate (95% CI)",
+        _combined_evidence_panel(
+            ax,
+            event.loc[event["month"] == month].iloc[0],
+            placebo_space.loc[placebo_space["month"] == month],
+            placebo_spacetime.loc[placebo_spacetime["month"] == month],
+            affected_site,
+            month_name(month),
         )
-        ax.scatter(
-            time["estimate"], np.full(len(time), 2.0),
-            facecolors="none", edgecolors=REAL_COLOR, zorder=3,
-            label=f"{affected_site} time placebos",
-        )
-        ax.scatter(
-            space["estimate"], np.full(len(space), 1.0),
-            facecolors="none", edgecolors=PLACEBO_COLOR, zorder=3,
-            label="Space placebos",
-        )
-        ax.scatter(
-            spacetime["estimate"], np.full(len(spacetime), 0.0),
-            color=PLACEBO_COLOR, alpha=0.45, zorder=3, label="Space-and-time placebos",
-        )
-        ax.axvline(0.0, color="0.4", linewidth=0.9)
-        ax.set_yticks(
-            [3.0, 2.0, 1.0, 0.0],
-            [
-                "Model estimate",
-                f"Time placebos ({len(time)})",
-                f"Space placebos ({len(space)})",
-                f"Space-and-time placebos ({len(spacetime)})",
-            ],
-        )
-        ax.set_ylim(-0.6, 3.6)
-        ax.set_xlabel("Event estimate")
-        space_p = float(placebo_space.loc[placebo_space["month"] == month, "p_value"].iloc[0])
-        spacetime_p = float(
-            placebo_spacetime.loc[placebo_spacetime["month"] == month, "p_value"].iloc[0]
-        )
-        ax.set_title(
-            f"{month_name(month)}: p = {space_p:.3f} (space), "
-            f"{spacetime_p:.3f} (space-and-time)"
-        )
-        add_gridlines(ax, axis="x")
     add_shared_legend(fig, axes)
     return fig, axes
+
+
+def plot_combined_evidence_by_index(
+    results_by_index: Mapping[str, tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]],
+    month: int,
+    ncols: int = 2,
+) -> tuple[Figure, np.ndarray]:
+    """Plot one month's combined evidence with one panel per index.
+
+    Transpose of :func:`plot_combined_evidence`: ``results_by_index`` maps each
+    index name to its (``did_main.csv``, ``did_placebo_space.csv``,
+    ``did_placebo_spacetime.csv``) frames, and every panel shows the requested
+    month so the indices can be compared directly.
+    """
+    if not results_by_index:
+        raise ValueError("results_by_index must not be empty")
+    indices = list(results_by_index)
+    nrows = math.ceil(len(indices) / ncols)
+    fig, axes = plt.subplots(
+        nrows, ncols, figsize=(11, 7), constrained_layout=True, squeeze=False
+    )
+    axes = np.asarray(axes)
+    for ax in axes.flat[len(indices):]:
+        ax.set_visible(False)
+    for ax, index in zip(axes.flat, indices):
+        main, placebo_space, placebo_spacetime = results_by_index[index]
+        event = main.loc[
+            (main["variant"] == "primary")
+            & (main["term"] == EVENT_TERM)
+            & (main["month"] == month)
+        ]
+        if event.empty:
+            raise ValueError(f"No primary event rows for month {month} in {index}")
+        affected_site = placebo_spacetime.loc[
+            placebo_spacetime["is_real"], "site"
+        ].iloc[0]
+        _combined_evidence_panel(
+            ax,
+            event.iloc[0],
+            placebo_space.loc[placebo_space["month"] == month],
+            placebo_spacetime.loc[placebo_spacetime["month"] == month],
+            affected_site,
+            index,
+        )
+    add_shared_legend(fig, axes)
+    return fig, axes
+
+
+def _combined_evidence_panel(
+    ax: Axes,
+    row: pd.Series,
+    placebo_space: pd.DataFrame,
+    placebo_spacetime: pd.DataFrame,
+    affected_site: str,
+    title: str,
+) -> None:
+    """Draw one combined-evidence panel from a single month's result rows."""
+    space = placebo_space.loc[~placebo_space["is_real"]]
+    spacetime = placebo_spacetime.loc[~placebo_spacetime["is_real"]]
+    time = spacetime.loc[spacetime["site"] == affected_site]
+    ax.errorbar(
+        row["estimate"], 3.0,
+        xerr=[[row["estimate"] - row["ci_low"]], [row["ci_high"] - row["estimate"]]],
+        fmt="o", color=REAL_COLOR, capsize=3, zorder=3,
+        label="Event estimate (95% CI)",
+    )
+    ax.scatter(
+        time["estimate"], np.full(len(time), 2.0),
+        facecolors="none", edgecolors=REAL_COLOR, zorder=3,
+        label=f"{affected_site} time placebos",
+    )
+    ax.scatter(
+        space["estimate"], np.full(len(space), 1.0),
+        facecolors="none", edgecolors=PLACEBO_COLOR, zorder=3,
+        label="Space placebos",
+    )
+    ax.scatter(
+        spacetime["estimate"], np.full(len(spacetime), 0.0),
+        color=PLACEBO_COLOR, alpha=0.45, zorder=3, label="Space-and-time placebos",
+    )
+    ax.axvline(0.0, color="0.4", linewidth=0.9)
+    ax.set_yticks(
+        [3.0, 2.0, 1.0, 0.0],
+        [
+            "Model estimate",
+            f"Time placebos ({len(time)})",
+            f"Space placebos ({len(space)})",
+            f"Space-and-time placebos ({len(spacetime)})",
+        ],
+    )
+    ax.set_ylim(-0.6, 3.6)
+    ax.set_xlabel("Event estimate")
+    space_p = float(placebo_space["p_value"].iloc[0])
+    spacetime_p = float(placebo_spacetime["p_value"].iloc[0])
+    ax.set_title(
+        f"{title}: p = {space_p:.3f} (space), "
+        f"{spacetime_p:.3f} (space-and-time)"
+    )
+    add_gridlines(ax, axis="x")
 
 
 def _pair_label(start: int, end: int) -> str:
