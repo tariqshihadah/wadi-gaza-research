@@ -168,8 +168,8 @@ def plot_change_trajectories(
     ``results`` holds one index's change-CI rows; primary-tau rows are selected
     when ``is_primary_tau`` is present. Comparison sites are drawn in muted
     grey, the affected site in the highlight colour with its spatially adjusted
-    95% CI band (``ci_low``/``ci_high``) when present, and the event year pairs
-    are shaded.
+    95% CI as error bars (``ci_low``/``ci_high``) when present, and the event
+    year pairs are shaded.
     """
     frame = results.copy()
     if "is_primary_tau" in frame:
@@ -198,13 +198,14 @@ def plot_change_trajectories(
             if is_affected and {"ci_low", "ci_high"} <= set(series.columns):
                 low = series["ci_low"].to_numpy(dtype=float)
                 high = series["ci_high"].to_numpy(dtype=float)
-                valid = np.isfinite(low) & np.isfinite(high)
+                mean = series["mean_change"].to_numpy(dtype=float)
+                valid = np.isfinite(low) & np.isfinite(high) & np.isfinite(mean)
                 if valid.any():
-                    ax.fill_between(
-                        series["year_start"].to_numpy(dtype=float), low, high,
-                        where=valid, interpolate=True, color=REAL_COLOR,
-                        alpha=0.18, linewidth=0, zorder=1,
-                        label=f"{affected_site} 95% CI",
+                    ax.errorbar(
+                        series["year_start"].to_numpy(dtype=float)[valid], mean[valid],
+                        yerr=[mean[valid] - low[valid], high[valid] - mean[valid]],
+                        fmt="none", ecolor=REAL_COLOR, elinewidth=1.2, capsize=3,
+                        zorder=4, label=f"{affected_site} 95% CI",
                     )
         ax.axhline(0.0, color="0.4", linewidth=0.9)
         ax.set_xticks(
