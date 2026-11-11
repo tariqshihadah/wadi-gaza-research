@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import numpy as np
+from statsmodels.regression.linear_model import RegressionResultsWrapper
 
 MODEL_SITE_PERIOD = "site_period"
 MODEL_PERIOD_ONLY = "period_only"
@@ -55,3 +56,6 @@ class WeightedFitResult:
     columns: tuple[str, ...] = ()
     cov: np.ndarray | None = field(default=None, repr=False, compare=False)
     site_effects: bool = True
+    regression: RegressionResultsWrapper | None = field(
+        default=None, repr=False, compare=False
+    )

@@ -23,10 +23,11 @@ def run_placebo_space(
     ``frame`` is one month x tau subset with SEs already handled;
     ``site_effects`` selects the same model as the run the placebo belongs to.
     Each refit drops the affected site's rows, moves both event indicators onto
-    one comparison site, and re-estimates sigma_u^2 and the weights excluding
-    both of that site's indicator cells (each is fit exactly by its own
-    indicator, mirroring the main model). Returns one row per site (the real
-    estimate plus one placebo per comparison site) with the month's one-sided
+    one comparison site, and re-estimates sigma_u^2 with the HE leverage
+    correction and the weights. Both indicator cells have leverage one and
+    contribute no residual measurement variance, mirroring the main model.
+    Returns one row per site (the real estimate plus one placebo per comparison
+    site) with the month's one-sided
     p-value and the ratio of the real estimate to the largest absolute placebo
     estimate.
     """

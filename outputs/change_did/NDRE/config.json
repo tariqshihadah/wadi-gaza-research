@@ -46,5 +46,13 @@
   "alpha": 0.05,
   "fill_n_eff": 5,
   "expected_flagged_primary": 22,
-  "index": "NDRE"
+  "index": "NDRE",
+  "estimation": {
+    "library": "statsmodels",
+    "library_version": "0.15.0",
+    "variance_estimator": "HE",
+    "cov_type": "fixed scale",
+    "scale": 1.0,
+    "use_t": true
+  }
 }

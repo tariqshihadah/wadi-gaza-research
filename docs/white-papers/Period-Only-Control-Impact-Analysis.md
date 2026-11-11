@@ -86,13 +86,17 @@ For reporting, the year-pair effects use deviation (sum-to-zero) coding, so each
 
 The model is fit in three steps.
 
-**Step 1: estimate the real site-year variation.** Equation (1) is first fit by ordinary least squares, giving a residual variance s² that contains both kinds of uncertainty. Removing the average measurement variance leaves the real site-year variation:
+**Step 1: estimate the real site-year variation.** Equation (1) is first fit by ordinary least squares. The Hedges method-of-moments estimator for meta-regression removes the expected measurement-error contribution from the residual sum of squares (Hedges, 1992; Viechtbauer, 2010):
 
 ```latex
-\hat\sigma_u^2 = \max\left(0,\; s^2 - \overline{SE^2}\right) \tag{2}
+\hat\sigma_u^2 = \max\left(0,\;
+\frac{\mathrm{RSS} - \sum_i (1-h_i)SE_i^2}{n-k}\right),
+\qquad H = X(X^\top X)^{-1}X^\top,\quad h_i = H_{ii} \tag{2}
 ```
 
-The average is taken over all observations except Wadi Gaza in 2023–24 and 2024–25: each of those rows is fit exactly by its own indicator, so neither contributes to the residual scatter. If the result would be negative, it is set to zero and flagged (Section 5).
+Here i indexes site-year observations, n is their number, k is the full-rank design's parameter count, and hᵢ is each observation's unweighted OLS leverage. The correction accounts for unequal measurement variances and unequal leverages. Wadi Gaza's event and persistence cells are fit exactly by their own indicators: their leverages are one, so they contribute neither residual scatter nor measurement variance to this estimate. Negative estimates are set to zero and flagged (Section 5).
+
+Under the model's independent-error assumptions, the expected residual sum of squares is (n − k)σ\_u² + Σᵢ(1 − hᵢ)SEᵢ². Equation (2) subtracts that measurement-error contribution; it replaces the arithmetic-mean variance subtraction used in the initial implementation.
 
 **Step 2: weight each observation by its total variance.**
 
@@ -100,7 +104,7 @@ The average is taken over all observations except Wadi Gaza in 2023–24 and 202
 w_{s,t} = \frac{1}{\hat\sigma_u^2 + SE_{s,t}^2} \tag{3}
 ```
 
-**Step 3: fit by weighted least squares.** The weights are treated as known inverse variances. The coefficients and their covariance are:
+**Step 3: fit by weighted least squares.** These inverse estimated total-variance weights are treated as fixed for coefficient inference. The coefficients and their conditional covariance are:
 
 ```latex
 \hat\theta = (X^\top W X)^{-1} X^\top W \Delta, \qquad \operatorname{Cov}(\hat\theta) = (X^\top W X)^{-1} \tag{4}
@@ -108,7 +112,9 @@ w_{s,t} = \frac{1}{\hat\sigma_u^2 + SE_{s,t}^2} \tag{3}
 
 Here X holds the intercept, year-pair effects, and the two indicators; W is the diagonal matrix of weights; and Δ is the vector of 42 mean changes. The standard error of β̂ is the square root of its diagonal entry in the covariance.
 
-This approach comes from meta-analysis, where estimates with known standard errors are combined while allowing for real variation between them.
+This approach comes from meta-regression, combining estimates with supplied standard errors while allowing residual heterogeneity. OLS and WLS are implemented with statsmodels (Seabold & Perktold, 2010), using `cov_type="fixed scale"`, `cov_kwds={"scale": 1.0}`, and `use_t=True`. This avoids the additional residual-scale multiplier used by default WLS. Statsmodels also supplies linear contrasts and joint Wald F-tests. The installed software version and estimation settings are recorded in each output's `config.json`; the implementation was validated with statsmodels 0.15.0.
+
+All 1,472 configured main, sensitivity, and placebo fits were independently reproduced with R 4.3.3 and metafor 4.4-0 using `method="HE"` and `test="t"`. Variance components, coefficients, covariance matrices, intervals, and tests agreed to floating-point precision. This is an implementation cross-check, not evidence that the inferential assumptions hold.
 
 **Pairs without a range.** Where the confidence-interval analysis found no autocorrelation range, the effective sample size and standard error are undefined. These observations are kept, because their mean changes are valid, and given the largest standard error observed for that index and month. This gives them low weight without discarding them.
 
@@ -120,11 +126,11 @@ The (1 − α) confidence interval for the event effect is:
 \mathrm{CI} = \hat\beta \pm t_{1-\alpha/2,\,\nu} \cdot SE(\hat\beta), \qquad \alpha = 0.05, \; \nu = 34 \tag{5}
 ```
 
-The same form gives the interval for β′. A two-sided p-value is reported for each.
+The same form gives the interval for β′. A two-sided p-value is reported for each. The 34 degrees of freedom apply to the complete primary design; sensitivity and placebo refits use their actual n − k. This is plug-in t inference, not a Knapp–Hartung adjustment or heteroskedasticity-, autocorrelation-, or cluster-robust covariance estimate.
 
 ### 4.6 Placebo tests
 
-The confidence interval in Section 4.5 relies on the model's assumptions about variation, in particular that Wadi Gaza's year-to-year variation resembles the other sites'. Placebo tests check the result without those assumptions. They ask: how large an "effect" does the same model produce where nothing happened? If ordinary sites and years routinely produced estimates as large as Wadi Gaza's, its result would not be meaningful (Abadie et al., 2010).
+The confidence interval in Section 4.5 relies on the model's assumptions about variation, in particular that Wadi Gaza's year-to-year variation resembles the other sites'. Placebo tests assess how unusual the fitted effect is relative to effects assigned to unaffected sites and years. Interpreting their ranks as inferential p-values still requires comparability or exchangeability of those assignments; they are not assumption-free causal tests (Abadie et al., 2010).
 
 Both tests are one-sided, because the study hypothesis, set before analysis, is a decline. Each refit repeats the full estimation in Section 4.4 with the same period-only model.
 
@@ -196,7 +202,9 @@ For NDVI in May, September, and November, these variants changed the event estim
 
 **No coinciding local event.** No other site-specific event is assumed to have changed Wadi Gaza's index by a similar amount in the same year. Local events at ordinary sites, such as restoration or grazing changes, are part of the site-year variation σ\_u². The placebo-in-space estimates show their typical size.
 
-**Similar variation across sites.** The confidence interval assumes the real site-year variation σ\_u² is the same at every site. The placebo tests do not depend on this assumption.
+**Similar variation across sites.** The confidence interval assumes the real site-year variation σ\_u² is the same at every site. Placebo ranks provide a complementary diagnostic but require comparable site-year assignments for inferential interpretation.
+
+**Plug-in uncertainty and dependence.** Coefficient covariance treats the estimated σ\_u² and supplied spatial SEs as fixed; their estimation uncertainty is not fully propagated. The diagonal variance model assumes independent residual site-year errors. Adjacent annual changes share a year and can be correlated, and spatial adjustment within a raster does not remove temporal or between-site dependence. Choosing t reference distributions does not by itself resolve these limitations or guarantee exact small-sample coverage.
 
 **Shared weather between nearby sites.** The year-pair effect absorbs conditions shared by all sites. Correlation left between nearby sites would make the comparison sites act like somewhat fewer independent sites; the placebo tests are less affected by this.
 
@@ -230,8 +238,14 @@ Every output is labeled with its index (NDVI as primary; GNDVI, SAVI, and NDRE a
 
 Abadie, A., Diamond, A., & Hainmueller, J. (2010). Synthetic control methods for comparative case studies: Estimating the effect of California's tobacco control program. *Journal of the American Statistical Association*, 105(490), 493–505.
 
+Hedges, L. V. (1992). Meta-analysis. *Journal of Educational Statistics*, 17(4), 279–296. https://doi.org/10.3102/10769986017004279
+
+Seabold, S., & Perktold, J. (2010). statsmodels: Econometric and statistical modeling with Python. *Proceedings of the 9th Python in Science Conference*, 92–96.
+
 Stewart-Oaten, A., Murdoch, W. W., & Parker, K. R. (1986). Environmental impact assessment: "Pseudoreplication" in time? *Ecology*, 67(4), 929–940.
 
 Underwood, A. J. (1991). Beyond BACI: Experimental designs for detecting human environmental impacts on temporal variations in natural populations. *Australian Journal of Marine and Freshwater Research*, 42(5), 569–587.
 
-References are listed from memory; verify details before publication.
+Viechtbauer, W. (2010). Conducting meta-analyses in R with the metafor package. *Journal of Statistical Software*, 36(3), 1–48. https://doi.org/10.18637/jss.v036.i03
+
+Verify reference details before publication. The HE estimator and inference settings are documented in the [metafor reference](https://wviechtb.github.io/metafor/reference/rma.uni.html); fixed-scale covariance is documented in the [statsmodels reference](https://www.statsmodels.org/stable/generated/statsmodels.regression.linear_model.RegressionResults.get_robustcov_results.html).

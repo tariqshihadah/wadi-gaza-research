@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Mapping, Sequence
+from dataclasses import replace
 
 import numpy as np
 import pandas as pd
-from scipy import stats
+from statsmodels.regression.linear_model import OLS, WLS, RegressionResultsWrapper
 
 from .models import FitTerm, JointTest, WeightedFitResult
 
@@ -88,54 +89,72 @@ def fit_weighted(
     X: np.ndarray,
     y: np.ndarray,
     se: np.ndarray,
-    exclude_from_sigma: np.ndarray,
     term_indices: Mapping[str, int],
     alpha: float,
     columns: Sequence[str] | None = None,
 ) -> WeightedFitResult:
-    """Fit the weighted fixed-effects model with known measurement variances.
+    """Fit WLS with Hedges' leverage-adjusted method-of-moments variance.
 
-    An OLS fit provides the residual variance ``s2``; the site-year variance
-    ``sigma_u2`` is ``max(0, s2 - mean(se^2))`` over the rows not excluded by
-    ``exclude_from_sigma``. Each row is then weighted by
-    ``1 / (sigma_u2 + se^2)`` and the weighted fit treats the weights as known
-    inverse variances, so the covariance is ``(X'WX)^-1`` with no extra scale
-    factor. Intervals and p-values use a t distribution with ``n - k`` degrees
-    of freedom. A term in ``term_indices`` gets a full :class:`FitTerm`; when
-    ``columns`` is given the raw coefficients and covariance are stored for
-    derived effects and joint tests.
+    OLS residuals and leverages give ``sigma_u2 = max(0,
+    (RSS - sum((1 - h) * se^2)) / (n - k))``. Weights are
+    ``1 / (sigma_u2 + se^2)`` and are treated as fixed inverse variances:
+    covariance is ``(X'WX)^-1``, without residual rescaling. Statsmodels
+    supplies the fit and t inference with ``n - k`` degrees of freedom.
+    When ``columns`` is given, retain the native fit, coefficients, and
+    covariance for derived contrasts and joint tests.
     """
+    if X.ndim != 2:
+        raise ValueError("Design must be a two-dimensional array")
     n, k = X.shape
+    if y.shape != (n,) or se.shape != (n,):
+        raise ValueError("Response and measurement SEs must match the design rows")
+    if not np.isfinite(X).all() or not np.isfinite(y).all():
+        raise ValueError("Design and response must be finite")
+    if not np.isfinite(se).all() or np.any(se <= 0):
+        raise ValueError("Measurement SEs must be finite and positive")
+    if not 0 < alpha < 1:
+        raise ValueError("alpha must be between zero and one")
     dof = n - k
     if dof <= 0:
         raise ValueError(f"Model has no residual degrees of freedom: n={n}, k={k}")
-    b_ols = np.linalg.lstsq(X, y, rcond=None)[0]
-    s2 = float(((y - X @ b_ols) ** 2).sum() / dof)
-    sigma_u2 = s2 - float((se[~exclude_from_sigma] ** 2).mean())
+    if k == 0 or np.linalg.matrix_rank(X) != k:
+        raise ValueError("Model design must have full column rank")
+    if columns is not None and (len(columns) != k or len(set(columns)) != k):
+        raise ValueError("columns must contain one unique name per design column")
+    if any(idx < 0 or idx >= k for idx in term_indices.values()):
+        raise ValueError("Term indices must identify design columns")
+    ols = OLS(y, X, missing="raise").fit()
+    leverage = ols.get_influence().hat_matrix_diag
+    with np.errstate(over="raise", invalid="raise"):
+        measurement_variance = se**2
+        sigma_u2 = float(
+            (ols.ssr - np.dot(1.0 - leverage, measurement_variance)) / dof
+        )
     clipped = sigma_u2 < 0
     if clipped:
         LOGGER.warning(
-            "sigma_u^2 clipped to zero (s2=%.3g): measurement SEs exceed total scatter",
-            s2,
+            "sigma_u^2 clipped to zero (HE estimate=%.3g): "
+            "measurement variances exceed residual scatter",
+            sigma_u2,
         )
         sigma_u2 = 0.0
-    weights = 1.0 / (sigma_u2 + se**2)
-    XtW = X.T * weights
-    cov = np.linalg.inv(XtW @ X)
-    b = cov @ (XtW @ y)
-    t_crit = float(stats.t.ppf(1.0 - alpha / 2.0, dof))
+    with np.errstate(over="raise", divide="raise", invalid="raise"):
+        weights = 1.0 / (sigma_u2 + measurement_variance)
+    if not np.isfinite(weights).all() or np.any(weights <= 0):
+        raise ValueError("Model weights must be finite and positive")
+    regression = WLS(y, X, weights=weights, missing="raise").fit(
+        cov_type="fixed scale", cov_kwds={"scale": 1.0}, use_t=True
+    )
+    intervals = regression.conf_int(alpha=alpha)
     terms: dict[str, FitTerm] = {}
     for name, idx in term_indices.items():
-        estimate = float(b[idx])
-        se_b = float(np.sqrt(cov[idx, idx]))
-        p_value = float(2.0 * stats.t.sf(abs(estimate / se_b), dof))
         terms[name] = FitTerm(
             term=name,
-            estimate=estimate,
-            se=se_b,
-            ci_low=estimate - t_crit * se_b,
-            ci_high=estimate + t_crit * se_b,
-            p_value=p_value,
+            estimate=float(regression.params[idx]),
+            se=float(regression.bse[idx]),
+            ci_low=float(intervals[idx, 0]),
+            ci_high=float(intervals[idx, 1]),
+            p_value=float(regression.pvalues[idx]),
         )
     return WeightedFitResult(
         terms=terms,
@@ -144,11 +163,12 @@ def fit_weighted(
         df=dof,
         n_obs=n,
         coefficients=(
-            {name: float(value) for name, value in zip(columns, b)}
+            {name: float(value) for name, value in zip(columns, regression.params)}
             if columns is not None else {}
         ),
         columns=tuple(columns) if columns is not None else (),
-        cov=cov if columns is not None else None,
+        cov=regression.cov_params() if columns is not None else None,
+        regression=regression if columns is not None else None,
     )
 
 
@@ -163,38 +183,22 @@ def fit_did(
 
     ``indicators`` maps term names to event cells; ``site_effects`` selects
     the site + period model (true) or the period-only model (false). Every
-    indicator cell is excluded from the sigma_u^2 estimate because a one-row
-    indicator fits its own row exactly, so the row contributes nothing to the
-    residual scatter. Indicators whose cell is absent from ``frame`` are
-    dropped from the design and recorded on the result. Full estimates are
-    returned for every design column.
+    indicator cell has leverage one, so it contributes neither residual scatter
+    nor measurement variance to the HE estimate. Indicators whose cell is
+    absent from ``frame`` are dropped from the design and recorded on the result.
+    Full estimates are returned for every design column.
     """
     X, columns, dropped = build_design(frame, indicators, site_effects=site_effects)
-    exclude = np.zeros(len(frame), dtype=bool)
-    for cell in indicators.values():
-        exclude |= _cell_mask(frame, cell)
     term_indices = {name: idx for idx, name in enumerate(columns)}
     result = fit_weighted(
         X,
         frame["mean_change"].to_numpy(dtype=float),
         frame["se"].to_numpy(dtype=float),
-        exclude,
         term_indices,
         alpha,
         columns=columns,
     )
-    return WeightedFitResult(
-        terms=result.terms,
-        sigma_u=result.sigma_u,
-        sigma_u_clipped=result.sigma_u_clipped,
-        df=result.df,
-        n_obs=result.n_obs,
-        dropped_terms=dropped,
-        coefficients=result.coefficients,
-        columns=result.columns,
-        cov=result.cov,
-        site_effects=site_effects,
-    )
+    return replace(result, dropped_terms=dropped, site_effects=site_effects)
 
 
 def omitted_level_term(
@@ -207,18 +211,17 @@ def omitted_level_term(
     covariance entries. Intervals use the fit's t distribution.
     """
     indices = _block_indices(fit, block_columns)
-    b = np.array([fit.coefficients[column] for column in block_columns])
-    estimate = -float(b.sum())
-    se = float(np.sqrt(fit.cov[np.ix_(indices, indices)].sum()))
-    t_crit = float(stats.t.ppf(1.0 - alpha / 2.0, fit.df))
-    p_value = float(2.0 * stats.t.sf(abs(estimate / se), fit.df))
+    contrast = np.zeros(len(fit.columns))
+    contrast[indices] = -1.0
+    test = _regression(fit).t_test(contrast, use_t=True)
+    interval = test.conf_int(alpha=alpha)[0]
     return FitTerm(
         term=name,
-        estimate=estimate,
-        se=se,
-        ci_low=estimate - t_crit * se,
-        ci_high=estimate + t_crit * se,
-        p_value=p_value,
+        estimate=float(np.asarray(test.effect).item()),
+        se=float(np.asarray(test.sd).item()),
+        ci_low=float(interval[0]),
+        ci_high=float(interval[1]),
+        p_value=float(np.asarray(test.pvalue).item()),
     )
 
 
@@ -233,16 +236,13 @@ def joint_wald_test(
     same under reference or deviation coding.
     """
     indices = _block_indices(fit, block_columns)
-    b = np.array([fit.coefficients[column] for column in block_columns])
-    S = fit.cov[np.ix_(indices, indices)]
-    q = len(indices)
-    statistic = float(b @ np.linalg.solve(S, b)) / q
+    test = _regression(fit).f_test(np.eye(len(fit.columns))[indices])
     return JointTest(
         name=name,
-        statistic=statistic,
-        df_num=q,
-        df_den=fit.df,
-        p_value=float(stats.f.sf(statistic, q, fit.df)),
+        statistic=float(np.asarray(test.fvalue).item()),
+        df_num=int(test.df_num),
+        df_den=int(test.df_denom),
+        p_value=float(np.asarray(test.pvalue).item()),
     )
 
 
@@ -269,7 +269,15 @@ def _block_indices(fit: WeightedFitResult, block_columns: Sequence[str]) -> np.n
     """Return the design indices for one block, validating the stored fit."""
     if fit.cov is None or not fit.columns:
         raise ValueError("Fit has no stored covariance; refit via fit_did")
+    if not block_columns or len(set(block_columns)) != len(block_columns):
+        raise ValueError("A contrast block must contain distinct design columns")
     return np.array([fit.columns.index(column) for column in block_columns])
+
+
+def _regression(fit: WeightedFitResult) -> RegressionResultsWrapper:
+    if fit.regression is None:
+        raise ValueError("Fit has no stored statsmodels result; refit via fit_did")
+    return fit.regression
 
 
 def _cell_mask(frame: pd.DataFrame, cell: Cell) -> np.ndarray:

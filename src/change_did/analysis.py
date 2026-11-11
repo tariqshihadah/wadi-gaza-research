@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 from dataclasses import dataclass
+from importlib.metadata import version
 
 import numpy as np
 import pandas as pd
@@ -194,6 +195,14 @@ class ChangeDidAnalysis:
             config = self.config.to_dict()
             config["index"] = index
             config["output_dir"] = str(output_dir)
+            config["estimation"] = {
+                "library": "statsmodels",
+                "library_version": version("statsmodels"),
+                "variance_estimator": "HE",
+                "cov_type": "fixed scale",
+                "scale": 1.0,
+                "use_t": True,
+            }
             with (output_dir / "config.json").open("w", encoding="utf-8") as stream:
                 json.dump(config, stream, indent=2)
 
@@ -297,6 +306,11 @@ class ChangeDidAnalysis:
             "separately; site and year-pair effects use deviation (sum-to-zero) "
             "coding, so each is relative to the average site or year pair, with "
             "an asterisk where the 95% CI excludes zero.",
+            "",
+            "Fits use statsmodels OLS/WLS with the leverage-adjusted Hedges "
+            "(HE) method-of-moments variance estimator. Inverse estimated "
+            "total-variance weights are treated as fixed, with covariance "
+            "scale = 1, Student-t coefficient inference, and Wald F-tests.",
             "",
         ]
         main = results.main

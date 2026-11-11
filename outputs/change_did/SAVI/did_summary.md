@@ -2,6 +2,8 @@
 
 Primary specification: tau = 0.05, largest-SE fill, affected site WadiGaza. NDVI is the primary index; other indices are robustness checks. Supplementary months are flagged in their month label. Each model specification (site + period, and period only without site effects) is reported separately; site and year-pair effects use deviation (sum-to-zero) coding, so each is relative to the average site or year pair, with an asterisk where the 95% CI excludes zero.
 
+Fits use statsmodels OLS/WLS with the leverage-adjusted Hedges (HE) method-of-moments variance estimator. Inverse estimated total-variance weights are treated as fixed, with covariance scale = 1, Student-t coefficient inference, and Wald F-tests.
+
 ## SAVI (robustness)
 
 ### Site + period model
@@ -37,7 +39,7 @@ Primary specification: tau = 0.05, largest-SE fill, affected site WadiGaza. NDVI
 | 2022–23 | 0.003 | 0.009* | -0.001 | 0.008* |
 | 2023–24 | 0.035* | -0.006 | 0.003 | -0.005 |
 | 2024–25 | -0.054* | -0.015* | -0.011* | -0.003 |
-| Joint p (year pairs) | 0.003 | 0.000 | 0.008 | 0.033 |
+| Joint p (year pairs) | 0.003 | 0.000 | 0.009 | 0.033 |
 | beta (2023–24) (95% CI) | -0.078 (-0.183, 0.026) | -0.068 (-0.098, -0.037)* | -0.072 (-0.102, -0.042)* | -0.071 (-0.101, -0.041)* |
 | beta' (2024–25) (95% CI) | -0.025 (-0.129, 0.078) | -0.015 (-0.046, 0.015) | -0.020 (-0.050, 0.010) | -0.003 (-0.027, 0.020) |
 | sigma_u | 0.044 | 0.011 | 0.007 | 0.010 |

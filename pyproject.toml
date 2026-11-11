@@ -15,6 +15,7 @@ dependencies = [
     "shapely",
     "numpy",
     "scipy",
+    "statsmodels>=0.15",
     "pandas",
     "matplotlib",
     "PyYAML",

@@ -1,8 +1,12 @@
+import json
+from importlib.metadata import version
+
 import numpy as np
 import pandas as pd
 import pytest
 from scipy import stats
 
+from change_did.analysis import ChangeDidAnalysis
 from change_did.data import fill_missing_se, flagged_se_report, validate_change_results
 from change_did.fitting import (
     build_design,
@@ -230,7 +234,8 @@ def test_joint_wald_test_matches_manual_computation():
     assert test.p_value < 0.01
 
 
-def test_sigma_exclusion_covers_every_indicator_cell():
+@pytest.mark.parametrize("site_effects", [True, False])
+def test_saturated_indicator_cells_do_not_contribute_measurement_variance(site_effects):
     rng = np.random.default_rng(3)
     frame = _grid(beta=-0.1, beta_persist=-0.04)
     frame["mean_change"] += rng.normal(scale=0.03, size=len(frame))
@@ -238,43 +243,48 @@ def test_sigma_exclusion_covers_every_indicator_cell():
         "d_event": ("WadiGaza", (2023, 2024)),
         "d_persist": ("WadiGaza", (2024, 2025)),
     }
-    baseline = fit_did(frame, indicators, alpha=0.05)
+    baseline = fit_did(frame, indicators, alpha=0.05, site_effects=site_effects)
     # Inflating the persist cell's SE must not move sigma_u: the row is fit
-    # exactly by its own indicator and is excluded from mean(SE^2).
+    # exactly by its own indicator and has leverage one.
     inflated = frame.copy()
     persist_row = (
         inflated["study_area"].eq("WadiGaza") & inflated["year_start"].eq(2024)
     )
     inflated.loc[persist_row, "se"] = 10.0
-    fit = fit_did(inflated, indicators, alpha=0.05)
+    fit = fit_did(inflated, indicators, alpha=0.05, site_effects=site_effects)
     assert fit.sigma_u == pytest.approx(baseline.sigma_u)
 
 
-def test_fit_weighted_matches_brief_reference():
+@pytest.mark.parametrize("site_effects", [True, False])
+def test_fit_weighted_matches_projection_and_qr_reference(site_effects):
     rng = np.random.default_rng(7)
     frame = _grid()
-    X, columns, _ = build_design(frame, {"d_event": ("WadiGaza", (2023, 2024))})
+    X, columns, _ = build_design(
+        frame, {"d_event": ("WadiGaza", (2023, 2024))}, site_effects=site_effects
+    )
     y = rng.normal(scale=0.05, size=len(frame))
     se = rng.uniform(0.01, 0.05, size=len(frame))
-    treated = (
-        frame["study_area"].eq("WadiGaza") & frame["year_start"].eq(2023)
-    ).to_numpy()
     term_idx = columns.index("d_event")
 
-    # Reference implementation from the handoff brief.
+    # Independent residual projection and whitened QR, not the fitting backend.
     n, k = X.shape
     dof = n - k
-    b_ols = np.linalg.lstsq(X, y, rcond=None)[0]
-    s2 = ((y - X @ b_ols) ** 2).sum() / dof
-    sigma_u2 = max(0.0, s2 - (se[~treated] ** 2).mean())
-    w = 1.0 / (sigma_u2 + se**2)
-    XtW = X.T * w
-    cov = np.linalg.inv(XtW @ X)
-    b = cov @ XtW @ y
+    Q0, _ = np.linalg.qr(X)
+    P = np.eye(n) - Q0 @ Q0.T
+    residual = P @ y
+    sigma_u2 = max(0.0, (residual @ residual - np.trace(P @ np.diag(se**2))) / dof)
+    sqrt_w = 1.0 / np.sqrt(sigma_u2 + se**2)
+    Q, R = np.linalg.qr(X * sqrt_w[:, None])
+    b = np.linalg.solve(R, Q.T @ (y * sqrt_w))
+    R_inv = np.linalg.solve(R, np.eye(k))
+    cov = R_inv @ R_inv.T
     est, sd_b = b[term_idx], np.sqrt(cov[term_idx, term_idx])
     t_crit = stats.t.ppf(0.975, dof)
 
-    fit = fit_weighted(X, y, se, treated, {"d_event": term_idx}, alpha=0.05)
+    fit = fit_weighted(
+        X, y, se, {name: idx for idx, name in enumerate(columns)},
+        alpha=0.05, columns=columns,
+    )
     term = fit.terms["d_event"]
     assert term.estimate == pytest.approx(est)
     assert term.se == pytest.approx(sd_b)
@@ -282,6 +292,157 @@ def test_fit_weighted_matches_brief_reference():
     assert term.ci_high == pytest.approx(est + t_crit * sd_b)
     assert fit.sigma_u == pytest.approx(np.sqrt(sigma_u2))
     assert fit.df == dof
+    np.testing.assert_allclose(list(fit.coefficients.values()), b, rtol=1e-10, atol=1e-12)
+    np.testing.assert_allclose(fit.cov, cov, rtol=1e-10, atol=1e-12)
+    assert term.p_value == pytest.approx(2 * stats.t.sf(abs(est / sd_b), dof))
+
+
+def test_fit_weighted_keeps_absolute_variance_scale_and_t_inference(caplog):
+    y = np.array([0.99, 1.01, 1.02, 0.98])
+    se = np.full(4, 0.1)
+    with caplog.at_level("WARNING", logger="change_did.fitting"):
+        fit = fit_weighted(np.ones((4, 1)), y, se, {"intercept": 0}, alpha=0.1)
+    term = fit.terms["intercept"]
+    assert fit.sigma_u_clipped
+    assert fit.sigma_u == 0.0
+    assert "clipped to zero" in caplog.text
+    assert term.estimate == pytest.approx(1.0)
+    assert term.se == pytest.approx(0.05)
+    assert term.ci_low == pytest.approx(1.0 - stats.t.ppf(0.95, 3) * 0.05)
+    assert term.ci_high == pytest.approx(1.0 + stats.t.ppf(0.95, 3) * 0.05)
+    assert term.p_value == pytest.approx(2 * stats.t.sf(20.0, 3))
+
+
+@pytest.mark.parametrize("seed", range(6))
+def test_he_variance_with_nonuniform_leverage_and_reparameterization(seed):
+    rng = np.random.default_rng(seed)
+    X = np.column_stack([np.ones(30), rng.normal(size=(30, 2))])
+    y = X @ np.array([0.1, -0.02, 0.3])
+    y += rng.normal(scale=0.001 if seed % 2 else 0.2, size=30)
+    se = rng.uniform(0.005, 0.08, size=30)
+    terms = {"a": 0, "b": 1, "c": 2}
+    fit = fit_weighted(X, y, se, terms, 0.05, columns=list(terms))
+    Q0, _ = np.linalg.qr(X)
+    P = np.eye(30) - Q0 @ Q0.T
+    expected_raw = ((P @ y) @ (P @ y) - np.trace(P @ np.diag(se**2))) / 27
+    assert fit.sigma_u**2 == pytest.approx(max(0.0, expected_raw), abs=1e-12)
+    assert fit.sigma_u_clipped == (seed % 2 == 1)
+    if not fit.sigma_u_clipped:
+        old_variance = ((P @ y) @ (P @ y)) / 27 - (se**2).mean()
+        assert abs(fit.sigma_u**2 - old_variance) > 1e-7
+
+    A = np.array([[1.0, 2.0, 3.0], [0.0, 2.0, -0.1], [0.0, 0.2, 0.9]])
+    recoded = fit_weighted(X @ A, y, se, terms, 0.05, columns=list(terms))
+    assert recoded.sigma_u == pytest.approx(fit.sigma_u, abs=1e-12)
+    np.testing.assert_allclose(
+        list(fit.coefficients.values()), A @ list(recoded.coefficients.values()),
+        rtol=1e-10, atol=1e-12,
+    )
+    np.testing.assert_allclose(fit.cov, A @ recoded.cov @ A.T, rtol=1e-10, atol=1e-12)
+
+
+@pytest.mark.parametrize(
+    ("fault", "message"),
+    [
+        ("rank", "full column rank"),
+        ("nonfinite_X", "finite"),
+        ("nonfinite_y", "finite"),
+        ("zero_se", "finite and positive"),
+        ("negative_se", "finite and positive"),
+        ("nonfinite_se", "finite and positive"),
+        ("shape", "match the design"),
+        ("dimension", "two-dimensional"),
+        ("dof", "degrees of freedom"),
+        ("alpha", "alpha"),
+        ("columns", "unique name"),
+        ("term_index", "Term indices"),
+    ],
+)
+def test_fit_weighted_rejects_invalid_inputs(fault, message):
+    X = np.column_stack([np.ones(5), np.arange(5)])
+    y = np.arange(5, dtype=float)
+    se = np.full(5, 0.1)
+    alpha = 0.05
+    columns = None
+    indices = {"intercept": 0}
+    if fault == "rank":
+        X[:, 1] = 1
+    elif fault == "nonfinite_X":
+        X[0, 0] = np.inf
+    elif fault == "nonfinite_y":
+        y[0] = np.nan
+    elif fault == "zero_se":
+        se[0] = 0
+    elif fault == "negative_se":
+        se[0] = -1
+    elif fault == "nonfinite_se":
+        se[0] = np.nan
+    elif fault == "shape":
+        y = y[:-1]
+    elif fault == "dimension":
+        X = X[:, 0]
+    elif fault == "dof":
+        X = np.eye(5)
+    elif fault == "alpha":
+        alpha = 1.0
+    elif fault == "columns":
+        columns = ["duplicate", "duplicate"]
+    elif fault == "term_index":
+        indices = {"invalid": 2}
+    with pytest.raises(ValueError, match=message):
+        fit_weighted(X, y, se, indices, alpha, columns=columns)
+
+
+def test_omitted_level_uses_full_covariance_and_requested_alpha():
+    rng = np.random.default_rng(42)
+    frame = _grid(beta=-0.1)
+    frame["mean_change"] += rng.normal(scale=0.02, size=len(frame))
+    fit = fit_did(frame, {"d_event": ("WadiGaza", (2023, 2024))}, alpha=0.05)
+    columns = [column for _, column in effect_levels(frame)["site"] if column is not None]
+    indices = [fit.columns.index(column) for column in columns]
+    estimate = -sum(fit.coefficients[column] for column in columns)
+    se = np.sqrt(fit.cov[np.ix_(indices, indices)].sum())
+    term = omitted_level_term(fit, columns, "omitted", alpha=0.1)
+    assert term.estimate == pytest.approx(estimate)
+    assert term.se == pytest.approx(se)
+    assert term.ci_low == pytest.approx(estimate - stats.t.ppf(0.95, fit.df) * se)
+    assert term.ci_high == pytest.approx(estimate + stats.t.ppf(0.95, fit.df) * se)
+    assert term.p_value == pytest.approx(2 * stats.t.sf(abs(estimate / se), fit.df))
+
+
+def test_run_and_save_both_models_with_missing_indicator(did_config_factory, tmp_path):
+    config = did_config_factory(
+        indices=("NDVI",), primary_index="NDVI", months=(5,), supplementary_months=(),
+        output_dir=tmp_path, expected_flagged_primary=1,
+    )
+    frame = _grid(beta=-0.1, beta_persist=-0.04)
+    flagged = frame["study_area"].eq("WadiGaza") & frame["year_start"].eq(2024)
+    frame.loc[flagged, "se"] = np.nan
+    frame.loc[flagged, "flag_no_range"] = True
+    frame = pd.concat(
+        [frame.assign(tau=tau) for tau in config.tau_sensitivity], ignore_index=True
+    )
+    analysis = ChangeDidAnalysis(config)
+    results = analysis.run(frame)
+    assert set(results.main["model"]) == set(config.models)
+    assert len(results.main) == 18
+    assert len(results.placebo_space) == 14
+    assert len(results.placebo_spacetime) == 70
+    assert len(results.anomalies) == 84
+    excluded = results.main.loc[results.main["variant"] == "exclude_flagged"]
+    assert excluded["term"].eq("d_event").all()
+    assert set(excluded["df"]) == {28, 34}
+    analysis.save(results)
+    pd.testing.assert_frame_equal(
+        pd.read_csv(tmp_path / "NDVI/did_main.csv"), results.main,
+        check_dtype=False, atol=1e-12, rtol=1e-10,
+    )
+    saved = json.loads((tmp_path / "NDVI/config.json").read_text())
+    assert saved["estimation"] == {
+        "library": "statsmodels", "library_version": version("statsmodels"),
+        "variance_estimator": "HE", "cov_type": "fixed scale",
+        "scale": 1.0, "use_t": True,
+    }
 
 
 def test_compute_anomalies_isolates_event_cells():
