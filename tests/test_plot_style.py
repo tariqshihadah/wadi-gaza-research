@@ -3,6 +3,7 @@ matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import pytest
 
 from plot_style import (
@@ -12,6 +13,7 @@ from plot_style import (
     contrast_text_color,
     finish_panel_grid,
     month_name,
+    site_order,
 )
 
 
@@ -68,6 +70,29 @@ def test_shared_legend_and_gridlines():
 
 def test_month_name_accepts_numbers_and_padded_strings():
     assert month_name(9) == month_name("09") == "September"
+
+
+def test_site_order_puts_focus_first_then_alphabetical():
+    sites = ["Zeta", "WadiGaza", "Alpha", "Alpha"]
+    assert site_order(sites, "WadiGaza") == ["WadiGaza", "Alpha", "Zeta"]
+    assert site_order(sites) == ["Alpha", "WadiGaza", "Zeta"]
+    assert site_order(sites, "Missing") == ["Alpha", "WadiGaza", "Zeta"]
+
+
+def test_anomaly_heatmap_rows_follow_site_order():
+    from change_did.plotting import plot_anomaly_heatmap
+
+    anomalies = pd.DataFrame({
+        "site": ["Alpha", "WadiGaza"] * 2,
+        "month": [1] * 4,
+        "year_start": [2019, 2019, 2020, 2020],
+        "year_end": [2020, 2020, 2021, 2021],
+        "anomaly": [0.1, -0.2, 0.0, 0.05],
+        "is_event_cell": [False, False, False, True],
+    })
+    fig, axes = plot_anomaly_heatmap(anomalies, sites=site_order(anomalies["site"], "WadiGaza"))
+    assert [tick.get_text() for tick in axes.flat[0].get_yticklabels()] == ["WadiGaza", "Alpha"]
+    plt.close(fig)
 
 
 def test_cell_labels_contrast_with_background():

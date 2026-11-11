@@ -167,7 +167,8 @@ def plot_change_trajectories(
 
     ``results`` holds one index's change-CI rows; primary-tau rows are selected
     when ``is_primary_tau`` is present. Comparison sites are drawn in muted
-    grey, the affected site in the highlight colour, and the event year pairs
+    grey, the affected site in the highlight colour with its spatially adjusted
+    95% CI band (``ci_low``/``ci_high``) when present, and the event year pairs
     are shaded.
     """
     frame = results.copy()
@@ -194,6 +195,17 @@ def plot_change_trajectories(
                 zorder=3 if is_affected else 2,
                 label=affected_site if is_affected else "Comparison sites",
             )
+            if is_affected and {"ci_low", "ci_high"} <= set(series.columns):
+                low = series["ci_low"].to_numpy(dtype=float)
+                high = series["ci_high"].to_numpy(dtype=float)
+                valid = np.isfinite(low) & np.isfinite(high)
+                if valid.any():
+                    ax.fill_between(
+                        series["year_start"].to_numpy(dtype=float), low, high,
+                        where=valid, interpolate=True, color=REAL_COLOR,
+                        alpha=0.18, linewidth=0, zorder=1,
+                        label=f"{affected_site} 95% CI",
+                    )
         ax.axhline(0.0, color="0.4", linewidth=0.9)
         ax.set_xticks(
             [pair[0] for pair in pairs], [_pair_label(*pair) for pair in pairs]
@@ -208,17 +220,19 @@ def plot_change_trajectories(
 def plot_anomaly_heatmap(
     anomalies: pd.DataFrame,
     months: Sequence[int] | None = None,
+    sites: Sequence[str] | None = None,
 ) -> tuple[Figure, np.ndarray]:
     """Plot each cell's deviation from the fixed-effects counterfactual per month.
 
-    ``anomalies`` holds one index's ``did_anomalies.csv`` rows: each cell's
-    deviation from the fitted site and year-pair fixed effects. Event cells are
+    ``anomalies`` holds one model's ``did_anomalies.csv`` rows for one index:
+    each cell's deviation from that model's fitted fixed effects. Event cells are
     outlined; their deviations equal the fitted event coefficients. Brown is a
-    decrease and teal an increase, matching the change-CI heatmaps.
+    decrease and teal an increase, matching the change-CI heatmaps. ``sites``
+    sets the row order from top to bottom; it defaults to alphabetical.
     """
     frame = anomalies.copy()
     month_values = sorted(months or frame["month"].unique())
-    sites = sorted(frame["site"].unique())
+    sites = list(sites) if sites is not None else sorted(frame["site"].unique())
     pairs = sorted(set(zip(frame["year_start"], frame["year_end"])))
     limit = float(frame["anomaly"].abs().max())
     ncols = 2
@@ -262,9 +276,10 @@ def plot_observed_vs_counterfactual(
 ) -> tuple[Figure, np.ndarray]:
     """Plot the affected site's observed changes against the model counterfactual.
 
-    ``anomalies`` holds one index's ``did_anomalies.csv`` rows. The
-    counterfactual is the fitted intercept plus site and year-pair fixed
-    effects: what the model expects of the affected site absent an event. The
+    ``anomalies`` holds one model's ``did_anomalies.csv`` rows for one index.
+    The counterfactual is the fitted intercept plus that model's fixed effects
+    (site and year-pair, or year-pair only for the period-only model): what the
+    model expects of the affected site absent an event. The
     gap at the first event pair is annotated; it equals the event estimate.
     """
     frame = anomalies.loc[anomalies["site"] == affected_site].copy()
@@ -281,7 +296,7 @@ def plot_observed_vs_counterfactual(
         )
         ax.plot(
             rows["year_start"], rows["counterfactual"], marker="o", markersize=4,
-            linestyle="--", color="0.45", label="Counterfactual (site + year effects)",
+            linestyle="--", color="0.45", label="Fixed-effects counterfactual",
         )
         ax.plot(
             rows["year_start"], rows["mean_change"], marker="o", markersize=4,
@@ -322,16 +337,14 @@ def plot_combined_evidence(
 
     Inputs are one index's ``did_main.csv``, ``did_placebo_space.csv``, and
     ``did_placebo_spacetime.csv`` rows. Each panel stacks the primary event
-    estimate with its 95% CI over three placebo rows on a shared estimate axis:
-    the affected site's own pre-event pairs (time placebos, drawn from the
-    space-and-time estimates), the comparison sites (space placebos), and every
-    unaffected site x pair cell (space-and-time placebos). Panel titles carry
-    both one-sided placebo p-values.
+    estimate with its 95% CI over two placebo rows on a shared estimate axis:
+    the comparison sites (space placebos) and every unaffected site x pair
+    cell (space-and-time placebos). Panel titles carry both one-sided placebo
+    p-values.
     """
     event = main.loc[(main["variant"] == "primary") & (main["term"] == EVENT_TERM)]
     if event.empty:
         raise ValueError("No primary event rows found in main results")
-    affected_site = placebo_spacetime.loc[placebo_spacetime["is_real"], "site"].iloc[0]
     fig, axes, month_values = _month_panels(event, months, ncols, (11, 7))
     for ax, month in zip(axes.flat, month_values):
         _combined_evidence_panel(
@@ -339,7 +352,6 @@ def plot_combined_evidence(
             event.loc[event["month"] == month].iloc[0],
             placebo_space.loc[placebo_space["month"] == month],
             placebo_spacetime.loc[placebo_spacetime["month"] == month],
-            affected_site,
             month_name(month),
         )
     add_shared_legend(fig, axes)
@@ -377,15 +389,11 @@ def plot_combined_evidence_by_index(
         ]
         if event.empty:
             raise ValueError(f"No primary event rows for month {month} in {index}")
-        affected_site = placebo_spacetime.loc[
-            placebo_spacetime["is_real"], "site"
-        ].iloc[0]
         _combined_evidence_panel(
             ax,
             event.iloc[0],
             placebo_space.loc[placebo_space["month"] == month],
             placebo_spacetime.loc[placebo_spacetime["month"] == month],
-            affected_site,
             index,
         )
     add_shared_legend(fig, axes)
@@ -397,23 +405,16 @@ def _combined_evidence_panel(
     row: pd.Series,
     placebo_space: pd.DataFrame,
     placebo_spacetime: pd.DataFrame,
-    affected_site: str,
     title: str,
 ) -> None:
     """Draw one combined-evidence panel from a single month's result rows."""
     space = placebo_space.loc[~placebo_space["is_real"]]
     spacetime = placebo_spacetime.loc[~placebo_spacetime["is_real"]]
-    time = spacetime.loc[spacetime["site"] == affected_site]
     ax.errorbar(
-        row["estimate"], 3.0,
+        row["estimate"], 2.0,
         xerr=[[row["estimate"] - row["ci_low"]], [row["ci_high"] - row["estimate"]]],
         fmt="o", color=REAL_COLOR, capsize=3, zorder=3,
         label="Event estimate (95% CI)",
-    )
-    ax.scatter(
-        time["estimate"], np.full(len(time), 2.0),
-        facecolors="none", edgecolors=REAL_COLOR, zorder=3,
-        label=f"{affected_site} time placebos",
     )
     ax.scatter(
         space["estimate"], np.full(len(space), 1.0),
@@ -426,15 +427,14 @@ def _combined_evidence_panel(
     )
     ax.axvline(0.0, color="0.4", linewidth=0.9)
     ax.set_yticks(
-        [3.0, 2.0, 1.0, 0.0],
+        [2.0, 1.0, 0.0],
         [
             "Model estimate",
-            f"Time placebos ({len(time)})",
             f"Space placebos ({len(space)})",
             f"Space-and-time placebos ({len(spacetime)})",
         ],
     )
-    ax.set_ylim(-0.6, 3.6)
+    ax.set_ylim(-0.6, 2.6)
     ax.set_xlabel("Event estimate")
     space_p = float(placebo_space["p_value"].iloc[0])
     spacetime_p = float(placebo_spacetime["p_value"].iloc[0])

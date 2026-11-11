@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import calendar
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Any
 
 import matplotlib.pyplot as plt
@@ -23,6 +23,19 @@ CELL_FONTSIZE = 9
 def month_name(month: object) -> str:
     """Return the full English month name for a month number such as 9 or '09'."""
     return calendar.month_name[int(month)]
+
+
+def site_order(sites: Iterable[object], focus: str | None = None) -> list[str]:
+    """Return unique site names sorted alphabetically, with ``focus`` first when present.
+
+    Heatmaps draw the first site in the top row, so passing the affected site
+    as ``focus`` puts it at the top of every site-by-period grid.
+    """
+    names = sorted({str(site) for site in sites})
+    if focus is not None and focus in names:
+        names.remove(focus)
+        names.insert(0, focus)
+    return names
 
 
 def contrast_text_color(rgba: Sequence[float]) -> str:
