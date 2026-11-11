@@ -82,3 +82,20 @@ def test_summary_heatmap_shared_limit_without_colorbar():
     assert (norm.vmin, norm.vcenter, norm.vmax) == (-2.5, 0.0, 2.5)
     assert len(fig.axes) == 1
     plt.close(fig)
+
+
+def test_climatology_july_start_groups_months_by_season():
+    daily = _daily()
+    normals = compute_normals(daily, CONFIG)
+    fig, ax = plot_climatology(normals, daily, "N31.5_E34.4", [2019, 2026], start_month=7, connect=True)
+    assert [t.get_text() for t in ax.get_xticklabels()][:2] == ["Jul", "Aug"]
+    lines = {line.get_label(): line for line in ax.get_lines() if not line.get_label().startswith("_")}
+    assert set(lines) == {"2018/19", "2025/26"}
+    full = daily.loc[daily["cell_id"] == "N31.5_E34.4"].assign(date=lambda d: pd.to_datetime(d["date"]))
+    july_2018 = full.loc[full["date"].dt.to_period("M") == "2018-07", "precip_mm"].sum()
+    june_2019 = full.loc[full["date"].dt.to_period("M") == "2019-06", "precip_mm"].sum()
+    x, y = lines["2018/19"].get_data()
+    assert list(x) == list(range(12))
+    assert np.isclose(y[0], july_2018) and np.isclose(y[-1], june_2019)
+    assert list(lines["2025/26"].get_data()[0]) == list(range(6))
+    plt.close(fig)

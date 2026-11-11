@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
-from matplotlib.colors import TwoSlopeNorm
+from matplotlib.colors import ListedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 
@@ -230,23 +230,53 @@ def plot_climatology(
     cell_id: str,
     years: Sequence[int],
     ax: Axes | None = None,
+    marker_size: float = 3.7,
+    outline: bool = False,
+    connect: bool = False,
+    cmap: str = "viridis",
+    cmap_range: tuple[float, float] = (0.0, 0.9),
+    start_month: int = 1,
 ) -> tuple[Figure, Axes]:
-    """Plot monthly precipitation normals (+/-1 SD) with observed monthly totals overlaid."""
+    """Plot monthly precipitation normals (+/-1 SD) with observed monthly totals overlaid.
+
+    The x axis runs for twelve months from ``start_month``. With the default
+    January start, ``years`` are calendar years. With any other start they are
+    the ending years of twelve-month seasons, labelled like ``2019/20``, so
+    ``start_month=7`` with ``years=[2020]`` plots July 2019 to June 2020.
+
+    ``marker_size`` is the observed-point diameter in points. ``outline`` adds a
+    dark edge to each point, and ``connect`` joins each year's months with a
+    dashed line. ``cmap`` colours the years: qualitative maps (such as
+    ``"tab10"``) assign their colours in order, continuous maps are sampled
+    evenly across ``cmap_range``.
+    """
+    if not 1 <= start_month <= 12:
+        raise ValueError("start_month must be between 1 and 12")
     rows = normals.loc[(normals["cell_id"] == cell_id) & (normals["measure"] == "precip_mm")]
-    rows = rows.sort_values("month")
+    rows = rows.assign(position=(rows["month"] - start_month) % 12).sort_values("position")
     fig, ax = _figure_axes(ax, (8, 4))
-    ax.bar(rows["month"], rows["mean"], yerr=rows["sd"], color="lightgrey", edgecolor="grey",
+    ax.bar(rows["position"], rows["mean"], yerr=rows["sd"], color="lightgrey", edgecolor="grey",
            capsize=3, label="1991\N{EN DASH}2020 normal \N{PLUS-MINUS SIGN}1 SD")
     cell = daily.loc[daily["cell_id"] == cell_id].copy()
     dates = pd.to_datetime(cell["date"])
-    cell = cell.assign(year=dates.dt.year, month=dates.dt.month)
+    shift = (dates.dt.month >= start_month).astype(int) if start_month > 1 else 0
+    cell = cell.assign(year=dates.dt.year + shift, month=dates.dt.month)
     cell = cell.loc[cell["year"].isin(years)]
     totals = cell.groupby(["year", "month"])["precip_mm"].sum(min_count=1).reset_index()
-    colours = plt.cm.viridis(np.linspace(0, 0.9, len(years)))
+    totals["position"] = (totals["month"] - start_month) % 12
+    colormap = plt.get_cmap(cmap)
+    if isinstance(colormap, ListedColormap) and colormap.N >= len(years) and colormap.N <= 20:
+        colours = colormap(np.arange(len(years)))
+    else:
+        colours = colormap(np.linspace(*cmap_range, len(years)))
     for colour, year in zip(colours, years):
-        observed = totals.loc[totals["year"] == year]
-        ax.scatter(observed["month"], observed["precip_mm"], color=colour, s=14, label=str(year), zorder=3)
-    ax.set_xticks(range(1, 13), [MONTH_ABBR[m] for m in range(1, 13)])
+        observed = totals.loc[totals["year"] == year].sort_values("position")
+        ax.plot(observed["position"], observed["precip_mm"], linestyle="--" if connect else "none",
+                linewidth=1.1, color=(*colour[:3], 0.90), marker="o", markersize=marker_size,
+                markerfacecolor=colour, markeredgecolor="#222222" if outline else colour,
+                markeredgewidth=0.7 if outline else 0,
+                label=str(year) if start_month == 1 else season_label(year), zorder=3)
+    ax.set_xticks(range(12), [MONTH_ABBR[(start_month - 1 + i) % 12 + 1] for i in range(12)])
     ax.set_ylabel("Precipitation (mm)")
     ax.set_title(f"{cell_id}: monthly precipitation")
     add_gridlines(ax, axis="y")
