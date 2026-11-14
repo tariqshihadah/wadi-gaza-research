@@ -1,0 +1,620 @@
+# One-line captions and detailed explanations are maintained here, not in generated catalogs.
+# Patterns are relative to outputs/ and must match exactly one current family.
+indices:
+  NDVI: normalized difference vegetation index
+  GNDVI: green normalized difference vegetation index
+  SAVI: soil-adjusted vegetation index
+  NDRE: normalized difference red-edge index
+sites:
+  WadiGaza: Wadi Gaza
+  AlAhrashProtectorate: Al Ahrash Protectorate
+  BesorStream: Besor Stream
+  HaBesorNationalPark: HaBesor National Park
+  HolotNizzanim: Holot Nizzanim
+  HolotPalmahim: Holot Palmahim
+  NahalRubin: Nahal Rubin
+models:
+  site_period: >-
+    site + period model, which includes site-specific mean changes and shared
+    year-pair effects
+  period_only: >-
+    period-only model, which includes shared year-pair effects but no
+    site-specific mean changes
+model_methods:
+  site_period: Before-After-Control-Impact-Analysis.md
+  period_only: Period-Only-Control-Impact-Analysis.md
+model_labels:
+  site_period: site + period
+  period_only: period-only
+fragments:
+  spatial_ci: >-
+    Intervals are spatially adjusted {ci}% Student's t confidence intervals,
+    using effective sample sizes derived from Moran's I correlograms at the
+    primary range threshold tau = {tau}. Means remain visible when an
+    autocorrelation range, and hence an interval, cannot be estimated.
+  change: >-
+    Change is the later year's index minus the earlier year's index for the
+    same calendar month, averaged over pixels valid in both composites;
+    negative values indicate a decrease.
+  model_ci: >-
+    Model intervals are {ci}% plug-in t confidence intervals from inverse
+    total-variance weighted least squares, with leverage-adjusted Hedges
+    residual-variance estimation; they are not cluster-robust intervals.
+  placebo: >-
+    Space placebos reassign the event and persistence indicators to comparison
+    sites after excluding {affected}. Space-and-time placebos omit the
+    {persistence_pair} pair and reassign a single event indicator among
+    unaffected site-year-pair cells, excluding the real event cell from each
+    placebo fit. The space-and-time p-value uses its own reduced-sample real
+    refit, which can differ from the main estimate. Both reported p-values
+    are lower-tail rank proportions for a decline, including the real
+    assignment; interpreting them inferentially requires comparable assignments.
+  space_placebo: >-
+    Each placebo excludes {affected} and jointly reassigns the event and
+    persistence indicators to one comparison site.
+  spacetime_placebo: >-
+    Fits omit {persistence_pair} and use a single event indicator. Each fake-event
+    fit also excludes the real event cell and assigns that indicator to an
+    unaffected site-year-pair cell.
+  rank: >-
+    The one-sided p-value is the fraction of assignments, including the real
+    one, at least as negative as the real estimate; inferential interpretation
+    requires comparable assignments.
+  climate: >-
+    Values are from ERA5-Land reanalysis at 0.1-degree resolution, referenced
+    to the {reference} climatology. Site values represent their assigned grid
+    cells, not measurements within site polygons; sites sharing a cell share
+    a climate record.
+
+# Superseded single-panel layouts; retain files, but do not caption them.
+retired:
+  - 'change_ci/[^/]+/plots/WadiGaza_mean_change_heatmap_\d{2}\.png'
+  - 'change_ci/[^/]+/plots/study_area_mean_change_2023_2024_month_\d{2}\.png'
+
+figures:
+  - &change
+    pattern: 'change_ci/(?P<index>[^/]+)/plots/WadiGaza_mean_change_timeseries\.png'
+    notebook: 12_visualize_change_results.ipynb
+    method: Mean-Index-Change-Confidence-Intervals.md
+    run: 'outputs/change_ci/{index}/config.json'
+    select: {index: PLOT_INDEX}
+    fragments: [change, spatial_ci]
+    title: 'Wadi Gaza {index} change trajectories'
+    caption: >-
+      Mean year-to-year {index} change at Wadi Gaza by calendar month, with
+      spatially adjusted {ci}% confidence intervals.
+    explanation: >-
+      Mean change in the {index_name} ({index}) at Wadi Gaza across consecutive
+      year pairs. Separate lines identify calendar months; points are spatial
+      means and whiskers show uncertainty in each mean. {change} {spatial_ci}
+
+  - <<: *change
+    pattern: 'change_ci/(?P<index>[^/]+)/plots/(?P<site>[^/]+)_(?P=index)_mean_change_month_panels\.png'
+    select: {}
+    title: '{site_name}: monthly {index} changes'
+    caption: >-
+      Mean year-to-year {index} change at {site_name}, with monthly panels
+      and spatially adjusted {ci}% confidence intervals.
+    explanation: >-
+      Mean change in the {index_name} ({index}) at {site_name} across consecutive
+      year pairs, with one panel per calendar month. Points show spatial means
+      and whiskers their uncertainty; the horizontal line marks no change.
+      {change} {spatial_ci}
+
+  - <<: *change
+    pattern: 'change_ci/(?P<index>[^/]+)/plots/WadiGaza_vs_other_areas_2023_2024_monthly_small_multiples\.png'
+    title: '{index} change across sites, 2023-2024'
+    caption: >-
+      Mean 2023-2024 {index} change across study sites by month, highlighting
+      Wadi Gaza with spatially adjusted {ci}% confidence intervals for each site.
+    explanation: >-
+      Site-level mean change in the {index_name} ({index}) between 2023 and
+      2024, with one panel per calendar month. Wadi Gaza is highlighted by a
+      red diamond; comparison sites are grey. Whiskers quantify uncertainty in
+      individual site changes, not in differences between sites.
+      {change} {spatial_ci}
+
+  - <<: *change
+    pattern: 'change_ci/(?P<index>[^/]+)/plots/study_area_mean_change_heatmaps\.png'
+    select: {}
+    title: '{index} change by site and year pair'
+    caption: >-
+      Mean {index} change by site, month, and year pair; asterisks indicate
+      spatially adjusted {ci}% confidence intervals excluding zero.
+    explanation: >-
+      Mean change in the {index_name} ({index}) by study site and consecutive
+      year pair, with one panel per calendar month and Wadi Gaza in the top
+      row. Brown denotes decreases and teal increases on a shared zero-centered
+      scale. Cell labels report mean changes; asterisks mark individual
+      spatially adjusted {ci}% confidence intervals excluding zero, without
+      multiple-comparison adjustment. {change} The primary range threshold
+      is tau = {tau}; unmarked cells can include changes with undefined intervals.
+
+  - <<: *change
+    pattern: 'change_ci/(?P<index>[^/]+)/plots/WadiGaza_effective_sample_size\.png'
+    fragments: []
+    title: 'Wadi Gaza {index} effective sample sizes for changes'
+    caption: >-
+      Spatial effective sample sizes for Wadi Gaza {index} changes by month
+      and year pair, with the review threshold at 30.
+    explanation: >-
+      Spatial effective sample size for Wadi Gaza {index} change estimates,
+      with each point representing one calendar month and consecutive year
+      pair. Effective sample sizes account for spatial autocorrelation in
+      difference rasters at the primary range threshold tau = {tau}, rather
+      than treating all valid pixels as independent. The dashed line marks
+      the plotted review threshold of 30; pairs without an estimated range
+      have no effective-sample-size point.
+
+  - <<: *change
+    pattern: 'change_ci/(?P<index>[^/]+)/plots/correlograms/(?P<site>[^/]+)_(?P<month>\d{2})_correlograms_all_year_pairs\.png'
+    fragments: []
+    title: '{site_name}: {month_name} {index} change correlograms'
+    caption: >-
+      Moran's I correlograms of {month_name} {index} changes at {site_name}
+      by year pair, showing range thresholds and selected decorrelation distances.
+    explanation: >-
+      Moran's I correlograms of {month_name} {index} difference rasters at
+      {site_name}, with one panel per consecutive year pair. Lag is expressed
+      in pixels using Chebyshev-distance rings. Horizontal dashed lines mark
+      the tested range thresholds ({thresholds}); a vertical dotted line, when
+      present, marks the first lag with Moran's I below the primary threshold
+      tau = {tau}. Absence of that line indicates that no range was found
+      within the evaluated lags.
+
+  - &index
+    pattern: 'index_ci/(?P<index>[^/]+)/plots/WadiGaza_mean_index_timeseries\.png'
+    notebook: 14_visualize_index_results.ipynb
+    method: Mean-Index-Level-Confidence-Intervals.md
+    run: 'outputs/index_ci/{index}/config.json'
+    select: {index: PLOT_INDEX}
+    fragments: [spatial_ci]
+    title: 'Wadi Gaza annual {index} levels'
+    caption: >-
+      Annual mean {index} at Wadi Gaza by calendar month, with spatially
+      adjusted {ci}% confidence bands.
+    explanation: >-
+      Annual spatial mean of the {index_name} ({index}) at Wadi Gaza.
+      Separate lines identify calendar months; translucent bands show
+      uncertainty in annual means. {spatial_ci}
+
+  - <<: *index
+    pattern: 'index_ci/(?P<index>[^/]+)/plots/WadiGaza_vs_study_areas_index_timeseries\.png'
+    title: 'Annual {index} levels across sites'
+    caption: >-
+      Annual mean {index} across study sites by month, highlighting Wadi Gaza
+      with spatially adjusted {ci}% confidence bands.
+    explanation: >-
+      Annual spatial mean of the {index_name} ({index}) at Wadi Gaza and
+      comparison sites, with one panel per calendar month. Wadi Gaza is
+      highlighted by a solid red line and uncertainty band; other sites are
+      dotted and shown without bands for clarity. {spatial_ci}
+
+  - <<: *index
+    pattern: 'index_ci/(?P<index>[^/]+)/plots/WadiGaza_vs_study_areas_index_change_from_(?P<base_year>\d{4})\.png'
+    select: {index: PLOT_INDEX, base_year: BASE_YEAR}
+    title: '{index} levels relative to {base_year}'
+    caption: >-
+      Annual mean {index} relative to each site's {base_year} mean (%), with
+      Wadi Gaza's {ci}% confidence bands conditional on a fixed baseline.
+    explanation: >-
+      Percentage change in each site's annual mean {index} from its own
+      {base_year} mean, calculated as 100 times (annual mean / base-year mean
+      minus 1), with one panel per calendar month. Wadi Gaza is highlighted
+      with a solid red line; dotted lines show comparison sites. Its band
+      rescales the spatially adjusted {ci}% confidence interval by the fixed
+      base-year mean and does not propagate uncertainty in that baseline.
+      Missing bands indicate undefined spatial intervals.
+
+  - <<: *index
+    pattern: 'index_ci/(?P<index>[^/]+)/plots/study_area_mean_index_heatmaps\.png'
+    fragments: []
+    title: '{index} levels by site and observation year'
+    caption: >-
+      Annual mean {index} by study site and observation year, with separate
+      panels for each calendar month.
+    explanation: >-
+      Annual spatial mean of the {index_name} ({index}) by site and observation
+      year, with one panel per calendar month and Wadi Gaza in the top row.
+      Colors and cell labels encode mean index values on one scale shared
+      across panels. These are index levels rather than changes or
+      significance tests; uncertainty is not displayed.
+
+  - <<: *index
+    pattern: 'index_ci/(?P<index>[^/]+)/plots/WadiGaza_index_effective_sample_size\.png'
+    fragments: []
+    title: 'Wadi Gaza annual {index} effective sample sizes'
+    caption: >-
+      Spatial effective sample sizes for annual mean {index} at Wadi Gaza
+      by month, with the review threshold at {min_n_eff}.
+    explanation: >-
+      Spatial effective sample sizes for annual mean {index} at Wadi Gaza,
+      with separate lines for calendar months. Values are derived from
+      autocorrelation in the index-level rasters using the primary range
+      threshold tau = {tau}. The dashed line marks the review threshold
+      n_eff = {min_n_eff}; undefined ranges yield missing effective sample sizes.
+
+  - <<: *index
+    pattern: 'index_ci/(?P<index>[^/]+)/plots/WadiGaza_(?P<month>\d{2})_index_correlograms_by_year\.png'
+    select: {index: PLOT_INDEX, month: PLOT_MONTH}
+    fragments: []
+    title: 'Wadi Gaza {month_name} {index} level correlograms'
+    caption: >-
+      Moran's I correlograms of {month_name} {index} levels at Wadi Gaza
+      by observation year, showing range thresholds and selected decorrelation distances.
+    explanation: >-
+      Moran's I correlograms of {month_name} {index} levels at Wadi Gaza,
+      with one panel per observation year. Lags are Chebyshev distances in
+      pixels. Dashed horizontal lines show range thresholds ({thresholds});
+      the vertical dotted line, when present, marks the first lag below
+      the primary threshold tau = {tau}. These correlograms describe index
+      levels, not the difference rasters used to estimate change uncertainty.
+
+  - &did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/(?P<model>site_period|period_only)/placebo_space\.png'
+    notebook: 31_visualize_did_results.ipynb
+    method: '{model_method}'
+    run: 'outputs/change_did/{index}/config.json'
+    fragments: [space_placebo, rank]
+    title: '{index} placebo-in-space evidence ({model})'
+    caption: >-
+      {affected}'s {event_pair} {index} event estimate versus comparison-site
+      placebos by month under the {model_label} model, with one-sided rank p-values.
+    explanation: >-
+      Placebo-in-space estimates of the {event_pair} {index} event effect
+      under the {model_description}, with one panel per calendar month.
+      The red diamond and vertical line identify {affected}; blue points
+      identify comparison-site placebo estimates. Panel titles report
+      lower-tail rank p-values and the absolute real estimate divided by
+      the largest absolute placebo estimate. {space_placebo} {rank}
+
+  - <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/(?P<model>site_period|period_only)/placebo_spacetime\.png'
+    fragments: [spacetime_placebo, rank]
+    title: '{index} placebo-in-space-and-time evidence ({model})'
+    caption: >-
+      Ranked space-and-time placebo estimates and the reduced-sample real
+      {index} event estimate by month under the {model_label} model, with one-sided rank p-values.
+    explanation: >-
+      Ranked space-and-time placebo estimates for {index} under the
+      {model_description}, with one panel per calendar month. The red
+      diamond and vertical line identify the real {affected} {event_pair}
+      estimate refitted without the persistence pair; blue points identify
+      fake-event assignments. Panel titles report lower-tail rank p-values.
+      {spacetime_placebo} {rank}
+
+  - <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/(?P<model>site_period|period_only)/sensitivity_forest\.png'
+    fragments: [model_ci]
+    title: '{index} event-estimate sensitivity ({model})'
+    caption: >-
+      Sensitivity of {affected}'s {event_pair} {index} event estimate to
+      range thresholds and missing-error policies under the {model_label} model, with {ci}% confidence intervals.
+    explanation: >-
+      Sensitivity of the {affected} {event_pair} {index} event estimate under
+      the {model_description}, with one panel per calendar month. Points
+      and horizontal intervals show the primary fit (red) and sensitivity
+      fits (blue). Variants change the range threshold among {thresholds}
+      or replace the primary maximum-SE fill for undefined spatial errors
+      by exclusion or an n_eff = {fill_n_eff} fill. The vertical line marks
+      zero departure from expected change. {model_ci}
+
+  - <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/(?P<model>site_period|period_only)/anomaly_heatmap\.png'
+    fragments: []
+    title: '{index} departures from expected change ({model})'
+    caption: >-
+      Site-year-pair {index} changes relative to the {model_label} counterfactual
+      by month, with {affected}'s event and persistence cells outlined.
+    explanation: >-
+      Observed site-year-pair {index} change minus the fixed-effects
+      counterfactual under the {model_description}, with one panel per
+      calendar month and {affected} in the top row. The counterfactual sets
+      both event indicators to zero. Brown denotes negative departures and
+      teal positive departures on a shared zero-centered scale; labels are
+      in index units. Outlined {affected} cells in {event_pair} and
+      {persistence_pair} equal the event and persistence coefficients,
+      respectively; other cells are model residuals. Intervals are not shown.
+
+  - <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/(?P<model>site_period|period_only)/observed_vs_counterfactual\.png'
+    fragments: []
+    title: '{index} observed and counterfactual changes ({model})'
+    caption: >-
+      Observed and {model_label} counterfactual {index} changes at {affected}
+      by month, highlighting the {event_pair} event and {persistence_pair} persistence pairs.
+    explanation: >-
+      Observed mean {index} changes at {affected} (solid red) and expected
+      changes with event indicators set to zero (dashed grey), under the
+      {model_description}. Each panel represents a calendar month; shading
+      marks {event_pair} and {persistence_pair}. The annotated gap (observed
+      minus counterfactual) at {event_pair} equals the fitted event coefficient.
+      Values are changes in index units, not index levels, and intervals
+      are not shown.
+
+  - &combined
+    <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/(?P<model>site_period|period_only)/combined_evidence\.png'
+    fragments: [model_ci, placebo]
+    title: '{index} combined event evidence ({model})'
+    caption: >-
+      {affected}'s {event_pair} {index} event estimates with {ci}% confidence
+      intervals and space and space-and-time placebo distributions by month under the {model_label} model.
+    explanation: >-
+      Combined evidence for the {affected} {event_pair} {index} event effect
+      under the {model_description}, with one panel per calendar month.
+      The top row shows the main event estimate and its interval; middle
+      and bottom rows show space and space-and-time placebo estimates.
+      All are plotted in index units against a zero reference line;
+      panel titles report the two lower-tail rank p-values. {model_ci} {placebo}
+
+  - <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/change_trajectories\.png'
+    method: Mean-Index-Change-Confidence-Intervals.md
+    fragments: [change]
+    title: '{index} change trajectories across sites'
+    caption: >-
+      Mean year-to-year {index} changes across study sites by month, with
+      {affected}'s spatially adjusted {ci}% confidence intervals and event pairs shaded.
+    explanation: >-
+      Mean {index} change across consecutive year pairs for {affected}
+      (red) and comparison sites (grey), with one panel per calendar month.
+      Shading marks {event_pair} and {persistence_pair}. Error bars at
+      {affected} show spatially adjusted {ci}% confidence intervals from
+      difference-raster autocorrelation; undefined intervals are omitted.
+      These describe individual mean changes, not model event-effect
+      uncertainty. {change}
+
+  - <<: *did
+    pattern: 'change_did/(?P<index>[^/]+)/plots/level_trajectories\.png'
+    method: Mean-Index-Level-Confidence-Intervals.md
+    fragments: []
+    title: '{index} level trajectories across sites'
+    caption: >-
+      Annual mean {index} across study sites by month, highlighting {affected}
+      and shading observation years {event_years}.
+    explanation: >-
+      Annual spatial mean of the {index_name} ({index}) at {affected}
+      (solid red) and comparison sites (dotted), with one panel per calendar
+      month. Shading marks observation years {event_years}, the ending years
+      of the event and persistence pairs. No confidence intervals are shown.
+      This figure provides descriptive context in index levels; the
+      comparison models are fitted to changes, not these levels.
+
+  - <<: *combined
+    pattern: 'index_comparison/plots/(?P<model>site_period|period_only)/combined_evidence_(?P<month>\d{2})\.png'
+    run: outputs/change_did/NDVI/config.json
+    title: '{month_name} combined evidence across indices ({model})'
+    caption: >-
+      {month_name} event estimates with {ci}% confidence intervals and placebo
+      distributions across vegetation indices for {affected} under the {model_label} model.
+    explanation: >-
+      Combined event evidence for {month_name} at {affected}, with separate
+      panels for NDVI (normalized difference vegetation index), GNDVI
+      (green normalized difference vegetation index), SAVI (soil-adjusted
+      vegetation index), and NDRE (normalized difference red-edge index),
+      under the {model_description}. Top rows show the main {event_pair}
+      event estimates and intervals; middle and bottom rows show space and
+      space-and-time placebo estimates. Values are in each index's units;
+      panel titles give lower-tail rank p-values. {model_ci} {placebo}
+
+  - <<: *did
+    pattern: 'index_comparison/plots/level_trajectories_(?P<month>\d{2})\.png'
+    run: outputs/change_did/NDVI/config.json
+    method: Mean-Index-Level-Confidence-Intervals.md
+    fragments: []
+    title: '{month_name} level trajectories across indices'
+    caption: >-
+      Annual {month_name} vegetation-index means across study sites and indices,
+      highlighting {affected} and shading observation years {event_years}.
+    explanation: >-
+      Annual {month_name} spatial means at {affected} (solid red) and
+      comparison sites (dotted), with separate panels for NDVI (normalized
+      difference vegetation index), GNDVI (green normalized difference
+      vegetation index), SAVI (soil-adjusted vegetation index), and NDRE
+      (normalized difference red-edge index). Shading marks {event_years}.
+      Values retain each index's units and no uncertainty bands are shown.
+      These are descriptive level trajectories, not fitted event effects.
+
+  - &climate
+    pattern: 'climate/plots/sites_over_cells\.png'
+    notebook: 22_visualize_climate_context.ipynb
+    method: ERA5-Land-Climate-Context.md
+    run: outputs/climate/config.json
+    fragments: [climate]
+    title: 'Study sites and the ERA5-Land grid'
+    caption: >-
+      Study-site locations and assigned ERA5-Land 0.1-degree grid cells,
+      with cells lacking data hatched.
+    explanation: >-
+      Study-site polygons (green with black boundaries) over the ERA5-Land
+      0.1-degree grid. Blue outlines and coordinate labels identify cells
+      assigned to sites; light-grey outlines show other cells with data and
+      hatching denotes cells without data. Axes give geographic longitude
+      and latitude. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/regional_normals\.png'
+    title: 'Regional precipitation and temperature normals'
+    caption: >-
+      ERA5-Land {reference} annual precipitation (mm per year) and mean
+      2 m air-temperature (degrees Celsius) normals across the study region.
+    explanation: >-
+      ERA5-Land {reference} annual precipitation normal (left, mm per year)
+      and annual mean 2 m air-temperature normal (right, degrees Celsius).
+      Annual precipitation is the sum of monthly normals; annual temperature
+      is the unweighted mean of monthly 24-hour-mean temperature normals.
+      Black outlines locate study sites; hatched cells have no data.
+      These panels show separate variables with separate color scales.
+
+  - <<: *climate
+    pattern: 'climate/plots/regional_wet_season_pct_normal\.png'
+    title: 'Regional wet-season precipitation relative to normal'
+    caption: >-
+      Regional October-April precipitation by wet season, expressed as
+      a percentage of the ERA5-Land {reference} normal.
+    explanation: >-
+      October-April precipitation as a percentage of the {reference} normal,
+      with one ERA5-Land map per wet season shown. The common diverging
+      scale is centered on 100%, with brown below normal and teal above
+      normal. Black outlines locate study sites; hatched cells have no
+      data. Seasons are labeled by their starting and ending years.
+
+  - <<: *climate
+    pattern: 'climate/plots/regional_temperature_anomaly\.png'
+    title: 'Regional mean temperature anomaly'
+    caption: >-
+      Regional mean 2 m air-temperature anomaly (degrees Celsius) over
+      {years} study months relative to ERA5-Land {reference} normals.
+    explanation: >-
+      Mean ERA5-Land 2 m air-temperature anomaly over the selected study
+      months in {years}, in degrees Celsius relative to the corresponding
+      {reference} monthly normals. Each cell equally averages the monthly
+      anomalies of daily 24-hour means. Red indicates warmer and blue
+      cooler conditions on a zero-centered scale; black outlines show
+      study sites and hatching denotes no data.
+
+  - <<: *climate
+    pattern: 'climate/plots/precip_anomaly_heatmaps\.png'
+    title: 'Monthly precipitation anomalies by site'
+    caption: >-
+      ERA5-Land monthly precipitation anomalies (mm) by site and observation
+      year, relative to {reference} normals.
+    explanation: >-
+      Monthly precipitation anomalies (observed minus normal, mm) by site
+      and year in {years}, with one panel per study month and Wadi Gaza in
+      the top row. Brown denotes drier and teal wetter conditions on a
+      shared zero-centered scale. Hatched cells have a monthly normal below
+      {near_zero} mm, for which percentage-of-normal values are suppressed;
+      absolute anomalies remain reported. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/wet_season_pct_normal\.png'
+    title: 'Wet-season precipitation by site'
+    caption: >-
+      October-April precipitation by study site and wet season, expressed
+      as a percentage of ERA5-Land {reference} normals.
+    explanation: >-
+      Total precipitation for each completed October-April wet season by
+      site, expressed as a percentage of its corresponding normal. Seasons
+      are shown once each and labeled by starting and ending years; Wadi
+      Gaza appears first. Brown indicates below-normal and teal above-normal
+      totals on a scale centered on 100%. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/cumulative_pct_normal_heatmaps\.png'
+    title: 'Antecedent cumulative precipitation by site'
+    caption: >-
+      Precipitation accumulated from October 1 through the month preceding
+      each observation, by site and year, as a percentage of {reference} normals.
+    explanation: >-
+      Cumulative precipitation from the preceding October 1 through the
+      end of the month before each observation month, as a percentage of
+      the corresponding normal. Panels show study months, columns
+      observation years, and rows sites with Wadi Gaza first. The shared
+      scale is centered on 100%; brown indicates below-normal and teal
+      above-normal totals. Hatching flags normals below {near_zero} mm,
+      for which percentages are undefined. The May window is October-April
+      and equals the wet-season total. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/(?P<site>[A-Z][A-Za-z]+)_temperature_anomaly\.png'
+    select: {site: FOCUS_SITE}
+    title: '{site_name} temperature anomalies'
+    caption: >-
+      ERA5-Land monthly temperature anomalies at {site_name} relative to
+      {reference} normals, comparing daily 24-hour means and midranges.
+    explanation: >-
+      Monthly 2 m air-temperature anomalies at the grid cell assigned to
+      {site_name}, in degrees Celsius relative to {reference} normals.
+      Colors distinguish study months; solid lines use daily 24-hour
+      means and dashed lines use daily midranges, (hourly maximum + hourly
+      minimum) / 2. The horizontal line marks zero anomaly. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/temperature_anomaly_heatmaps\.png'
+    title: 'Monthly temperature anomalies by site'
+    caption: >-
+      ERA5-Land monthly 2 m air-temperature anomalies (degrees Celsius)
+      by site and observation year, relative to {reference} normals.
+    explanation: >-
+      Monthly 2 m air-temperature anomalies by site and observation year,
+      with one panel per study month and Wadi Gaza first. Values are
+      monthly averages of daily 24-hour means minus the corresponding
+      {reference} normal, in degrees Celsius. Red denotes warmer and
+      blue cooler conditions on a common zero-centered scale. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/monthly_climatology\.png'
+    title: 'Monthly precipitation climatology at site-assigned cells'
+    caption: >-
+      Observed {years} monthly precipitation at site-assigned ERA5-Land cells
+      against {reference} monthly means and interannual standard deviations.
+    explanation: >-
+      Monthly precipitation at each ERA5-Land cell used by a study site,
+      with the Wadi Gaza cell first. Grey bars show {reference} monthly
+      means and whiskers show plus or minus one interannual standard
+      deviation, not confidence intervals. Colored points show observed
+      calendar-month totals for {years}, in mm; panel titles identify the
+      cell and the sites sharing it. {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/(?P<site>[^/]+)_monthly_climatology\.png'
+    select: {site: FOCUS_SITE}
+    title: '{site_name} monthly rainfall in July-June seasons'
+    caption: >-
+      Monthly precipitation at {site_name} by July-June season against
+      ERA5-Land {reference} monthly means and interannual standard deviations.
+    explanation: >-
+      Monthly precipitation at the grid cell assigned to {site_name},
+      arranged July-June to keep each wet season on one trajectory.
+      Grey bars and whiskers show {reference} monthly means plus or minus
+      one interannual standard deviation, not confidence intervals.
+      Colored points connected by dashed lines show observed monthly
+      totals (mm); legend labels identify each July-June season.
+      {climate}
+
+  - <<: *climate
+    pattern: 'climate/plots/(?P<site>[^/]+)_cumulative_since_oct1\.png'
+    select: {site: FOCUS_SITE}
+    title: '{site_name} cumulative rainfall since October 1'
+    caption: >-
+      Cumulative precipitation since October 1 at {site_name}, with
+      the ERA5-Land {reference} reference mean and plus or minus one interannual standard deviation.
+    explanation: >-
+      Cumulative precipitation (mm) from October 1 at the ERA5-Land cell
+      assigned to {site_name}, with colored lines identifying the seasons
+      in the legend. The black curve is the mean of reference seasons
+      ending in {reference}; grey shading is plus or minus one interannual
+      standard deviation, not a confidence interval. The horizontal axis
+      covers the first 365 days of each October-start season.
+
+  - <<: *climate
+    pattern: 'climate/plots/(?P<site>[^/]+)_cell_sensitivity\.png'
+    select: {site: FOCUS_SITE}
+    title: '{site_name} climate-cell sensitivity'
+    caption: >-
+      Wet-season precipitation at {site_name}'s assigned ERA5-Land cell
+      and its southern neighbor, expressed as percentages of their respective {reference} normals.
+    explanation: >-
+      Sensitivity of wet-season precipitation context for {site_name} to
+      grid-cell assignment. Solid circles show the assigned ERA5-Land
+      cell and dashed squares the adjacent cell to the south; coordinate
+      identifiers appear in the legend. Each series expresses October-April
+      precipitation as a percentage of its own {reference} normal.
+      The horizontal line marks 100%. This is a descriptive cell-choice
+      diagnostic, not an uncertainty interval.
+
+  - <<: *climate
+    pattern: 'climate/plots/temperature_method_difference\.png'
+    title: 'Temperature-method comparison'
+    caption: >-
+      Mean daily temperature midrange minus 24-hour mean (degrees Celsius)
+      by calendar month at site-assigned ERA5-Land cells.
+    explanation: >-
+      Mean daily temperature midrange minus daily 24-hour mean at each
+      site-assigned ERA5-Land cell, grouped by calendar month over the
+      available daily record. Midrange is (hourly maximum + hourly minimum)
+      / 2. Values are in degrees Celsius; positive values mean that the
+      midrange runs warmer. Lines distinguish cells, and the horizontal
+      line marks agreement between the two methods.
