@@ -13,7 +13,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Normalize
 from matplotlib.figure import Figure
 
-from plot_style import FIGURE_DPI, add_gridlines, add_title, annotate_cells, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_title, annotate_cells, month_name, site_label
 
 
 def _month(value: object) -> str:
@@ -55,8 +55,8 @@ def _select(
 
 
 def _series_label(group: str, group_by: str) -> str:
-    """Display month series by name and other series as-is."""
-    return month_name(group) if group_by == "month" else group
+    """Display month series by name and site series by display name."""
+    return month_name(group) if group_by == "month" else site_label(group)
 
 
 def _figure_axes(
@@ -200,7 +200,7 @@ def plot_index_heatmap(
     labels = np.vectorize(lambda value: f"{value:.2f}", otypes=[str])(values)
     annotate_cells(ax, image, values, labels)
     ax.set_xticks(range(len(years)), years)
-    ax.set_yticks(range(len(areas)), areas)
+    ax.set_yticks(range(len(areas)), [site_label(area) for area in areas])
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Study area")
     add_title(ax, f"Mean index value by study area, {month_name(month)}", panel=not owns_figure)
@@ -290,7 +290,7 @@ def plot_index_correlogram(
     ax.set_xlabel("Lag (pixels)")
     ax.set_ylabel("Moran's I")
     ax.set_title(
-        f"{observation['study_area']} {observation['index']} "
+        f"{site_label(observation['study_area'])} {observation['index']} "
         f"{month_name(observation['month'])} {observation['year']}"
     )
     add_gridlines(ax)

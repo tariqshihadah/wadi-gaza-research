@@ -13,7 +13,9 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 
-from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, annotate_cells, finish_panel_grid, month_name
+from plot_style import (
+    FIGURE_DPI, add_gridlines, add_shared_legend, annotate_cells, finish_panel_grid, month_name, site_label,
+)
 
 from .placebo import EVENT_TERM
 
@@ -61,7 +63,7 @@ def plot_placebo_space(
         )
         ax.axvline(0.0, color="0.4", linewidth=0.9)
         ax.set_yticks(positions)
-        ax.set_yticklabels(rows["site"])
+        ax.set_yticklabels([site_label(site) for site in rows["site"]])
         ax.set_xlabel("Event estimate")
         ax.set_title(_panel_title(rows, month))
         add_gridlines(ax, axis="x")
@@ -193,7 +195,7 @@ def plot_change_trajectories(
                 color=REAL_COLOR if is_affected else "0.65",
                 linewidth=2.0 if is_affected else 1.0,
                 zorder=3 if is_affected else 2,
-                label=affected_site if is_affected else "Comparison sites",
+                label=site_label(affected_site) if is_affected else "Comparison sites",
             )
             if is_affected and {"ci_low", "ci_high"} <= set(series.columns):
                 low = series["ci_low"].to_numpy(dtype=float)
@@ -205,7 +207,7 @@ def plot_change_trajectories(
                         series["year_start"].to_numpy(dtype=float)[valid], mean[valid],
                         yerr=[mean[valid] - low[valid], high[valid] - mean[valid]],
                         fmt="none", ecolor=REAL_COLOR, elinewidth=1.2, capsize=3,
-                        zorder=4, label=f"{affected_site} 95% CI",
+                        zorder=4, label=f"{site_label(affected_site)} 95% CI",
                     )
         ax.axhline(0.0, color="0.4", linewidth=0.9)
         ax.set_xticks(
@@ -262,7 +264,7 @@ def plot_anomaly_heatmap(
         ax.set_xticks(
             range(len(pairs)), [_pair_label(*pair) for pair in pairs], rotation=45
         )
-        ax.set_yticks(range(len(sites)), sites)
+        ax.set_yticks(range(len(sites)), [site_label(site) for site in sites])
         ax.set_title(month_name(month))
     finish_panel_grid(fig, axes, label="Deviation from fixed-effects counterfactual")
     return fig, axes

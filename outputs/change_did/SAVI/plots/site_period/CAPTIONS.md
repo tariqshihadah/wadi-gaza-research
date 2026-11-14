@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: ae1b4609abbef8d720c11516d40e9d74439c70af410eeb171460709703cfcdad -->
+<!-- Figure SHA-256: df61db86e3ba150dfbf6aac58abe73ba47a05aac747d30c706fe84ff29253de1 -->
 
 ## SAVI combined event evidence (site_period)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 62f8e4e5cb949d982573065317641c745a04f38f655adea127bc3ba52b308add -->
+<!-- Figure SHA-256: d39b8c946387f192c1d2807dee333b6c73d7ddbd870bb5c30e8a6c80925e89cd -->
 
 ## SAVI placebo-in-space-and-time evidence (site_period)
 

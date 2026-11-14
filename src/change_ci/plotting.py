@@ -14,7 +14,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import TwoSlopeNorm
 from matplotlib.figure import Figure
 
-from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, add_title, annotate_cells, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, add_title, annotate_cells, month_name, site_label
 
 
 def _month(value: object) -> str:
@@ -134,7 +134,7 @@ def plot_change_timeseries(
         x = np.array([pair_index[(int(r.year_start), int(r.year_end))] + offset for r in rows.itertuples()])
         color = "C3" if group == highlight else ("0.62" if highlight is not None else f"C{index % 10}")
         marker = "D" if group == highlight else "o"
-        label = month_name(group) if group_by == "month" else group
+        label = month_name(group) if group_by == "month" else site_label(group)
         ax.plot(x, rows["mean_change"], marker=marker, linestyle="--", linewidth=1,
                 markersize=5, color=color, label=label)
         if group in ci_groups:
@@ -206,7 +206,7 @@ def plot_change_small_multiples(
             results, group_by, {**(filters or {}), facet_by: facet},
             show_ci_for, facet_ax, tau, highlight,
         )
-        facet_ax.set_title(month_name(facet) if facet_by == "month" else facet)
+        facet_ax.set_title(month_name(facet) if facet_by == "month" else site_label(facet))
     for facet_ax in axes.ravel()[len(facets):]:
         facet_ax.set_visible(False)
     fig.tight_layout()
@@ -284,7 +284,7 @@ def plot_change_heatmap(
     ])
     annotate_cells(ax, image, values, cell_labels)
     ax.set_xticks(range(len(labels)), labels)
-    ax.set_yticks(range(len(areas)), areas)
+    ax.set_yticks(range(len(areas)), [site_label(area) for area in areas])
     ax.set_xlabel("Year pair")
     ax.set_ylabel("Study area")
     add_title(ax, f"Mean change by study area, {month_name(month)}", panel=not owns_figure)
@@ -363,7 +363,7 @@ def plot_correlogram(
         ax.axvline(float(result["range_px"]), color="C3", linestyle=":", label=f"range={int(result['range_px'])}")
     ax.set_xlabel("Lag (pixels)")
     ax.set_ylabel("Moran's I")
-    ax.set_title(f"{keys['study_area']} {month_name(keys['month'])} {keys['year_start']}-{keys['year_end']}")
+    ax.set_title(f"{site_label(keys['study_area'])} {month_name(keys['month'])} {keys['year_start']}-{keys['year_end']}")
     add_gridlines(ax)
     if thresholds or pd.notna(result["range_px"]):
         ax.legend()
@@ -401,7 +401,7 @@ def plot_n_eff(
     valid = np.isfinite(frame["n_eff"].to_numpy(dtype=float))
     ax.scatter(x[valid], frame.loc[valid, "n_eff"], c="C0", s=28, zorder=3)
     ax.axhline(min_n_eff, color="C3", linestyle="--", label=f"minimum n_eff={min_n_eff:g}")
-    labels = [f"{row.study_area}\n{month_name(row.month)} {_pair_label(row.year_start, row.year_end)}" for row in frame.itertuples()]
+    labels = [f"{site_label(row.study_area)}\n{month_name(row.month)} {_pair_label(row.year_start, row.year_end)}" for row in frame.itertuples()]
     ax.set_xticks(x, labels, rotation=70, ha="right", fontsize=8)
     ax.set_ylabel("Effective sample size")
     add_gridlines(ax)

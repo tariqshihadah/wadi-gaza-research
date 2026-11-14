@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: c2bbe285aa934cd017b7ccabe9c8f24c1229cd6b0402a97282697ffa517e8148 -->
+<!-- Figure SHA-256: 9a90d5fb2677f8d9ebf1f6e5e7e8428ca1e5dfac3827f61026db8ffa985004cf -->
 
 ## NDVI combined event evidence (period_only)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 7af6b166708765b4ad1dfcb26e2f7a7155d5341d25b2892aae0f5e64e5053255 -->
+<!-- Figure SHA-256: f605506f47b57314fd0ea60ceeeb44abd8a3619a58f4eeb6a6f0ec5bd906b7e6 -->
 
 ## NDVI placebo-in-space-and-time evidence (period_only)
 

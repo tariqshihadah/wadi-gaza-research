@@ -10,7 +10,7 @@ from importlib.metadata import version
 import numpy as np
 import pandas as pd
 
-from plot_style import month_name
+from plot_style import month_name, site_label
 
 from .config import DidAnalysisConfig
 from .data import fill_missing_se, flagged_se_report
@@ -299,7 +299,7 @@ class ChangeDidAnalysis:
             "# Weighted fixed-effects model on index change",
             "",
             f"Primary specification: tau = {config.tau:g}, largest-SE fill, "
-            f"affected site {config.affected_site}. {config.primary_index} is the "
+            f"affected site {site_label(config.affected_site)}. {config.primary_index} is the "
             "primary index; other indices are robustness checks. Supplementary "
             "months are flagged in their month label. Each model specification "
             "(site + period, and period only without site effects) is reported "

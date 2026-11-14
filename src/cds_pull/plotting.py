@@ -15,7 +15,7 @@ from matplotlib.colors import ListedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 
-from plot_style import FIGURE_DPI, add_gridlines, add_title, annotate_cells, contrast_text_color, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_title, annotate_cells, contrast_text_color, month_name, site_label
 
 from .windows import season_label
 
@@ -168,7 +168,7 @@ def plot_summary_heatmap(
                           otypes=[str])(values)
     annotate_cells(ax, image, values, labels)
     ax.set_xticks(range(len(years)), years)
-    ax.set_yticks(range(len(sites)), sites)
+    ax.set_yticks(range(len(sites)), [site_label(site) for site in sites])
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Site")
     add_title(ax, f"{label or value}, {month_name(month)}", panel=not owns_figure)
@@ -195,7 +195,7 @@ def plot_wet_season_heatmap(
                       norm=TwoSlopeNorm(vmin=100 - limit, vcenter=100, vmax=100 + limit))
     annotate_cells(ax, image, values, np.vectorize(lambda number: f"{number:.0f}", otypes=[str])(values))
     ax.set_xticks(range(len(labels)), labels, rotation=35, ha="right")
-    ax.set_yticks(range(len(sites)), sites)
+    ax.set_yticks(range(len(sites)), [site_label(site) for site in sites])
     ax.set_xlabel("Wet season (October to April)")
     add_title(ax, "Wet-season precipitation, percent of 1991\N{EN DASH}2020 normal", panel=not owns_figure)
     fig.colorbar(image, ax=ax, label="% of normal")
@@ -222,7 +222,7 @@ def plot_temperature_anomalies(
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Anomaly from 1991\N{EN DASH}2020 normal (\N{DEGREE SIGN}C)")
-    add_title(ax, f"{site}: monthly temperature anomaly", panel=not owns_figure)
+    add_title(ax, f"{site_label(site)}: monthly temperature anomaly", panel=not owns_figure)
     add_gridlines(ax)
     ax.legend(ncol=2, fontsize=8)
     return fig, ax

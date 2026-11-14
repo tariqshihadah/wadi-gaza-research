@@ -44,7 +44,7 @@ def test_index_timeseries_base_year_shows_percent_change():
         highlight="WadiGaza", base_year=2023,
     )
     by_label = {line.get_label(): line.get_ydata() for line in ax.lines}
-    assert list(by_label["WadiGaza"]) == pytest.approx([0.0, 100 / 3])
+    assert list(by_label["Wadi Gaza"]) == pytest.approx([0.0, 100 / 3])
     assert list(by_label["Other"]) == pytest.approx([0.0, 25.0])
     assert "2023" in ax.get_ylabel()
     plt.close(fig)

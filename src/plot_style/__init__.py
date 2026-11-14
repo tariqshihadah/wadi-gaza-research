@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import calendar
+import re
 from collections.abc import Iterable, Sequence
 from typing import Any
 
@@ -30,6 +31,29 @@ SHOW_TITLES = False
 def month_name(month: object) -> str:
     """Return the full English month name for a month number such as 9 or '09'."""
     return calendar.month_name[int(month)]
+
+
+# Display names for site IDs; IDs stay CamelCase in data, configs and filenames.
+# Keep in sync with the ``sites:`` block in docs/figure-captions.yaml.
+SITE_LABELS = {
+    "WadiGaza": "Wadi Gaza",
+    "AlAhrashProtectorate": "Al Ahrash Protectorate",
+    "BesorStream": "Besor Stream",
+    "HaBesorNationalPark": "HaBesor National Park",
+    "HolotNizzanim": "Holot Nizzanim",
+    "HolotPalmahim": "Holot Palmahim",
+    "NahalRubin": "Nahal Rubin",
+}
+
+
+def site_label(site: object) -> str:
+    """Return the display name for a site ID such as 'WadiGaza' -> 'Wadi Gaza'.
+
+    Uses ``SITE_LABELS`` when the ID is listed; otherwise inserts a space before
+    each capital that follows a lowercase letter, so unlisted IDs still read well.
+    """
+    name = str(site)
+    return SITE_LABELS.get(name, re.sub(r"(?<=[a-z])(?=[A-Z])", " ", name))
 
 
 def site_order(sites: Iterable[object], focus: str | None = None) -> list[str]:

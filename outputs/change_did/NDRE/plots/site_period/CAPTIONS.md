@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 5680ea35906b8d339c75fe41804493fb77bbd7408fd2aa16e51afb0dfe6c4bee -->
+<!-- Figure SHA-256: 79f20c2b6afed1b9ce902aa0a8abecf40754524b8c1e8aa38400e3741fbba27f -->
 
 ## NDRE combined event evidence (site_period)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: f5b6a02f79e6adc345074a3a8e5e17b9d30f1059e2e9b48d7ed46c040fbcc1a2 -->
+<!-- Figure SHA-256: cd3e900e253e05b98a0e624d419914e147c965bbbb9f7a63d329b713e5849e01 -->
 
 ## NDRE placebo-in-space-and-time evidence (site_period)
 

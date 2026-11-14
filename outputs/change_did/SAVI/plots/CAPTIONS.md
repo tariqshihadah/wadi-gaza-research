@@ -16,7 +16,7 @@ Figure: [change_trajectories.png](change_trajectories.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 588cd8ce4e98e93c09caca882ef2ca8cc2f13b47e06983660d0af0dbfd489db3 -->
+<!-- Figure SHA-256: 817f822fb53120eebd465f124c4aca84326ebe1b32355f542af206a028155840 -->
 
 ## SAVI level trajectories across sites
 
@@ -30,4 +30,4 @@ Figure: [level_trajectories.png](level_trajectories.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 80954a785eecf1093dcd9b566bf6ef421fdb6a7571ed079105c6203e748d29bb -->
+<!-- Figure SHA-256: 5763b10fcff1acd3c4689962705df37211a8495cb8f260dbcf3fa8444144676d -->

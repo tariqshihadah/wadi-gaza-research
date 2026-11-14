@@ -16,7 +16,7 @@ Figure: [level_trajectories_01.png](level_trajectories_01.png)
 
 Source: [31_visualize_did_results.ipynb](../../../notebooks/31_visualize_did_results.ipynb); [method](../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 513c7d4c76997e03d8e41697306fd8006ba8ec1f1d6ebdc9dcd8bfa04acb26a7 -->
+<!-- Figure SHA-256: c973d3e488969beeabfbe5e97beb13a75e23b45be9ce849a72c000890e519988 -->
 
 ## May level trajectories across indices
 
@@ -30,7 +30,7 @@ Figure: [level_trajectories_05.png](level_trajectories_05.png)
 
 Source: [31_visualize_did_results.ipynb](../../../notebooks/31_visualize_did_results.ipynb); [method](../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: b3cb4310ff133c28bcc2e04ce628c3ac314f1fe4e4a12810b702217705e14205 -->
+<!-- Figure SHA-256: 1f88b37e3b4d923891cc1d6bd37db1b5bf0de6f8c4cdcae3e650d9c1bb4acf97 -->
 
 ## September level trajectories across indices
 
@@ -44,7 +44,7 @@ Figure: [level_trajectories_09.png](level_trajectories_09.png)
 
 Source: [31_visualize_did_results.ipynb](../../../notebooks/31_visualize_did_results.ipynb); [method](../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 59c55c94d7366df7d00f4a2033418abaa1ce67cc01effaaf66d36b4ee1f0486a -->
+<!-- Figure SHA-256: a4a346d509c1c020a0e7bc4fec255207d7869ff2b5ea2d2a233fc3115a58b369 -->
 
 ## November level trajectories across indices
 
@@ -58,4 +58,4 @@ Figure: [level_trajectories_11.png](level_trajectories_11.png)
 
 Source: [31_visualize_did_results.ipynb](../../../notebooks/31_visualize_did_results.ipynb); [method](../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 6cc5cc5621e82656ee60723f7a743bc6cd109283f366bcd4962bff133e41f06e -->
+<!-- Figure SHA-256: 2ddd2d6e652d8bd55d2169cc7f473b5c7344a1519afaf533d86fb4b5b26e9d3e -->

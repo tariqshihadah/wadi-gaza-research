@@ -91,7 +91,7 @@ def test_anomaly_heatmap_rows_follow_site_order():
         "is_event_cell": [False, False, False, True],
     })
     fig, axes = plot_anomaly_heatmap(anomalies, sites=site_order(anomalies["site"], "WadiGaza"))
-    assert [tick.get_text() for tick in axes.flat[0].get_yticklabels()] == ["WadiGaza", "Alpha"]
+    assert [tick.get_text() for tick in axes.flat[0].get_yticklabels()] == ["Wadi Gaza", "Alpha"]
     plt.close(fig)
 
 
