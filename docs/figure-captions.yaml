@@ -346,7 +346,8 @@ figures:
       The top row shows the main event estimate and its interval; middle
       and bottom rows show space and space-and-time placebo estimates.
       All are plotted in index units against a zero reference line;
-      panel titles report the two lower-tail rank p-values. {model_ci} {placebo}
+      placebo row labels give each placebo count and lower-tail rank
+      p-value. {model_ci} {placebo}
 
   - <<: *did
     pattern: 'change_did/(?P<index>[^/]+)/plots/change_trajectories\.png'
@@ -396,7 +397,8 @@ figures:
       under the {model_description}. Top rows show the main {event_pair}
       event estimates and intervals; middle and bottom rows show space and
       space-and-time placebo estimates. Values are in each index's units;
-      panel titles give lower-tail rank p-values. {model_ci} {placebo}
+      placebo row labels give each placebo count and lower-tail rank
+      p-value. {model_ci} {placebo}
 
   - <<: *did
     pattern: 'index_comparison/plots/level_trajectories_(?P<month>\d{2})\.png'

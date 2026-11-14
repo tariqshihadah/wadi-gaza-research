@@ -340,8 +340,8 @@ def plot_combined_evidence(
     ``did_placebo_spacetime.csv`` rows. Each panel stacks the primary event
     estimate with its 95% CI over two placebo rows on a shared estimate axis:
     the comparison sites (space placebos) and every unaffected site x pair
-    cell (space-and-time placebos). Panel titles carry both one-sided placebo
-    p-values.
+    cell (space-and-time placebos). Each placebo row's y tick label carries
+    its count and one-sided placebo p-value.
     """
     event = main.loc[(main["variant"] == "primary") & (main["term"] == EVENT_TERM)]
     if event.empty:
@@ -408,7 +408,11 @@ def _combined_evidence_panel(
     placebo_spacetime: pd.DataFrame,
     title: str,
 ) -> None:
-    """Draw one combined-evidence panel from a single month's result rows."""
+    """Draw one combined-evidence panel from a single month's result rows.
+
+    Placebo row labels include the placebo count and one-sided p-value on a
+    second line; ``title`` is used as the panel title unchanged.
+    """
     space = placebo_space.loc[~placebo_space["is_real"]]
     spacetime = placebo_spacetime.loc[~placebo_spacetime["is_real"]]
     ax.errorbar(
@@ -427,22 +431,20 @@ def _combined_evidence_panel(
         color=PLACEBO_COLOR, alpha=0.45, zorder=3, label="Space-and-time placebos",
     )
     ax.axvline(0.0, color="0.4", linewidth=0.9)
+    # Placebo p-values (one per month) sit in the y tick labels, not the title
+    space_p = float(placebo_space["p_value"].iloc[0])
+    spacetime_p = float(placebo_spacetime["p_value"].iloc[0])
     ax.set_yticks(
         [2.0, 1.0, 0.0],
         [
             r"Event estimate ($\beta$)",
-            f"Space placebos ({len(space)})",
-            f"Space-and-time placebos ({len(spacetime)})",
+            f"Space placebos\n(n = {len(space)}, p = {space_p:.3f})",
+            f"Space-and-time placebos\n(n = {len(spacetime)}, p = {spacetime_p:.3f})",
         ],
     )
     ax.set_ylim(-0.6, 2.6)
     ax.set_xlabel("Event estimate")
-    space_p = float(placebo_space["p_value"].iloc[0])
-    spacetime_p = float(placebo_spacetime["p_value"].iloc[0])
-    ax.set_title(
-        f"{title}: p = {space_p:.3f} (space), "
-        f"{spacetime_p:.3f} (space-and-time)"
-    )
+    ax.set_title(title)
     add_gridlines(ax, axis="x")
 
 
