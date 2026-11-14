@@ -16,7 +16,7 @@ Figure: [combined_evidence_01.png](combined_evidence_01.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 90fa7014cb8236c0bd806e96f4f6056d55604948e7f63de14d30eb4778f55ba1 -->
+<!-- Figure SHA-256: 97ad57fbb4a9410bab35b67985686c1db66b19b193f0a651c5bff03c3c35952f -->
 
 ## May combined evidence across indices (site_period)
 
@@ -30,7 +30,7 @@ Figure: [combined_evidence_05.png](combined_evidence_05.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: f672d4cec28cb33d43d0fec0cb05143bab531ec0aea65e4b0db4d99e44f20154 -->
+<!-- Figure SHA-256: c4ba877ae739de0bb586c6ffee28c872afe502dc9ddcfdb92ee4316a97cdb0c7 -->
 
 ## September combined evidence across indices (site_period)
 
@@ -44,7 +44,7 @@ Figure: [combined_evidence_09.png](combined_evidence_09.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 21507ae774fdbdcd6fe165d2ce32de680b3dfcd8d2eb4dfdf2437748c1347840 -->
+<!-- Figure SHA-256: 74ea4c2cc6693e1822d3d359dd1d49c8a0a594d02c454c04a55c9b0584ef0632 -->
 
 ## November combined evidence across indices (site_period)
 
@@ -58,4 +58,4 @@ Figure: [combined_evidence_11.png](combined_evidence_11.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: bb6fb32d6eb526ef7e7796ea0ed39a9c0f948d7646e8df1b42c18c8cb15cd5a4 -->
+<!-- Figure SHA-256: 382cd371f4bb7fd62f9e1baa49e43519030dd6883e75badde7cf22814257695e -->

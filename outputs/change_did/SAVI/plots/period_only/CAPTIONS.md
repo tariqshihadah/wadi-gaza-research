@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: a280c0150ee3644c7ca5054deff27403d87b73d26cc16ae60799cff1bf2d3ec2 -->
+<!-- Figure SHA-256: d87f531b90b7f92379ecfe3407180e060b5a193c7a9f69dc3ad986a1a5919b09 -->
 
 ## SAVI combined event evidence (period_only)
 
@@ -30,7 +30,7 @@ Figure: [combined_evidence.png](combined_evidence.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 455ed8bd6e5126b12f12f37897dba6dff41ff16a98aacfebd5d3e2ed042f8352 -->
+<!-- Figure SHA-256: 18532b8fb8d958c3577da441bcbcf8a0b56f9e5cb06997b54b7cacd84cb487e1 -->
 
 ## SAVI observed and counterfactual changes (period_only)
 
@@ -44,7 +44,7 @@ Figure: [observed_vs_counterfactual.png](observed_vs_counterfactual.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: fbaa27721aa24b870405690604b3fab85c618fea711af114624718499ac46e44 -->
+<!-- Figure SHA-256: 1776b4377bb41b8c2e2d1fcaba5dfc1b83d1e95ad6c395932f2146b436d94881 -->
 
 ## SAVI placebo-in-space evidence (period_only)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: f02106a4ebbf74e340134ee122d4a488dbd72dd781e1db8d633b8f97097e05be -->
+<!-- Figure SHA-256: ad56b2db5467e3092f194b25da4090d24e4ef08f4d41bdd52f188dc27db73389 -->
 
 ## SAVI placebo-in-space-and-time evidence (period_only)
 
@@ -72,7 +72,7 @@ Figure: [placebo_spacetime.png](placebo_spacetime.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 5e883b6e0d62264b14cca00f8189393c59c10d96558e73e238b441d835544119 -->
+<!-- Figure SHA-256: f0c04829b9a5fd0309012ab9e505815ce47c5d03366723144cb6143dfbb050a7 -->
 
 ## SAVI event-estimate sensitivity (period_only)
 
@@ -86,4 +86,4 @@ Figure: [sensitivity_forest.png](sensitivity_forest.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Period-Only-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: be011af3b4efd57f204e6b60c065120a4b3217c041487b91ca6de7840f8d7d9c -->
+<!-- Figure SHA-256: b5c0b8e688e7f387534f96402bc95facdd5b5a101bfa4d760ec1cfc9b0f44c8f -->

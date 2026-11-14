@@ -15,7 +15,7 @@ from matplotlib.colors import ListedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 
-from plot_style import add_gridlines, annotate_cells, contrast_text_color, month_name
+from plot_style import FIGURE_DPI, add_gridlines, annotate_cells, contrast_text_color, month_name
 
 from .windows import season_label
 
@@ -349,7 +349,7 @@ def plot_temperature_method_difference(
     return fig, ax
 
 
-def save_figure(fig: Figure, path: str | Path, dpi: int = 180) -> Path:
+def save_figure(fig: Figure, path: str | Path, dpi: int = FIGURE_DPI) -> Path:
     """Save a figure after creating its parent directory and return the path."""
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)

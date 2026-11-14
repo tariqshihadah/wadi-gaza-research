@@ -16,7 +16,7 @@ Figure: [AlAhrashProtectorate_01_correlograms_all_year_pairs.png](AlAhrashProtec
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 683239d08a5efac3de3b233967b169a453bc8e1b868fdec8fdc165d727d3e48e -->
+<!-- Figure SHA-256: 1ab136cada7dc27db744751598ff9b87d7c0d6ee7162d9f516aec278c26d6d56 -->
 
 ## Al Ahrash Protectorate: May NDVI change correlograms
 
@@ -30,7 +30,7 @@ Figure: [AlAhrashProtectorate_05_correlograms_all_year_pairs.png](AlAhrashProtec
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 88fef72b115795eb5043366387cd9c50347ffa15a35ec3268176c10285c51718 -->
+<!-- Figure SHA-256: 723b2e641cd34b021e977d875ec594481ff02400db35ed8e4cd3609836617f86 -->
 
 ## Al Ahrash Protectorate: September NDVI change correlograms
 
@@ -44,7 +44,7 @@ Figure: [AlAhrashProtectorate_09_correlograms_all_year_pairs.png](AlAhrashProtec
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: aeeacf3d207d654e8ffe471e3fc719a113cc3e48a40b2b1b7ddf808611dc4e00 -->
+<!-- Figure SHA-256: d23ed19adbe98b450f0429f079b9aaa3771958f7baab71772a36a2b68339e596 -->
 
 ## Al Ahrash Protectorate: November NDVI change correlograms
 
@@ -58,7 +58,7 @@ Figure: [AlAhrashProtectorate_11_correlograms_all_year_pairs.png](AlAhrashProtec
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: c9acef33287d8bda83711375257454fe0032466d5d6ea57ce39ccc6f2022490d -->
+<!-- Figure SHA-256: 9e8da27cb01182ed37c790cf3fc065d10e5f8913093741b20e9f892ff7dbe231 -->
 
 ## Besor Stream: January NDVI change correlograms
 
@@ -72,7 +72,7 @@ Figure: [BesorStream_01_correlograms_all_year_pairs.png](BesorStream_01_correlog
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: ce1e9baabab0b615422d86c512072657df4c8983291077a0471e3f8caae621a0 -->
+<!-- Figure SHA-256: b71b6bc38572f0c89dc3ce90b5c77622ce2c77a9673df698c91ee34c45b146e7 -->
 
 ## Besor Stream: May NDVI change correlograms
 
@@ -86,7 +86,7 @@ Figure: [BesorStream_05_correlograms_all_year_pairs.png](BesorStream_05_correlog
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 8e54cfc5ba94a45e5d6068bc34d2024294c5ddeed434bceb25d23925b349446b -->
+<!-- Figure SHA-256: 20654f33d8c651f7972f5b2b86bdc80f76d2f3dd7879ebd22efd19412a1f9d83 -->
 
 ## Besor Stream: September NDVI change correlograms
 
@@ -100,7 +100,7 @@ Figure: [BesorStream_09_correlograms_all_year_pairs.png](BesorStream_09_correlog
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: b4606c2d143284937531bb031105124a0b85f05def5407aa695456ad917ef7af -->
+<!-- Figure SHA-256: 7ec5417aa7a48404d6de339729e4112d8ad3d571fec9c8b123df260a02785f3f -->
 
 ## Besor Stream: November NDVI change correlograms
 
@@ -114,7 +114,7 @@ Figure: [BesorStream_11_correlograms_all_year_pairs.png](BesorStream_11_correlog
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 1762693379af027e58158bedfd21c25db5c902300f17078562a1e448faee169d -->
+<!-- Figure SHA-256: a227c3b1afd30e07a25eff0247aa46e824f1b4d6e83827932fe29168797550bb -->
 
 ## HaBesor National Park: January NDVI change correlograms
 
@@ -128,7 +128,7 @@ Figure: [HaBesorNationalPark_01_correlograms_all_year_pairs.png](HaBesorNational
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: b3cd780482663e95dfbf8534b60b53766649abe6755066480dadb7dfd6f07ad8 -->
+<!-- Figure SHA-256: f6fdd88fe53033d10b6e519bf0972fec8b0a029740cf7204306a072fd9601af1 -->
 
 ## HaBesor National Park: May NDVI change correlograms
 
@@ -142,7 +142,7 @@ Figure: [HaBesorNationalPark_05_correlograms_all_year_pairs.png](HaBesorNational
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 61c3d95f48614ae688d5e498f8d6caa86ebe6376829da159d39f5abf1a4da466 -->
+<!-- Figure SHA-256: 006491a4263012d90d18ff1c9c41842bffb21cee3cd149c33f8106e1bbc97425 -->
 
 ## HaBesor National Park: September NDVI change correlograms
 
@@ -156,7 +156,7 @@ Figure: [HaBesorNationalPark_09_correlograms_all_year_pairs.png](HaBesorNational
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: e1295d91d9ee9d7d87578218669fc70113f5c6533ab55c31a7f9e86fc266eada -->
+<!-- Figure SHA-256: 40ca039394316d9be7068242853c3a86cf4780cf3e59006842a3e33df837087a -->
 
 ## HaBesor National Park: November NDVI change correlograms
 
@@ -170,7 +170,7 @@ Figure: [HaBesorNationalPark_11_correlograms_all_year_pairs.png](HaBesorNational
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: bd317361fe57de89f837377280cff85b36d49c5e5e6f9cfc8f22b28caea48f62 -->
+<!-- Figure SHA-256: 090397567d7792693120506afd529056886d7de6f7646a86b13dc5f45abf2b4d -->
 
 ## Holot Nizzanim: January NDVI change correlograms
 
@@ -184,7 +184,7 @@ Figure: [HolotNizzanim_01_correlograms_all_year_pairs.png](HolotNizzanim_01_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: f5492d72de96f14571f7b28b19e75634938e31b59d452f3fae7c664d282de730 -->
+<!-- Figure SHA-256: 8853b84c3854bebe0d6d59547be66e3655060f7a636a61746c315612236a0cc7 -->
 
 ## Holot Nizzanim: May NDVI change correlograms
 
@@ -198,7 +198,7 @@ Figure: [HolotNizzanim_05_correlograms_all_year_pairs.png](HolotNizzanim_05_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: e39f65529716c329a5758544159f071a5fc06076c36f65f1da07d4cfc8354ffe -->
+<!-- Figure SHA-256: 39dee7de1448eb60f9d0a77ca99797ba12f6fc2b6e75a401aa1f7926a59a0f2c -->
 
 ## Holot Nizzanim: September NDVI change correlograms
 
@@ -212,7 +212,7 @@ Figure: [HolotNizzanim_09_correlograms_all_year_pairs.png](HolotNizzanim_09_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 9736d57b18ee24b99d21c5f01812557cfe9b426c239552cbb6b05e7a68b4b8f2 -->
+<!-- Figure SHA-256: ddad2919cddeede43c1818023b814cc2733c129b6cdfccf2b945a47113f5d608 -->
 
 ## Holot Nizzanim: November NDVI change correlograms
 
@@ -226,7 +226,7 @@ Figure: [HolotNizzanim_11_correlograms_all_year_pairs.png](HolotNizzanim_11_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 1d32e2a93dc1e61fe8e28474d17e8a79d1d94114d2891c8f8a1f57902ab23197 -->
+<!-- Figure SHA-256: 05614643a5708e752a74da5724c1bb50c29bca92890d5f9a122be84ac9c3bf5a -->
 
 ## Holot Palmahim: January NDVI change correlograms
 
@@ -240,7 +240,7 @@ Figure: [HolotPalmahim_01_correlograms_all_year_pairs.png](HolotPalmahim_01_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 115486329fb1861ac127cc3a7ab13d02c918ad4d79210332a5a9cd7104071bbd -->
+<!-- Figure SHA-256: 094d8b6773cf4bda8f7eec01d9892c6dec30ff4faf96412cbc756569ae3a737b -->
 
 ## Holot Palmahim: May NDVI change correlograms
 
@@ -254,7 +254,7 @@ Figure: [HolotPalmahim_05_correlograms_all_year_pairs.png](HolotPalmahim_05_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 2203e59a21b41bb9d3f5f97fed455f304e3f57b50563885c7d9b669fb4e3d813 -->
+<!-- Figure SHA-256: ccf694aadf71b2e3601c111df6a6fe3f4d68c19db79db0b0e521af3b3aeea9b3 -->
 
 ## Holot Palmahim: September NDVI change correlograms
 
@@ -268,7 +268,7 @@ Figure: [HolotPalmahim_09_correlograms_all_year_pairs.png](HolotPalmahim_09_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: fece9e17c5d74a9e83071e9446df3384cbd7a2bc74ac0ca18c915fe0f28a3251 -->
+<!-- Figure SHA-256: 455f8b205200a4d42de4b3e6835509d6fa634db533fc99e6d6f1f36e24bef7ae -->
 
 ## Holot Palmahim: November NDVI change correlograms
 
@@ -282,7 +282,7 @@ Figure: [HolotPalmahim_11_correlograms_all_year_pairs.png](HolotPalmahim_11_corr
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 0a6f5bcbcc5a4635ddd8c4df4d4e3697c5e3f4dedc116e86bbc9144197a0dbd9 -->
+<!-- Figure SHA-256: 30fe75cdf6bb9d2a668bfc157114ecbaa0c851c18e5cc4ee3907e94a1ccc13ef -->
 
 ## Nahal Rubin: January NDVI change correlograms
 
@@ -296,7 +296,7 @@ Figure: [NahalRubin_01_correlograms_all_year_pairs.png](NahalRubin_01_correlogra
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: e99e09760e04529cad08511f2c8332aa89a9cd058e43c75a873a6c54e1cd8cc0 -->
+<!-- Figure SHA-256: a2e4c5ce478a3ded4bdecdf230fdd05f0c7b2223dfed2f52f1783ca1070522e5 -->
 
 ## Nahal Rubin: May NDVI change correlograms
 
@@ -310,7 +310,7 @@ Figure: [NahalRubin_05_correlograms_all_year_pairs.png](NahalRubin_05_correlogra
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 790580f00cf3bf7759792602a09ee92e6d0f8eab3047f3e0b880f844b4a717be -->
+<!-- Figure SHA-256: 5dc48a542e1193d279059acb99c3881e8e67c5f19d4447798249d1ce07165f37 -->
 
 ## Nahal Rubin: September NDVI change correlograms
 
@@ -324,7 +324,7 @@ Figure: [NahalRubin_09_correlograms_all_year_pairs.png](NahalRubin_09_correlogra
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 37de08a9dbb5985c002dc4a58bf7a68a86276bc05d4c23da3cd62ab4abe57098 -->
+<!-- Figure SHA-256: 23a94fcab160858745c263926ef85a63d8aab5a3f428d02edefc7e2d571c4988 -->
 
 ## Nahal Rubin: November NDVI change correlograms
 
@@ -338,7 +338,7 @@ Figure: [NahalRubin_11_correlograms_all_year_pairs.png](NahalRubin_11_correlogra
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: ae3829f403607a8a1d0b037be507d74244b43d02c763cd4a9e75dc71a5e13840 -->
+<!-- Figure SHA-256: fa9721c4165155daef104dbce582fafbc7afcfc7666559e813b038f87407a289 -->
 
 ## Wadi Gaza: January NDVI change correlograms
 
@@ -352,7 +352,7 @@ Figure: [WadiGaza_01_correlograms_all_year_pairs.png](WadiGaza_01_correlograms_a
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 0b55e1a0af61a8223bc5626c05d1cc186f3fd1474e9cf60d918c7b61c49c4e4e -->
+<!-- Figure SHA-256: 1b26149419b7cddba0924b6c4e12b6fd717bd1964d3d1fc99498bbcd4c5af9ea -->
 
 ## Wadi Gaza: May NDVI change correlograms
 
@@ -366,7 +366,7 @@ Figure: [WadiGaza_05_correlograms_all_year_pairs.png](WadiGaza_05_correlograms_a
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 6748775fc881e45a16c2f46d063185b9ce863ae544135aeb25f5b9ff9e348667 -->
+<!-- Figure SHA-256: 284f9e433ef20339de77630aa72b7a1fedf11dd5eae9e97f519018d16e1bc6bf -->
 
 ## Wadi Gaza: September NDVI change correlograms
 
@@ -380,7 +380,7 @@ Figure: [WadiGaza_09_correlograms_all_year_pairs.png](WadiGaza_09_correlograms_a
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 2a84c3effbb9d47bc63daf2fcaeb66d017873f032a1730c7832d737686f9f637 -->
+<!-- Figure SHA-256: 8049c582b35a4832efaed886de5a25df2ada370465a003dc856e2422135dca6a -->
 
 ## Wadi Gaza: November NDVI change correlograms
 
@@ -394,4 +394,4 @@ Figure: [WadiGaza_11_correlograms_all_year_pairs.png](WadiGaza_11_correlograms_a
 
 Source: [12_visualize_change_results.ipynb](../../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 3554abc93d0009134ef4ec3c827bdde60445694e1054847e39133c66148f5f17 -->
+<!-- Figure SHA-256: 78217bcdcbbc072fa71229aa4c7aa7f66c72b0bc0d69d860730597b892a30fb0 -->

@@ -16,7 +16,7 @@ Figure: [change_trajectories.png](change_trajectories.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 5c4e10680bd36c07535c95ed4689a7709538f8718d3057e0ba23f71f3eef0058 -->
+<!-- Figure SHA-256: d9d32bb77ae4f943a84901839ebef42b28ac68da737edbbf6e80bc92cf54e71b -->
 
 ## NDRE level trajectories across sites
 
@@ -30,4 +30,4 @@ Figure: [level_trajectories.png](level_trajectories.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 552afa5596623aac311e8455a2b1b318b66fb83eee1d32aae2326145c4845ea5 -->
+<!-- Figure SHA-256: 841a318af08937ed4d855fde00630fc7313af9feff1e9c874887450bfd14b907 -->

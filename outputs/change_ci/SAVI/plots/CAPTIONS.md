@@ -16,7 +16,7 @@ Figure: [AlAhrashProtectorate_SAVI_mean_change_month_panels.png](AlAhrashProtect
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 7e720fd442cdf5275f1623fd3c6c2dea948da40382067993228d7323345d6477 -->
+<!-- Figure SHA-256: f661b04320667d91c863393b89b455932fb2670124eb0e8ca53b5031f1721223 -->
 
 ## Besor Stream: monthly SAVI changes
 
@@ -30,7 +30,7 @@ Figure: [BesorStream_SAVI_mean_change_month_panels.png](BesorStream_SAVI_mean_ch
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 4a4e3fef473e3b565608d5c8a8e62063a7da47294fd27dbeab42489c121b0889 -->
+<!-- Figure SHA-256: 04b5a04e49b62933de3e7dfd7cdd217783b80f9dff608dc9753ca1f9b7cab9a8 -->
 
 ## HaBesor National Park: monthly SAVI changes
 
@@ -44,7 +44,7 @@ Figure: [HaBesorNationalPark_SAVI_mean_change_month_panels.png](HaBesorNationalP
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 70f1880f9eec72636d04a00e7d0353a9de8758d31050ae22555cbd0e7301c317 -->
+<!-- Figure SHA-256: 983803a4a5d09303d0d9d5e2aa041514ecf4a9c02878048144404dbf8bf6fd22 -->
 
 ## Holot Nizzanim: monthly SAVI changes
 
@@ -58,7 +58,7 @@ Figure: [HolotNizzanim_SAVI_mean_change_month_panels.png](HolotNizzanim_SAVI_mea
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 6bb9dec15f5aee1c5028ea1af2f7c675425cd8d36c6d12f86a092541d81e5d80 -->
+<!-- Figure SHA-256: 403dad02115dcbba2b9f449fefd3867b6f859fa5036beeff9ea3cbad8642fbe0 -->
 
 ## Holot Palmahim: monthly SAVI changes
 
@@ -72,7 +72,7 @@ Figure: [HolotPalmahim_SAVI_mean_change_month_panels.png](HolotPalmahim_SAVI_mea
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 9bfaeb69483bc5858d590a8095d0f23656376fb26dfcfb92f09057d1afb24976 -->
+<!-- Figure SHA-256: 87d0eb5f04d5e01be7479e956dbb5495bcd3ad9a978fa368acf53dc3c9d7cb44 -->
 
 ## Nahal Rubin: monthly SAVI changes
 
@@ -86,7 +86,7 @@ Figure: [NahalRubin_SAVI_mean_change_month_panels.png](NahalRubin_SAVI_mean_chan
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: f046e284043b88412b31e5c68d3b3b013821369736214a3e7b830a55174691c2 -->
+<!-- Figure SHA-256: 50689c603b37be484ae84e9529cd6b093cff9a1bd1352f264730fa4728e85b0f -->
 
 ## Wadi Gaza: monthly SAVI changes
 
@@ -100,7 +100,7 @@ Figure: [WadiGaza_SAVI_mean_change_month_panels.png](WadiGaza_SAVI_mean_change_m
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 830dafb40ec1546d971f0c4f86897e21cf3de69aac2c5440d57ab9353c213a87 -->
+<!-- Figure SHA-256: cd548374ae8b8f901cd10c19031cad8e216f496f8e8bc00cc5a1a0e41296d113 -->
 
 ## SAVI change by site and year pair
 
@@ -114,4 +114,4 @@ Figure: [study_area_mean_change_heatmaps.png](study_area_mean_change_heatmaps.pn
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 0b48be9ce089779d8d333c32ed6c2c6348000d73fcdb94ca8ef7f51d6bad1afd -->
+<!-- Figure SHA-256: b260fec4d09a4df383d4f7df70130c0185ae9f1d1b2baa80dbc6d7399442ff73 -->

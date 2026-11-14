@@ -13,7 +13,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Normalize
 from matplotlib.figure import Figure
 
-from plot_style import add_gridlines, annotate_cells, month_name
+from plot_style import FIGURE_DPI, add_gridlines, annotate_cells, month_name
 
 
 def _month(value: object) -> str:
@@ -301,7 +301,7 @@ def plot_index_correlogram(
     return fig, ax
 
 
-def save_figure(fig: Figure, path: Path, dpi: int = 160) -> None:
+def save_figure(fig: Figure, path: Path, dpi: int = FIGURE_DPI) -> None:
     """Create the destination directory and save a figure."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=dpi, bbox_inches="tight")

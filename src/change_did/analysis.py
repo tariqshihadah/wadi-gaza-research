@@ -327,6 +327,7 @@ class ChangeDidAnalysis:
             for model in config.models:
                 lines.append(f"### {MODEL_LABELS[model]} model")
                 lines.append("")
+                lines.extend(self._model_table_notes(results, index, model))
                 table = self.summary_table(results, index, model)
                 header = ["Term"] + [month_labels[month] for month in config.months]
                 lines.append("| " + " | ".join(header) + " |")
@@ -339,6 +340,7 @@ class ChangeDidAnalysis:
                 lines.append("")
             lines.append("### Event estimates and placebo tests")
             lines.append("")
+            lines.extend(self._event_table_notes(index))
             lines.append(
                 f"| Model | Month | beta {event_label} (95% CI) | p | "
                 f"beta' {persist_label} (95% CI) | sigma_u | "
@@ -370,6 +372,143 @@ class ChangeDidAnalysis:
                     )
             lines.append("")
         return "\n".join(lines)
+
+    def _model_table_notes(
+        self, results: DidResults, index: str, model: str
+    ) -> list[str]:
+        """Caption and explanation paragraphs for one model's summary table."""
+        config = self.config
+        event_label = _pair_label(*config.event_pairs[0])
+        persist_label = _pair_label(*config.event_pairs[1])
+        affected = config.affected_site
+        if config.model_site_effects(model):
+            caption = (
+                f"{index} site effects, year-pair effects, and {affected}'s "
+                f"{event_label} event and {persist_label} persistence estimates "
+                "by calendar month under the site + period model, with 95% "
+                "confidence intervals."
+            )
+            effects = (
+                "Site and year-pair effects are deviation-coded, so each is "
+                "relative to the average site or year pair. Joint p (sites) is "
+                "an omnibus Wald F-test of whether the site effects are all "
+                "zero together, after accounting for year-pair effects. "
+            )
+            site_result = self._joint_effect_result(
+                results, index, model, "site"
+            )
+        else:
+            caption = (
+                f"{index} year-pair effects and {affected}'s {event_label} event "
+                f"and {persist_label} persistence estimates by calendar month "
+                "under the period-only model, with 95% confidence intervals."
+            )
+            effects = (
+                "This model has no site effects, so the shared year-pair changes "
+                "are the only baseline. "
+            )
+            site_result = None
+        explanation = (
+            f"Each column is a calendar month of {index} change (later year "
+            "minus earlier year, averaged over valid pixels), fitted separately; "
+            "supplementary months are flagged in their label. " + effects +
+            "Year-pair effects are deviations from the average pair. Joint p "
+            "(year pairs) is an omnibus Wald F-test of whether the year-pair "
+            "effects are all zero together, after accounting for the other "
+            "modeled effects. " +
+            (site_result + " " if site_result else "") +
+            self._joint_effect_result(results, index, model, "pair") + " " +
+            f"beta is {affected}'s departure from the expected change in "
+            f"{event_label}; beta' is the same departure in {persist_label}, "
+            "so a value near zero means the change held without recovering and "
+            "a positive value indicates recovery. Brackets give 95% Student-t "
+            "confidence intervals; an asterisk marks an interval excluding "
+            "zero. sigma_u is the estimated standard deviation of residual "
+            "site-year variation and enters the inverse total-variance weights."
+        )
+        return [f"**Caption.** {caption}", "", f"**Explanation.** {explanation}", ""]
+
+    def _joint_effect_result(
+        self, results: DidResults, index: str, model: str, group: str
+    ) -> str:
+        """Summarize which configured months reject a joint effect null."""
+        rows = results.effects.loc[
+            results.effects["model"].eq(model)
+            & results.effects["index"].eq(index)
+            & results.effects["group"].eq(f"{group}_joint")
+        ].set_index("month")
+        alpha = self.config.alpha
+        p_values = {
+            month: float(rows.loc[month, "p_value"])
+            for month in self.config.months
+        }
+        significant = [
+            month for month, p_value in p_values.items() if p_value < alpha
+        ]
+        label = "site differences" if group == "site" else "year-pair differences"
+        month_list = ", ".join(month_name(month) for month in significant)
+        if not significant:
+            if group == "site":
+                return (
+                    f"The joint tests found no evidence of {label} in any "
+                    "listed month; this does not establish that site effects "
+                    "are identical."
+                )
+            return (
+                "The joint tests found no evidence of year-pair differences "
+                "in any listed month."
+            )
+        if len(significant) == len(p_values):
+            if group == "site":
+                return (
+                    "The joint tests indicate site differences in every "
+                    "listed month after accounting for year-pair effects."
+                )
+            return (
+                "The joint tests indicate year-pair differences in every "
+                "listed month, supporting the role of period terms in "
+                "accounting for temporal variation."
+            )
+        if group == "site":
+            return (
+                f"The joint tests indicate site differences in {month_list}, "
+                "but not every month, after accounting for year-pair effects."
+            )
+        return (
+            f"The joint tests indicate year-pair differences in {month_list}, "
+            "but not every month, supporting the role of period terms in "
+            "accounting for temporal variation in those months."
+        )
+
+    def _event_table_notes(self, index: str) -> list[str]:
+        """Caption and explanation paragraphs for the event and placebo table."""
+        config = self.config
+        event_label = _pair_label(*config.event_pairs[0])
+        persist_label = _pair_label(*config.event_pairs[1])
+        affected = config.affected_site
+        caption = (
+            f"{index} event and persistence estimates with their t-test p-value, "
+            "sigma_u, and placebo-in-space and placebo-in-space-and-time "
+            "p-values, by model specification and calendar month."
+        )
+        explanation = (
+            f"The table repeats beta ({event_label}) and beta' ({persist_label}) "
+            "from the model tables above with 95% CIs, adds the two-sided "
+            "t-test p-value for beta, and adds two placebo diagnostics. Space "
+            "placebos reassign the event and persistence indicators to "
+            f"comparison sites after excluding {affected}. Space-and-time "
+            f"placebos omit the {persist_label} pair and reassign a single "
+            "event indicator among unaffected site-year-pair cells, excluding "
+            "the real event cell from each placebo fit. Both placebo p-values "
+            "are lower-tail rank proportions for a decline, including the real "
+            "assignment, so the smallest attainable value is one over the "
+            "number of ranked assignments. The space-and-time p-value uses its "
+            "own reduced-sample real refit, which can differ from the main "
+            "estimate. Interpreting the ranks inferentially requires "
+            "comparable assignments; treat them as a diagnostic alongside the "
+            "model interval."
+        )
+        return [f"**Caption.** {caption}", "", f"**Explanation.** {explanation}", ""]
 
     def _summary_row(
         self, section: str, term: str, cells: dict[int, tuple[str, dict[str, float]]]

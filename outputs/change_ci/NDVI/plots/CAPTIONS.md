@@ -16,7 +16,7 @@ Figure: [AlAhrashProtectorate_NDVI_mean_change_month_panels.png](AlAhrashProtect
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 34b0a5204e9a249c39ce83672ca6b4c9a598d76b253981fcdd6d560282eb670e -->
+<!-- Figure SHA-256: efdd119f1f6b9015ea6a3fb14c078a27b0036de739f3f327a30fa547aa3ecb95 -->
 
 ## Besor Stream: monthly NDVI changes
 
@@ -30,7 +30,7 @@ Figure: [BesorStream_NDVI_mean_change_month_panels.png](BesorStream_NDVI_mean_ch
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: a8ec5c8c6b452223d9e0e3e6a6734e384836164d6291efa9c0fe21ddb3d98e2e -->
+<!-- Figure SHA-256: 18e27712700fca0e9be6f36376305ace2e1fc6d3c206b52f4da71e2c0c93e0d1 -->
 
 ## HaBesor National Park: monthly NDVI changes
 
@@ -44,7 +44,7 @@ Figure: [HaBesorNationalPark_NDVI_mean_change_month_panels.png](HaBesorNationalP
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 22d72741770db3ea5b95721d33b565044203ce0b065acdc031f7309e29d7c498 -->
+<!-- Figure SHA-256: 42d9a5b438ae5ace7c0138cf8863d81c40a26b68dd80033ca9308e23b51fda40 -->
 
 ## Holot Nizzanim: monthly NDVI changes
 
@@ -58,7 +58,7 @@ Figure: [HolotNizzanim_NDVI_mean_change_month_panels.png](HolotNizzanim_NDVI_mea
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 4d8656341b1f8c0277ff6ecfea5356f584eee905060ce835a5ef5e57425c5d85 -->
+<!-- Figure SHA-256: 8d1e179766c046bacd2d2633a4a57dd837cf2459e1bef42cf0667423532f0b4c -->
 
 ## Holot Palmahim: monthly NDVI changes
 
@@ -72,7 +72,7 @@ Figure: [HolotPalmahim_NDVI_mean_change_month_panels.png](HolotPalmahim_NDVI_mea
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: dfa4e996d9c87e7f65b3106fddb3adab749dfa8a195651f3b1c9185584bec306 -->
+<!-- Figure SHA-256: 60001f9d28046890da2ef47141c00b18180252e6d6d2447a2e0b793573ec4e8f -->
 
 ## Nahal Rubin: monthly NDVI changes
 
@@ -86,7 +86,7 @@ Figure: [NahalRubin_NDVI_mean_change_month_panels.png](NahalRubin_NDVI_mean_chan
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: c809c95d8cd8420673d1eb471a5e3112da281ab0de8b0fda4969d36546a7d27b -->
+<!-- Figure SHA-256: 670c065beb2df2fc9f3eda93b412efc6930f2df831e82fbc75d78571dca71d37 -->
 
 ## Wadi Gaza: monthly NDVI changes
 
@@ -100,7 +100,7 @@ Figure: [WadiGaza_NDVI_mean_change_month_panels.png](WadiGaza_NDVI_mean_change_m
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: cd0ca706c6ee45edfe04587c7d808b7a5294d9e75ddcf42c1005eae8243457f2 -->
+<!-- Figure SHA-256: 82bc1650bc8d1dd70d6fbcd9749487260f915654a6f46ac9de0f208a5d2208bf -->
 
 ## Wadi Gaza NDVI effective sample sizes for changes
 
@@ -114,7 +114,7 @@ Figure: [WadiGaza_effective_sample_size.png](WadiGaza_effective_sample_size.png)
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 0cdd4dc5456b1b61c512cae1fe37798c1d25c6966c79c048ff288cfbc2ade979 -->
+<!-- Figure SHA-256: 8222c4fbcaa93af56d99b46af7c46feba3eceb1820624b044bacdb4fe7d3046b -->
 
 ## Wadi Gaza NDVI change trajectories
 
@@ -128,7 +128,7 @@ Figure: [WadiGaza_mean_change_timeseries.png](WadiGaza_mean_change_timeseries.pn
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 021d7e0109350e408663fb184933d179d4567736d0140a85d320a0b215e1bc0e -->
+<!-- Figure SHA-256: 72ac588346324c6390e34a802271c06f8b323034a41be78f988db2311c2e4a46 -->
 
 ## NDVI change across sites, 2023-2024
 
@@ -142,7 +142,7 @@ Figure: [WadiGaza_vs_other_areas_2023_2024_monthly_small_multiples.png](WadiGaza
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 8354d59866aeabc25acbb3a621e8188ebdcfe23a0b5e8fa9c063b4a745612c42 -->
+<!-- Figure SHA-256: ff07ff95f86125a0aff6e27ac4ef34abe27acd5c2f02e7f6848a7e9350ccd0b5 -->
 
 ## NDVI change by site and year pair
 
@@ -156,4 +156,4 @@ Figure: [study_area_mean_change_heatmaps.png](study_area_mean_change_heatmaps.pn
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: a99e11055f66df247109f43d962056e9e877b650bd20d2f92be0c2d9cd7c1f91 -->
+<!-- Figure SHA-256: 469194bd1cc532a544e0b128ad86e946f5e42caff0b1211c759bb2a77830a773 -->

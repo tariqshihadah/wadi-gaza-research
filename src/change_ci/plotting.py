@@ -14,7 +14,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import TwoSlopeNorm
 from matplotlib.figure import Figure
 
-from plot_style import add_gridlines, add_shared_legend, annotate_cells, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, annotate_cells, month_name
 
 
 def _month(value: object) -> str:
@@ -466,7 +466,7 @@ def plot_tau_sensitivity(
     return fig, ax
 
 
-def save_figure(fig: Figure, path: str | Path, dpi: int = 180) -> Path:
+def save_figure(fig: Figure, path: str | Path, dpi: int = FIGURE_DPI) -> Path:
     """Save a figure after creating its parent directory.
 
     Parameters

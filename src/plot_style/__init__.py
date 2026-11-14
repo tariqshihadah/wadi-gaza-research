@@ -18,6 +18,7 @@ from matplotlib.legend import Legend
 
 PanelAxes = Axes | Sequence[Axes] | np.ndarray
 CELL_FONTSIZE = 9
+FIGURE_DPI = 300
 
 
 def month_name(month: object) -> str:

@@ -13,7 +13,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle
 
-from plot_style import add_gridlines, add_shared_legend, annotate_cells, finish_panel_grid, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, annotate_cells, finish_panel_grid, month_name
 
 from .placebo import EVENT_TERM
 
@@ -148,7 +148,7 @@ def plot_sensitivity_forest(
     return fig, axes
 
 
-def save_figure(fig: Figure, path: str | Path, dpi: int = 180) -> Path:
+def save_figure(fig: Figure, path: str | Path, dpi: int = FIGURE_DPI) -> Path:
     """Save a figure after creating its parent directory and return the path."""
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -415,7 +415,7 @@ def _combined_evidence_panel(
         row["estimate"], 2.0,
         xerr=[[row["estimate"] - row["ci_low"]], [row["ci_high"] - row["estimate"]]],
         fmt="o", color=REAL_COLOR, capsize=3, zorder=3,
-        label="Event estimate (95% CI)",
+        label=r"Event estimate ($\beta$, 95% CI)",
     )
     ax.scatter(
         space["estimate"], np.full(len(space), 1.0),
@@ -430,7 +430,7 @@ def _combined_evidence_panel(
     ax.set_yticks(
         [2.0, 1.0, 0.0],
         [
-            "Model estimate",
+            r"Event estimate ($\beta$)",
             f"Space placebos ({len(space)})",
             f"Space-and-time placebos ({len(spacetime)})",
         ],

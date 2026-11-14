@@ -16,7 +16,7 @@ Figure: [AlAhrashProtectorate_NDRE_mean_change_month_panels.png](AlAhrashProtect
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 7b4c18651bb5cbbdeeaf232ae417c217ef897443f3be3f30461e823be22df0fa -->
+<!-- Figure SHA-256: 91faded9528fad60e642fbbae9fb715e23462d95de9c9f7fc477c47eb15df8a0 -->
 
 ## Besor Stream: monthly NDRE changes
 
@@ -30,7 +30,7 @@ Figure: [BesorStream_NDRE_mean_change_month_panels.png](BesorStream_NDRE_mean_ch
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: dee5af86b479ba686baad1edf23f178f7cf88aa5bd33b3302a6148fe6f377232 -->
+<!-- Figure SHA-256: e3099e0e4f14c63f4546bf5742bc91de2340f14cb8d10acb897e5fb19b67a5cb -->
 
 ## HaBesor National Park: monthly NDRE changes
 
@@ -44,7 +44,7 @@ Figure: [HaBesorNationalPark_NDRE_mean_change_month_panels.png](HaBesorNationalP
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 4b117ac75cf1d5e580a7deaa1debc9092e8d8423bb6e0bfb1297586b27fa9a54 -->
+<!-- Figure SHA-256: 981d28185d39ba92f40829b62a513ba8852af9bdbcc56433f950f9a986de686c -->
 
 ## Holot Nizzanim: monthly NDRE changes
 
@@ -58,7 +58,7 @@ Figure: [HolotNizzanim_NDRE_mean_change_month_panels.png](HolotNizzanim_NDRE_mea
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: be1c65ef1031ec20df30c9cc9c5ef17a0ef709d16116f4b6077058cfc53483d4 -->
+<!-- Figure SHA-256: 8ad26dff3b6d69c0d56a84d28e5b2e666d10d33807159c76359b577d0d62b0c1 -->
 
 ## Holot Palmahim: monthly NDRE changes
 
@@ -72,7 +72,7 @@ Figure: [HolotPalmahim_NDRE_mean_change_month_panels.png](HolotPalmahim_NDRE_mea
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 442b6d7640bdaf47970258054db070f8fda7f956d9e3edeff96236e62cca577c -->
+<!-- Figure SHA-256: bb4059e1efa7f11a6f4ed7c8726e64f26592e11ec3827f1014e07db2f2c7803c -->
 
 ## Nahal Rubin: monthly NDRE changes
 
@@ -86,7 +86,7 @@ Figure: [NahalRubin_NDRE_mean_change_month_panels.png](NahalRubin_NDRE_mean_chan
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 12b6e6c80808cc6c75b8c93281927da45c7ea0318f7dbf505a01b7221e51c3ed -->
+<!-- Figure SHA-256: a4863af58a17894badb5c3b59d4f862facead2edbd9aa64f0eaa712990001d9d -->
 
 ## Wadi Gaza: monthly NDRE changes
 
@@ -100,7 +100,7 @@ Figure: [WadiGaza_NDRE_mean_change_month_panels.png](WadiGaza_NDRE_mean_change_m
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: b6bbf6a83ba2262aae4a336b8b1be69c6215b2e7a0ff8f9aee985638e493043a -->
+<!-- Figure SHA-256: da465f2e440af22a8669d4c12ce2ee67086bb3e45a0f9a945d119109298c843f -->
 
 ## NDRE change by site and year pair
 
@@ -114,4 +114,4 @@ Figure: [study_area_mean_change_heatmaps.png](study_area_mean_change_heatmaps.pn
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: db805c4ce8719ef1d44544d903310ac0f5d40a02e60719066813ebbe501fe72a -->
+<!-- Figure SHA-256: f9af9c8882a357eb21d448097eccad9918428e805da24b1485529d7c52d9633e -->

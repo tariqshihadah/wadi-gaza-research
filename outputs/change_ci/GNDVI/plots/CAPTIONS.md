@@ -16,7 +16,7 @@ Figure: [AlAhrashProtectorate_GNDVI_mean_change_month_panels.png](AlAhrashProtec
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 7b96970c2a28107eae8c27a8bf0492f55a9cde708747c9a1f4396efa96d08fcb -->
+<!-- Figure SHA-256: 113d187385351681ff7899d4ce5eeaeaf56d79604131c449da6769b66a653d5c -->
 
 ## Besor Stream: monthly GNDVI changes
 
@@ -30,7 +30,7 @@ Figure: [BesorStream_GNDVI_mean_change_month_panels.png](BesorStream_GNDVI_mean_
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 614a9eb6ed550c7d3deb7371d3e210591a71aaac708d6fc24d24bb8cc2587004 -->
+<!-- Figure SHA-256: fcc6c0194ca64010f353e05a0101c4e56b5fba4ebe45cdafd6f6be92b54aa905 -->
 
 ## HaBesor National Park: monthly GNDVI changes
 
@@ -44,7 +44,7 @@ Figure: [HaBesorNationalPark_GNDVI_mean_change_month_panels.png](HaBesorNational
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 2c887f620ab189d31810038b76da01dbc910a4eda4aa0ecd7e3ecc7cff09fe92 -->
+<!-- Figure SHA-256: fb29c936da2518806acbe6eed0c133c659ab41c3c70b53682bb6f286d59354d3 -->
 
 ## Holot Nizzanim: monthly GNDVI changes
 
@@ -58,7 +58,7 @@ Figure: [HolotNizzanim_GNDVI_mean_change_month_panels.png](HolotNizzanim_GNDVI_m
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: e7cc121342998d3752f8650fd4bf6e0baf8a482fb6fd7582bfe7b4705af6f26e -->
+<!-- Figure SHA-256: b474871c36544a8f32e669f0212a6a3cab7a1bf310080e2e63b4d4f17e7236eb -->
 
 ## Holot Palmahim: monthly GNDVI changes
 
@@ -72,7 +72,7 @@ Figure: [HolotPalmahim_GNDVI_mean_change_month_panels.png](HolotPalmahim_GNDVI_m
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: a299e9e952ff7c350b71d1b4c1332ea10b7a9f7d04ea9c7b3d0346124b595a1e -->
+<!-- Figure SHA-256: 1f6c4285337703dcd26f8e7d538a88c8497a14b558578f6d7e7516ec101cce59 -->
 
 ## Nahal Rubin: monthly GNDVI changes
 
@@ -86,7 +86,7 @@ Figure: [NahalRubin_GNDVI_mean_change_month_panels.png](NahalRubin_GNDVI_mean_ch
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: efa1df1671a418609e8dde3bc381ae3b6a7032701fabd98f59ba3d9f2afa46a0 -->
+<!-- Figure SHA-256: 616abe105256983f56c762e451467d53a991374957c7e3fd8961574521d707a4 -->
 
 ## Wadi Gaza: monthly GNDVI changes
 
@@ -100,7 +100,7 @@ Figure: [WadiGaza_GNDVI_mean_change_month_panels.png](WadiGaza_GNDVI_mean_change
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 9cf7b7a570f8a6612336eaea2e38b344ba2d1322d6013d18b6a0a0d4b8f70052 -->
+<!-- Figure SHA-256: c2de55cf4ccd6caf6b44c9eb698b16eea8bae6b506b644604db2cc6a4a999125 -->
 
 ## GNDVI change by site and year pair
 
@@ -114,4 +114,4 @@ Figure: [study_area_mean_change_heatmaps.png](study_area_mean_change_heatmaps.pn
 
 Source: [12_visualize_change_results.ipynb](../../../../notebooks/12_visualize_change_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 74b6acd89452091e16b9e1eaf957662e6cb666a0cb0e2cf367660201362485fb -->
+<!-- Figure SHA-256: cfe02da7c09c47d4b52ead927ddc786b4970b4916db8b520df222f60eb06982f -->

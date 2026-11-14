@@ -16,7 +16,7 @@ Figure: [WadiGaza_09_index_correlograms_by_year.png](WadiGaza_09_index_correlogr
 
 Source: [14_visualize_index_results.ipynb](../../../../notebooks/14_visualize_index_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 2d8022e79dda811763be7e97ba41d74e7ea03e73496a38126860bfc587b5d84e -->
+<!-- Figure SHA-256: 56ddf0f1db272c11ed5bb3cc5b7b85aafa57f5fc8d846be35b25e099d43d3441 -->
 
 ## Wadi Gaza annual NDVI effective sample sizes
 
@@ -30,7 +30,7 @@ Figure: [WadiGaza_index_effective_sample_size.png](WadiGaza_index_effective_samp
 
 Source: [14_visualize_index_results.ipynb](../../../../notebooks/14_visualize_index_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 4e4d21725bb800a27fd8c42a74ed52b54fa3587f3d1f712f9015c0ff7633e2b6 -->
+<!-- Figure SHA-256: 5912f6d58fd967a82038cd953db03082873c35f69f13e581452b59869d1bd864 -->
 
 ## Wadi Gaza annual NDVI levels
 
@@ -44,7 +44,7 @@ Figure: [WadiGaza_mean_index_timeseries.png](WadiGaza_mean_index_timeseries.png)
 
 Source: [14_visualize_index_results.ipynb](../../../../notebooks/14_visualize_index_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 101d3a23801d40e51a27ab8dcaefaa65d31c9a9bb9c086a865b30549235301ed -->
+<!-- Figure SHA-256: 0d0146a3997a0921849895c948b09ea7ad1364367a3ebf47fbe0f014f76f84c8 -->
 
 ## NDVI levels relative to 2019
 
@@ -58,7 +58,7 @@ Figure: [WadiGaza_vs_study_areas_index_change_from_2019.png](WadiGaza_vs_study_a
 
 Source: [14_visualize_index_results.ipynb](../../../../notebooks/14_visualize_index_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 8517c42d055c8d5c016f2d146edc768825aa15b244dffac4ba3eee92568fa2de -->
+<!-- Figure SHA-256: fce9c6ff1fda9a4fdd6e3b6617b9a913fc98e5d380449cf3baf140a23aa30159 -->
 
 ## Annual NDVI levels across sites
 
@@ -72,7 +72,7 @@ Figure: [WadiGaza_vs_study_areas_index_timeseries.png](WadiGaza_vs_study_areas_i
 
 Source: [14_visualize_index_results.ipynb](../../../../notebooks/14_visualize_index_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 7e8655251720da6a78404ab010469731b175c7ec20cb1faf7fcd9e44cdd47729 -->
+<!-- Figure SHA-256: e0e6da99659963a1267f7afc0ab5e668d91ff021d4e037d10f7f44fcefc37dc2 -->
 
 ## NDVI levels by site and observation year
 
@@ -86,4 +86,4 @@ Figure: [study_area_mean_index_heatmaps.png](study_area_mean_index_heatmaps.png)
 
 Source: [14_visualize_index_results.ipynb](../../../../notebooks/14_visualize_index_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 51d63b66cd47d17129008b6d1e547f26ff645e946c146627f200d1338c9fc824 -->
+<!-- Figure SHA-256: f1b48c6c2402a13b73555555dadeacbea5fd64301fe31bcd8a1a88320859757e -->

@@ -1,12 +1,16 @@
 # Weighted fixed-effects model on index change
 
-Primary specification: tau = 0.05, largest-SE fill, affected site WadiGaza. NDVI is the primary index; other indices are robustness checks. Supplementary months are flagged in their month label. Each model specification (site + period, and period only without site effects) is reported separately; site and year-pair effects use deviation (sum-to-zero) coding, so each is relative to the average site or year pair, with an asterisk where the 95% CI excludes zero.
+Primary specification: tau = 0.05, largest-SE fill, affected site WadiGaza. NDVI is the primary index; other indices are robustness checks. Supplementary months are flagged in their month label. Each model specification (site + period, and period only without site effects) is reported separately; site and year-pair estimates are relative to their respective averages. An asterisk marks estimates whose 95% confidence interval excludes zero.
 
-Fits use statsmodels OLS/WLS with the leverage-adjusted Hedges (HE) method-of-moments variance estimator. Inverse estimated total-variance weights are treated as fixed, with covariance scale = 1, Student-t coefficient inference, and Wald F-tests.
+The models use weighted regression to account for uncertainty in the estimated index changes, and report 95% confidence intervals and joint checks of site and year-pair effects.
 
 ## SAVI (robustness)
 
 ### Site + period model
+
+**Caption.** SAVI site effects, year-pair effects, and WadiGaza's 2023–24 event and 2024–25 persistence estimates by calendar month under the site + period model, with 95% confidence intervals.
+
+**Explanation.** Each column is a calendar month of SAVI change (later year minus earlier year, averaged over valid pixels), fitted separately; supplementary months are flagged in their label. Site and year-pair estimates are relative to their respective averages. The site joint p-value checks whether sites differ overall in average change, after accounting for year-to-year differences. The year-pair joint p-value checks whether average changes differ across years, after accounting for the other model terms. The site tests did not indicate an overall difference among sites in these months. The year-pair tests indicated differences among years in January, May, September, supporting the use of year-to-year adjustments for those months. beta is WadiGaza's departure from the expected change in 2023–24; beta' is the same departure in 2024–25, so a value near zero means the change held without recovering and a positive value indicates recovery. Brackets give 95% confidence intervals; an asterisk marks an interval excluding zero. sigma_u summarizes unexplained variation among site-year observations.
 
 | Term | January (supplementary) | May | September | November |
 | --- | --- | --- | --- | --- |
@@ -31,6 +35,10 @@ Fits use statsmodels OLS/WLS with the leverage-adjusted Hedges (HE) method-of-mo
 
 ### Period only model
 
+**Caption.** SAVI year-pair effects and WadiGaza's 2023–24 event and 2024–25 persistence estimates by calendar month under the period-only model, with 95% confidence intervals.
+
+**Explanation.** Each column is a calendar month of SAVI change (later year minus earlier year, averaged over valid pixels), fitted separately; supplementary months are flagged in their label. This model has no site effects, so the shared year-pair changes are the only baseline. The year-pair joint p-value checks whether average changes differ across years, after accounting for the other model terms. The year-pair tests indicated differences among years in every listed month, supporting the use of year-to-year adjustments. beta is WadiGaza's departure from the expected change in 2023–24; beta' is the same departure in 2024–25, so a value near zero means the change held without recovering and a positive value indicates recovery. Brackets give 95% confidence intervals; an asterisk marks an interval excluding zero. sigma_u summarizes unexplained variation among site-year observations.
+
 | Term | January (supplementary) | May | September | November |
 | --- | --- | --- | --- | --- |
 | 2019–20 | -0.037* | 0.014* | -0.001 | 0.006 |
@@ -45,6 +53,10 @@ Fits use statsmodels OLS/WLS with the leverage-adjusted Hedges (HE) method-of-mo
 | sigma_u | 0.044 | 0.011 | 0.007 | 0.010 |
 
 ### Event estimates and placebo tests
+
+**Caption.** SAVI event and persistence estimates with their t-test p-value, sigma_u, and placebo-in-space and placebo-in-space-and-time p-values, by model specification and calendar month.
+
+**Explanation.** The table repeats beta (2023–24) and beta' (2024–25) from the model tables above with 95% CIs, adds the two-sided t-test p-value for beta, and adds two placebo diagnostics. Space placebos reassign the event and persistence indicators to comparison sites after excluding WadiGaza. Space-and-time placebos omit the 2024–25 pair and reassign a single event indicator among unaffected site-year-pair cells, excluding the real event cell from each placebo fit. Both placebo p-values are lower-tail rank proportions for a decline, including the real assignment, so the smallest attainable value is one over the number of ranked assignments. The space-and-time p-value uses its own reduced-sample real refit, which can differ from the main estimate. Interpreting the ranks inferentially requires comparable assignments; treat them as a diagnostic alongside the model interval.
 
 | Model | Month | beta 2023–24 (95% CI) | p | beta' 2024–25 (95% CI) | sigma_u | Placebo-space p | Placebo-space-time p |
 | --- | --- | --- | --- | --- | --- | --- | --- |

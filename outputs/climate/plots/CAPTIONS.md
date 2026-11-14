@@ -16,7 +16,7 @@ Figure: [WadiGaza_cell_sensitivity.png](WadiGaza_cell_sensitivity.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: f5145bfa72a63775ae6215b2d6625190e1e9c4dfe4aeb5d80095dae4b8e8c3dc -->
+<!-- Figure SHA-256: 643414640cd085d9002b2879003e6c8af2f17f0b8360f11133b889a25fd5a7cf -->
 
 ## Wadi Gaza cumulative rainfall since October 1
 
@@ -30,7 +30,7 @@ Figure: [WadiGaza_cumulative_since_oct1.png](WadiGaza_cumulative_since_oct1.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: 00b9198298786837445c914e68f71118f73deee5b1e5f507ac8c225ad205c71e -->
+<!-- Figure SHA-256: 99200c28963ee1c231bb40b3a8868a202c9c220e3011015fcd71c655dad047b2 -->
 
 ## Wadi Gaza monthly rainfall in July-June seasons
 
@@ -44,7 +44,7 @@ Figure: [WadiGaza_monthly_climatology.png](WadiGaza_monthly_climatology.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: 93e9abc25dd0e52d2e5913923be4cfac5bef9c55f7dcc600707f4fb8498fc309 -->
+<!-- Figure SHA-256: 46cd953e032fd7f22cbf5947c44046aa182e09e560b895c13f757043107c6800 -->
 
 ## Wadi Gaza temperature anomalies
 
@@ -58,7 +58,7 @@ Figure: [WadiGaza_temperature_anomaly.png](WadiGaza_temperature_anomaly.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: 9a46c269cf0fcd6396da7ce49c71a5936ae476b3e8d26a18ea509073a9264c59 -->
+<!-- Figure SHA-256: 40041360943dc65de0d3a8bf1c52c02a756c42e2430313299b59ee67a941591d -->
 
 ## Antecedent cumulative precipitation by site
 
@@ -72,7 +72,7 @@ Figure: [cumulative_pct_normal_heatmaps.png](cumulative_pct_normal_heatmaps.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: f343d673ca54a96de134efdc8edbc96b4085caafd64f051c780d3f7af6b30830 -->
+<!-- Figure SHA-256: 523381ffa6daf06aa406cbbf42a8730bbe69e2ece0ccce0bb933bd49350b5c82 -->
 
 ## Monthly precipitation climatology at site-assigned cells
 
@@ -86,7 +86,7 @@ Figure: [monthly_climatology.png](monthly_climatology.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: 0bbfb1bdeef7b06ddf0d95d5d7b1378628baa36c064947536f05fbcb3ff11f62 -->
+<!-- Figure SHA-256: eb0ed7724807a4af60cddd6fce2203e2a0e9523fa152796d4925128721d99c13 -->
 
 ## Monthly precipitation anomalies by site
 
@@ -100,7 +100,7 @@ Figure: [precip_anomaly_heatmaps.png](precip_anomaly_heatmaps.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: c1aa2afe09636d4770dd51ca2997b5756d3f4ff6761e1d67ba59bedffa30b1cc -->
+<!-- Figure SHA-256: e2df6bed1af73d7658a17f63597ac7c7a9e7ad880573d08cfca9d0b160c983b6 -->
 
 ## Regional precipitation and temperature normals
 
@@ -114,7 +114,7 @@ Figure: [regional_normals.png](regional_normals.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: f5767bf12d7ff587e75dc097f2d8783715fa70f60bc91b8c0775f45bf1db881d -->
+<!-- Figure SHA-256: 932ee2b1af627a01b945c65fbb20bd96bc25921c92e77bde47506bf6b3fbe0a0 -->
 
 ## Regional mean temperature anomaly
 
@@ -128,7 +128,7 @@ Figure: [regional_temperature_anomaly.png](regional_temperature_anomaly.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: d78ef12cfc6bd62c28cd6485a894b5692da05344727e5a5fc7b8066895ed25a8 -->
+<!-- Figure SHA-256: 8388b547969fac15b9a59fb2f7e92638ada105a3de6caa96089520b499f0193a -->
 
 ## Regional wet-season precipitation relative to normal
 
@@ -142,7 +142,7 @@ Figure: [regional_wet_season_pct_normal.png](regional_wet_season_pct_normal.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: 96f94c5930ea1c0cfc552b1754290a9d37f70f8a019c59b0b463ff44213d0e9d -->
+<!-- Figure SHA-256: 546dec845e2c4eecd8dffd3f7873b2b91c377dc62c45a05e8d43ca512f841c9d -->
 
 ## Study sites and the ERA5-Land grid
 
@@ -156,7 +156,7 @@ Figure: [sites_over_cells.png](sites_over_cells.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: 9ed8b69c075be4621854210bd0f77a2b77240b107a4be9e101d2c0330f66e3b2 -->
+<!-- Figure SHA-256: 970e98c9b9646aa9b432e164695ee559a8c672373025679313872986136a03d5 -->
 
 ## Monthly temperature anomalies by site
 
@@ -170,7 +170,7 @@ Figure: [temperature_anomaly_heatmaps.png](temperature_anomaly_heatmaps.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: e723b53755b786f58b0f9e681e64c41a2ee033af5640cdbeee3a5c0f562bd62d -->
+<!-- Figure SHA-256: 5729267c2f224ba36b1274ecb658d4faf3d69a3b52d98c59fa7484765058b96e -->
 
 ## Temperature-method comparison
 
@@ -184,7 +184,7 @@ Figure: [temperature_method_difference.png](temperature_method_difference.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: c5fe5471b881ab74e7f49a2c0e902990026a47ae940aece4a59173a8d6291ea3 -->
+<!-- Figure SHA-256: 7c67b061f4e1ca27f97e5030044ad1e86183e22b7eadf0dcecdb994243c69730 -->
 
 ## Wet-season precipitation by site
 
@@ -198,4 +198,4 @@ Figure: [wet_season_pct_normal.png](wet_season_pct_normal.png)
 
 Source: [22_visualize_climate_context.ipynb](../../../notebooks/22_visualize_climate_context.ipynb); [method](../../../docs/white-papers/ERA5-Land-Climate-Context.md).
 
-<!-- Figure SHA-256: b6b98e89b4cb89982e92e930c15cd5c2e09dfe0b481031f29e77724bf095a788 -->
+<!-- Figure SHA-256: f5efbab86947397e65c2dd30d5b04c97a06e4cd8e504479df97e7db37ce91024 -->

@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 9a23af7da5ac3299ef3fc1c016c6b29a4eca27500717129cdd509d081b37d779 -->
+<!-- Figure SHA-256: d18c08e4d085ecd31cfdeff2bac2a1ff30fc547f2e31d53833be61d8e00e567f -->
 
 ## NDVI combined event evidence (site_period)
 
@@ -30,7 +30,7 @@ Figure: [combined_evidence.png](combined_evidence.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 278ffa8f2af7d7269c8f45f49c5ffba825ac1508493e670d12a76ccce2a86073 -->
+<!-- Figure SHA-256: fde1c5f1b2d85a95d4b9c6fe597dbdf5691f9ff42bf7ac4b8fcfc432ab619552 -->
 
 ## NDVI observed and counterfactual changes (site_period)
 
@@ -44,7 +44,7 @@ Figure: [observed_vs_counterfactual.png](observed_vs_counterfactual.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 1e3ab97cb92f587a2ad5baf687a2f2fd0e81c698ec1f90c6dafe95e23454d0c8 -->
+<!-- Figure SHA-256: 22f1c90d23c3584533a1894a2455e8eab39cacdd006162ffd5146db4bd64fb84 -->
 
 ## NDVI placebo-in-space evidence (site_period)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 7f400e725c137dac187bc9d80fe4240e6cea7cf4c0fbd260555b43966c05446f -->
+<!-- Figure SHA-256: 552a02cc734df64d578dee8af854610c49a2beb9a81bb8d018167bccc8e678d8 -->
 
 ## NDVI placebo-in-space-and-time evidence (site_period)
 
@@ -72,7 +72,7 @@ Figure: [placebo_spacetime.png](placebo_spacetime.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 410771b562179f8c9c630f6dd814e29e9ea64e6123ffb338d4213ebb246ef5c1 -->
+<!-- Figure SHA-256: c00d42cb30ae9c032bba2b63281c72a6bebd81f256308ba993026ba761d7cee8 -->
 
 ## NDVI event-estimate sensitivity (site_period)
 
@@ -86,4 +86,4 @@ Figure: [sensitivity_forest.png](sensitivity_forest.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 03d4ba0be068671c285cc6312bc4899fc787719de87f2c673956d247d76be71a -->
+<!-- Figure SHA-256: ed307547e7b45c003192299d42a66ab00629f6901c18d649c225f49d34394f2e -->

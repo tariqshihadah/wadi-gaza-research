@@ -16,7 +16,7 @@ Figure: [change_trajectories.png](change_trajectories.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Change-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: f2a5f87866fb6763da47fe2cdb0cbaa20a3835ff1a628e7edba25b6d52eec3d3 -->
+<!-- Figure SHA-256: 84f726ce7638f0e85fd212986e790d30fb3e20ca763788731b89cdedf8bf66e8 -->
 
 ## GNDVI level trajectories across sites
 
@@ -30,4 +30,4 @@ Figure: [level_trajectories.png](level_trajectories.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../docs/white-papers/Mean-Index-Level-Confidence-Intervals.md).
 
-<!-- Figure SHA-256: 3b511c712ad574e4aab311d6966f3af61d054531656956482b01a7b28b8fb2a0 -->
+<!-- Figure SHA-256: 4228a698f34e0a5432c47b221a4e23aa75510a4b0c807e8d0606f310f5979d0f -->
