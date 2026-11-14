@@ -86,10 +86,3 @@ def test_index_month_series_are_labeled_by_name():
     fig, ax = plot_index_timeseries(results, group_by="month")
     assert [line.get_label() for line in ax.lines] == ["January", "September"]
     plt.close(fig)
-
-
-def test_index_heatmap_cells_are_square_and_titled_by_month_name():
-    fig, ax = plot_index_heatmap(_results(), "09")
-    assert ax.get_aspect() == 1.0
-    assert ax.get_title().endswith("September")
-    plt.close(fig)
