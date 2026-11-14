@@ -14,7 +14,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import TwoSlopeNorm
 from matplotlib.figure import Figure
 
-from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, annotate_cells, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_shared_legend, add_title, annotate_cells, month_name
 
 
 def _month(value: object) -> str:
@@ -287,7 +287,7 @@ def plot_change_heatmap(
     ax.set_yticks(range(len(areas)), areas)
     ax.set_xlabel("Year pair")
     ax.set_ylabel("Study area")
-    ax.set_title(f"Mean change by study area, {month_name(month)}")
+    add_title(ax, f"Mean change by study area, {month_name(month)}", panel=not owns_figure)
     if colorbar:
         fig.colorbar(image, ax=ax, label="Mean index change")
     if owns_figure:

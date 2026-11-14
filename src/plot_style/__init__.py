@@ -15,10 +15,16 @@ from matplotlib.figure import Figure
 from matplotlib.image import AxesImage
 from matplotlib.layout_engine import ConstrainedLayoutEngine
 from matplotlib.legend import Legend
+from matplotlib.text import Text
 
 PanelAxes = Axes | Sequence[Axes] | np.ndarray
 CELL_FONTSIZE = 9
 FIGURE_DPI = 300
+# Overall figure titles are hidden by default (PI request); the title text is
+# kept in the code so they can be restored by setting this to True, e.g.
+# ``import plot_style; plot_style.SHOW_TITLES = True`` at the top of a notebook.
+# Panel labels (month names etc. on grid panels) are not affected.
+SHOW_TITLES = False
 
 
 def month_name(month: object) -> str:
@@ -60,6 +66,23 @@ def annotate_cells(
                 column, row, labels[row, column], ha="center", va="center",
                 fontsize=fontsize, color=contrast_text_color(image.to_rgba(value)),
             )
+
+
+def add_title(
+    target: Figure | Axes, text: str, panel: bool = False, **kwargs: Any
+) -> Text | None:
+    """Add an overall figure title, drawn only when ``SHOW_TITLES`` is True.
+
+    A ``Figure`` gets ``suptitle``; an ``Axes`` (a single-panel figure) gets
+    ``set_title``. Pass ``panel=True`` when ``target`` is one panel of a
+    larger grid: the text is then a panel label and is always drawn. Extra
+    keyword arguments go to the underlying matplotlib call.
+    """
+    if not (SHOW_TITLES or panel):
+        return None
+    if isinstance(target, Figure):
+        return target.suptitle(text, **kwargs)
+    return target.set_title(text, **kwargs)
 
 
 def _panels(axes: PanelAxes) -> list[Axes]:
@@ -169,5 +192,5 @@ def finish_panel_grid(
     if ylabel:
         fig.supylabel(ylabel, fontsize=size)
     if title:
-        fig.suptitle(title)
+        add_title(fig, title)
     return fig.colorbar(mappables[0], ax=panels, label=label, aspect=40)

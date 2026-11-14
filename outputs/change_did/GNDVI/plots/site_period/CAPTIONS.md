@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 979bb8a1ebaec486113616ab8e6254249ad1b2096feefd1a7714e211c72a2a20 -->
+<!-- Figure SHA-256: 5bd3abb5c37d3b237287b39fd9ae12ef163b20112d04713d8a0de192a921edb2 -->
 
 ## GNDVI combined event evidence (site_period)
 
@@ -30,7 +30,7 @@ Figure: [combined_evidence.png](combined_evidence.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: db567b13d2b5dd3244f3ffcfaea7af13ac2783ada16e1457a0985b49ffb35f02 -->
+<!-- Figure SHA-256: 2f9f291eda770c51ba6273d18891b6b3f0e752c7c2cdac7a67e60faf14c7cda1 -->
 
 ## GNDVI observed and counterfactual changes (site_period)
 
@@ -44,7 +44,7 @@ Figure: [observed_vs_counterfactual.png](observed_vs_counterfactual.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: f5c0a91c9e5f7ac8e1cd3b8c90b4da44a1a29cece6980e930841ce1a1490ed50 -->
+<!-- Figure SHA-256: 201e9ce4ead522a240923550a7dde5fdad5d270633924d6328741d38b1d8b753 -->
 
 ## GNDVI placebo-in-space evidence (site_period)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: dff212e9ad6332f1e8a46253fe33d4b71ef22fee39b72c84c0758534758561ae -->
+<!-- Figure SHA-256: f471eb991f2f651eeb27b279c8b50a6b3f6c266da98ad8218b36780aa3e975fd -->
 
 ## GNDVI placebo-in-space-and-time evidence (site_period)
 
@@ -72,7 +72,7 @@ Figure: [placebo_spacetime.png](placebo_spacetime.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: ff3bb41988dde7df98f8c72aeee14bd61793250e71384c0e19a642a228c64370 -->
+<!-- Figure SHA-256: b1efb33a40314cbac4e6b351c48dabf2cad5ad5f9d0766de2d3d0027f72d1382 -->
 
 ## GNDVI event-estimate sensitivity (site_period)
 
@@ -86,4 +86,4 @@ Figure: [sensitivity_forest.png](sensitivity_forest.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 5d612a2891524dfb0c86a04b61b005c4afbbcd93be32eda5e7808d15d7980f40 -->
+<!-- Figure SHA-256: 6c9331d4b7570f7a266971f09f7e1bbd4bf223f073bf05848f503a91ffe05ebf -->

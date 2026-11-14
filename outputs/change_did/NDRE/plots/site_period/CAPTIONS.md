@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 1603457c0f9e61bb877f4546110cdb8cae4815e3461927cef2fe0fbe6f30a1a6 -->
+<!-- Figure SHA-256: 5680ea35906b8d339c75fe41804493fb77bbd7408fd2aa16e51afb0dfe6c4bee -->
 
 ## NDRE combined event evidence (site_period)
 
@@ -30,7 +30,7 @@ Figure: [combined_evidence.png](combined_evidence.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 62e62cf2a1c188e6e0d4984c73de13ec323e0904de203277c0087585c73cb523 -->
+<!-- Figure SHA-256: c2e5800328da1767b7c43ee6aa217a104622ae65ec17c47935654826b5d92d9b -->
 
 ## NDRE observed and counterfactual changes (site_period)
 
@@ -44,7 +44,7 @@ Figure: [observed_vs_counterfactual.png](observed_vs_counterfactual.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 6b991c7e34fa378cf8cec84fb5eea8826e90671fbc0fa33a4abba0f19d073adb -->
+<!-- Figure SHA-256: 96cba34cec5e955f918cf8c4fc247057e379e05b034570bb12491e5656e39ad9 -->
 
 ## NDRE placebo-in-space evidence (site_period)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 2e85ac46181730d95757e5343257f39911d1adca184de0a752f5a3b8079b3b6b -->
+<!-- Figure SHA-256: f5b6a02f79e6adc345074a3a8e5e17b9d30f1059e2e9b48d7ed46c040fbcc1a2 -->
 
 ## NDRE placebo-in-space-and-time evidence (site_period)
 
@@ -72,7 +72,7 @@ Figure: [placebo_spacetime.png](placebo_spacetime.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 66b8f78d30a2c94b356c168751c824418684d00206f29847e0e8416f97746fa7 -->
+<!-- Figure SHA-256: 4882d272cd1c0c6933c566c20746431836c267166e427001e78bf873d593f6ac -->
 
 ## NDRE event-estimate sensitivity (site_period)
 
@@ -86,4 +86,4 @@ Figure: [sensitivity_forest.png](sensitivity_forest.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 7652ebb4702414ee0a609577cd05bb34f8b8c30841de784350ea1918f4113508 -->
+<!-- Figure SHA-256: b3f7e4e776a37993921a46b7e6194884c33ffe8590e064aa4e72dff2f333f8ba -->

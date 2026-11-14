@@ -15,7 +15,7 @@ from matplotlib.colors import ListedColormap, TwoSlopeNorm
 from matplotlib.figure import Figure
 from matplotlib.patches import Patch
 
-from plot_style import FIGURE_DPI, add_gridlines, annotate_cells, contrast_text_color, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_title, annotate_cells, contrast_text_color, month_name
 
 from .windows import season_label
 
@@ -40,6 +40,7 @@ def plot_cells_map(
         and ``used`` columns (``era5land_cells.gpkg``). Cells used by a site
         are outlined in blue and labelled; cells without data are hatched.
     """
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (7, 8))
     used = cells.loc[cells["used"].astype(bool)]
     empty = cells.loc[~cells["has_data"].astype(bool)]
@@ -59,7 +60,7 @@ def plot_cells_map(
     ax.legend(handles=handles, loc="lower right", fontsize=8)
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
-    ax.set_title("Study sites over the ERA5-Land 0.1\N{DEGREE SIGN} grid")
+    add_title(ax, "Study sites over the ERA5-Land 0.1\N{DEGREE SIGN} grid", panel=not owns_figure)
     return fig, ax
 
 
@@ -153,6 +154,7 @@ def plot_summary_heatmap(
     limit = limit if limit > 0 else 1.0
     # Percent of normal cannot be negative, so the scale stops at zero.
     vmin = max(centre - limit, 0.0) if centre else -limit
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (len(years) * 0.7 + 3.5, len(sites) * 0.7 + 1.8))
     image = ax.imshow(values, aspect="equal", cmap="BrBG" if "precip" in value else "RdBu_r",
                       norm=TwoSlopeNorm(vmin=vmin, vcenter=centre, vmax=centre + limit))
@@ -169,7 +171,7 @@ def plot_summary_heatmap(
     ax.set_yticks(range(len(sites)), sites)
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Site")
-    ax.set_title(f"{label or value}, {month_name(month)}")
+    add_title(ax, f"{label or value}, {month_name(month)}", panel=not owns_figure)
     if colorbar:
         fig.colorbar(image, ax=ax, label=label or value)
     return fig, ax
@@ -187,6 +189,7 @@ def plot_wet_season_heatmap(
     values = grid.to_numpy(dtype=float)
     finite = np.abs(values[np.isfinite(values)] - 100)
     limit = float(finite.max()) if len(finite) and finite.max() > 0 else 1.0
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (len(labels) * 0.7 + 3.5, len(sites) * 0.7 + 2.2))
     image = ax.imshow(values, aspect="equal", cmap="BrBG",
                       norm=TwoSlopeNorm(vmin=100 - limit, vcenter=100, vmax=100 + limit))
@@ -194,7 +197,7 @@ def plot_wet_season_heatmap(
     ax.set_xticks(range(len(labels)), labels, rotation=35, ha="right")
     ax.set_yticks(range(len(sites)), sites)
     ax.set_xlabel("Wet season (October to April)")
-    ax.set_title("Wet-season precipitation, percent of 1991\N{EN DASH}2020 normal")
+    add_title(ax, "Wet-season precipitation, percent of 1991\N{EN DASH}2020 normal", panel=not owns_figure)
     fig.colorbar(image, ax=ax, label="% of normal")
     return fig, ax
 
@@ -206,6 +209,7 @@ def plot_temperature_anomalies(
     frame = summary.loc[summary["site"] == site]
     if frame.empty:
         raise ValueError(f"No summary rows for site {site}")
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (9, 4.5))
     months = sorted(frame["month"].unique())
     colours = plt.cm.tab10(np.arange(len(months)))
@@ -218,7 +222,7 @@ def plot_temperature_anomalies(
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Anomaly from 1991\N{EN DASH}2020 normal (\N{DEGREE SIGN}C)")
-    ax.set_title(f"{site}: monthly temperature anomaly")
+    add_title(ax, f"{site}: monthly temperature anomaly", panel=not owns_figure)
     add_gridlines(ax)
     ax.legend(ncol=2, fontsize=8)
     return fig, ax
@@ -254,6 +258,7 @@ def plot_climatology(
         raise ValueError("start_month must be between 1 and 12")
     rows = normals.loc[(normals["cell_id"] == cell_id) & (normals["measure"] == "precip_mm")]
     rows = rows.assign(position=(rows["month"] - start_month) % 12).sort_values("position")
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (8, 4))
     ax.bar(rows["position"], rows["mean"], yerr=rows["sd"], color="lightgrey", edgecolor="grey",
            capsize=3, label="1991\N{EN DASH}2020 normal \N{PLUS-MINUS SIGN}1 SD")
@@ -278,7 +283,7 @@ def plot_climatology(
                 label=str(year) if start_month == 1 else season_label(year), zorder=3)
     ax.set_xticks(range(12), [MONTH_ABBR[(start_month - 1 + i) % 12 + 1] for i in range(12)])
     ax.set_ylabel("Precipitation (mm)")
-    ax.set_title(f"{cell_id}: monthly precipitation")
+    add_title(ax, f"{cell_id}: monthly precipitation", panel=not owns_figure)
     add_gridlines(ax, axis="y")
     ax.legend(fontsize=7, ncol=2)
     return fig, ax
@@ -308,6 +313,7 @@ def plot_cumulative_seasons(
     cell["cumulative"] = cell.groupby("end_year")["precip_mm"].cumsum()
     curves = cell.pivot(index="day", columns="end_year", values="cumulative")
 
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (9, 5))
     reference = curves.reindex(columns=list(reference_end_years))
     mean, sd = reference.mean(axis=1), reference.std(axis=1, ddof=1)
@@ -322,7 +328,7 @@ def plot_cumulative_seasons(
     ax.set_xticks((ticks - ticks[0]).days, [t.strftime("%b") for t in ticks])
     ax.set_xlim(0, 364)
     ax.set_ylabel("Cumulative precipitation since October 1 (mm)")
-    ax.set_title(f"{cell_id}: cumulative precipitation since October 1")
+    add_title(ax, f"{cell_id}: cumulative precipitation since October 1", panel=not owns_figure)
     add_gridlines(ax)
     ax.legend(fontsize=8, ncol=2, loc="upper left")
     return fig, ax
@@ -337,13 +343,14 @@ def plot_temperature_method_difference(
         diff=daily["t2m_midrange_c"] - daily["t2m_mean_24h_c"],
     )
     table = frame.groupby(["month", "cell_id"])["diff"].mean().unstack()
+    owns_figure = ax is None
     fig, ax = _figure_axes(ax, (8, 4))
     for cell in table.columns:
         ax.plot(table.index, table[cell], "-o", markersize=3, label=cell)
     ax.axhline(0, color="black", linewidth=0.8)
     ax.set_xticks(range(1, 13), [MONTH_ABBR[m] for m in range(1, 13)])
     ax.set_ylabel("Midrange minus 24-hour mean (\N{DEGREE SIGN}C)")
-    ax.set_title("Daily temperature method difference, 1990\N{EN DASH}2025 mean")
+    add_title(ax, "Daily temperature method difference, 1990\N{EN DASH}2025 mean", panel=not owns_figure)
     add_gridlines(ax)
     ax.legend(fontsize=8, ncol=2)
     return fig, ax

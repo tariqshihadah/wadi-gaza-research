@@ -13,7 +13,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Normalize
 from matplotlib.figure import Figure
 
-from plot_style import FIGURE_DPI, add_gridlines, annotate_cells, month_name
+from plot_style import FIGURE_DPI, add_gridlines, add_title, annotate_cells, month_name
 
 
 def _month(value: object) -> str:
@@ -203,7 +203,7 @@ def plot_index_heatmap(
     ax.set_yticks(range(len(areas)), areas)
     ax.set_xlabel("Observation year")
     ax.set_ylabel("Study area")
-    ax.set_title(f"Mean index value by study area, {month_name(month)}")
+    add_title(ax, f"Mean index value by study area, {month_name(month)}", panel=not owns_figure)
     if colorbar:
         fig.colorbar(image, ax=ax, label="Mean index value")
     if owns_figure:

@@ -16,7 +16,7 @@ Figure: [anomaly_heatmap.png](anomaly_heatmap.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: dc8ee1a6dc8bce3799df16a12f24de626ef95279b965ecffa42aeffbcc48ba4f -->
+<!-- Figure SHA-256: ae1b4609abbef8d720c11516d40e9d74439c70af410eeb171460709703cfcdad -->
 
 ## SAVI combined event evidence (site_period)
 
@@ -30,7 +30,7 @@ Figure: [combined_evidence.png](combined_evidence.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 10a642a6181795c7398fee596c9c7cc924659caa4edf3d12f7a347cbc0194ddd -->
+<!-- Figure SHA-256: 356f2be51eb121e9c663b23e9c12bc172e552f5cb47b685bcf735f68639add68 -->
 
 ## SAVI observed and counterfactual changes (site_period)
 
@@ -44,7 +44,7 @@ Figure: [observed_vs_counterfactual.png](observed_vs_counterfactual.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 2b4a4fb87b8f140f5dcf65f55e5a9f2bdacd660969e54438261754c8d5bb334a -->
+<!-- Figure SHA-256: 1254b218fa582ab83e3da9e29404615fc66f1cf2171d8230b8e12661bf6684fe -->
 
 ## SAVI placebo-in-space evidence (site_period)
 
@@ -58,7 +58,7 @@ Figure: [placebo_space.png](placebo_space.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: a1d94f3c22bda3ad605096d000c0d48aeb5e4c05da0a4e6e79181ea967d0e4dc -->
+<!-- Figure SHA-256: 62f8e4e5cb949d982573065317641c745a04f38f655adea127bc3ba52b308add -->
 
 ## SAVI placebo-in-space-and-time evidence (site_period)
 
@@ -72,7 +72,7 @@ Figure: [placebo_spacetime.png](placebo_spacetime.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 5965444c3d8be8031290e51cf07174b96e6a841e317a494d4af86f04197c89e6 -->
+<!-- Figure SHA-256: 1b7a32dbba48676df51d1bee7b123a065dbe316806aed06027f896079d743234 -->
 
 ## SAVI event-estimate sensitivity (site_period)
 
@@ -86,4 +86,4 @@ Figure: [sensitivity_forest.png](sensitivity_forest.png)
 
 Source: [31_visualize_did_results.ipynb](../../../../../notebooks/31_visualize_did_results.ipynb); [method](../../../../../docs/white-papers/Before-After-Control-Impact-Analysis.md).
 
-<!-- Figure SHA-256: 38c3e749b701dc2215dc6fdf49aba1f5ee4e027e5c3aed540b8ba52e4d8852a0 -->
+<!-- Figure SHA-256: 77c488c79180e42e28bd114a16be62a96e058977ba504dec61de8af8ceeb8bfb -->
